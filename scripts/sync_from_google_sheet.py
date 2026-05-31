@@ -62,6 +62,12 @@ def get_gspread_client():
         else:
             # Fallback a file locale (sviluppo)
             sa_file = os.path.join(os.path.dirname(__file__), '..', 'service_account.json')
+            if not os.path.exists(sa_file):
+                raise FileNotFoundError(
+                    "Credenziali Google mancanti: configura il secret GitHub "
+                    "GOOGLE_SERVICE_ACCOUNT_JSON oppure aggiungi service_account.json "
+                    "solo in sviluppo locale."
+                )
             creds = Credentials.from_service_account_file(sa_file, scopes=scopes)
 
         return gspread.authorize(creds)
@@ -208,6 +214,7 @@ def sync_rows(rows: list, default_vote_url: str, dry_run: bool = False,
     saved = 0
     skipped = 0
     errors = 0
+    matched = 0
 
     for row in rows:
         ded_id = _cell(row, 'id')
@@ -228,6 +235,8 @@ def sync_rows(rows: list, default_vote_url: str, dry_run: bool = False,
             skipped += 1
             continue
 
+        matched += 1
+
         try:
             result = save_sheet_dedication(
                 row,
@@ -247,6 +256,12 @@ def sync_rows(rows: list, default_vote_url: str, dry_run: bool = False,
 
     logger.info("Nessun file eliminato: sync append-only, archivio locale preservato.")
     logger.info(f"\nSync completata: {saved} creati/aggiornati, {skipped} non toccati, {errors} errori")
+    if (target_date or target_id) and matched == 0:
+        logger.error(
+            "Nessuna riga del Google Sheet corrisponde ai filtri richiesti "
+            f"(date={target_date or '-'}, id={target_id or '-'})."
+        )
+        return False
     return errors == 0
 
 
