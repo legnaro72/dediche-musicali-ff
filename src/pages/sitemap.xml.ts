@@ -4,7 +4,7 @@ import type { APIRoute } from 'astro';
 import { readFileSync, readdirSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
 
-const SITE_BASE = 'https://legnaro72.github.io/dediche-musicali';
+const SITE_BASE = 'https://legnaro72.github.io/dediche-musicali-ff';
 
 function escapeXml(url: string): string {
   return url.replace(/&/g, '&amp;');

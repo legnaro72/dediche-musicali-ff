@@ -17,12 +17,12 @@ except Exception:
     pass
 
 
-GOOGLE_SHEET_ID = "1Cv5fXc9yqp1qkODqL53qZhBFhF_Uha0ucyB4RJO8NQU"
+GOOGLE_SHEET_ID = "1wYqRKJ0xdHXzLKAT09PlFSn4v42JsCG9NaWcfebm9fw"
 SERVICE_ACCOUNT_FILE = "service_account.json"
 
 DEFAULT_VOTE_URL = "https://docs.google.com/forms/d/17VuesL0BOupyw5M5MNCLs1gq_uqZioVKVkGC8oFfn38/viewform"
 SITE_NAME = "DDG FF"
-GITHUB_REPO = "legnaro72/dediche-musicali"
+GITHUB_REPO = "legnaro72/dediche-musicali-ff"
 GITHUB_BRANCH = "main"
 UPLOAD_DIR = "public/images/upload"
 VALID_IMAGE_MODES = ("auto", "upload", "raw", "none")

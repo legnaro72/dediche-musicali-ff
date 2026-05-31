@@ -6,7 +6,7 @@ Percorso predefinito:
 
 ```json
 {
-  "backgroundMusic": "/dediche-musicali/background-music/main.mp3",
+  "backgroundMusic": "/dediche-musicali-ff/background-music/main.mp3",
   "audioDefaultEnabled": true,
   "audioVolume": 0.3
 }

@@ -28,15 +28,15 @@ except Exception:
 
 GOOGLE_SHEET_ID = os.environ.get(
     "GOOGLE_SHEET_ID",
-    "1Cv5fXc9yqp1qkODqL53qZhBFhF_Uha0ucyB4RJO8NQU",
+    "1wYqRKJ0xdHXzLKAT09PlFSn4v42JsCG9NaWcfebm9fw",
 )
 SERVICE_ACCOUNT_FILE = Path(__file__).resolve().parents[1] / "service_account.json"
 DEFAULT_VOTE_URL = os.environ.get(
     "DEFAULT_VOTE_URL",
     "https://docs.google.com/forms/d/17VuesL0BOupyw5M5MNCLs1gq_uqZioVKVkGC8oFfn38/viewform",
 )
-SITE_NAME = os.environ.get("SITE_NAME", "DDGPilliSite")
-GITHUB_REPO = os.environ.get("GITHUB_REPO", "legnaro72/dediche-musicali")
+SITE_NAME = os.environ.get("SITE_NAME", "DDG FF")
+GITHUB_REPO = os.environ.get("GITHUB_REPO", "legnaro72/dediche-musicali-ff")
 GITHUB_BRANCH = os.environ.get("GITHUB_BRANCH", "main")
 DAILY_WORKFLOW_FILE = os.environ.get("DAILY_WORKFLOW_FILE", "daily-publish.yml")
 UPLOAD_DIR = "public/images/upload"
