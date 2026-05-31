@@ -1,8 +1,9 @@
-name = "ddgpilli-feedback"
+name = "ddgff-feedback"
+account_id = "108dc585770e96629e308b9b7ff06eaf"
 main = "src/index.js"
 compatibility_date = "2026-05-15"
 
 [vars]
-GITHUB_REPO = "legnaro72/dediche-musicali"
+GITHUB_REPO = "legnaro72/dediche-musicali-ff"
 GITHUB_BRANCH = "main"
 ALLOWED_ORIGINS = "https://legnaro72.github.io,http://localhost:4321,http://127.0.0.1:4321,http://127.0.0.1:8787"
