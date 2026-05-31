@@ -8,20 +8,20 @@
   --bg-card-hover: rgba(255, 255, 255, 0.09);
   --red-1: #ff0033;
   --red-2: #ff2a4f;
-  --blue-1: #7fd6ff;
-  --blue-2: #b9ecff;
+  --blue-1: #003f8f;
+  --blue-2: #0057c8;
   --accent: #ff0033;
   --text-primary: #f7fbff;
   --text-secondary: #d8f4ff;
   --text-muted: #6b7280;
   --text-dim: rgba(247, 251, 255, 0.68);
-  --border: rgba(127, 214, 255, 0.22);
+  --border: rgba(0, 87, 200, 0.28);
   --border-hover: rgba(255, 0, 51, 0.5);
-  --gradient-btn: linear-gradient(135deg, #ff0033 0%, #7fd6ff 100%);
-  --gradient-text: linear-gradient(135deg, #ff0033 0%, #b9ecff 100%);
+  --gradient-btn: linear-gradient(135deg, #ff0033 0%, #0057c8 100%);
+  --gradient-text: linear-gradient(135deg, #ff0033 0%, #0057c8 100%);
   --shadow-btn: 0 4px 24px rgba(255, 0, 51, 0.35);
   --shadow-card: 0 8px 32px rgba(0, 0, 0, 0.55);
-  --shadow-glow: 0 0 40px rgba(127, 214, 255, 0.14);
+  --shadow-glow: 0 0 40px rgba(0, 87, 200, 0.18);
   --radius-full: 9999px;
   --radius-lg: 24px;
   --radius-md: 16px;
@@ -49,7 +49,7 @@ body {
   font-family: var(--font-sans);
   background:
     radial-gradient(circle at 16% 8%, rgba(255, 0, 51, 0.28), transparent 26rem),
-    radial-gradient(circle at 86% 14%, rgba(185, 236, 255, 0.24), transparent 28rem),
+    radial-gradient(circle at 86% 14%, rgba(0, 87, 200, 0.32), transparent 28rem),
     linear-gradient(135deg, #210613 0%, #071221 52%, #102f46 100%);
   color: var(--text-primary);
   min-height: 100vh;
@@ -74,6 +74,9 @@ a:hover {
 
 .tone-blue {
   color: var(--blue-2);
+  text-shadow:
+    0 0 1px rgba(255, 255, 255, 0.75),
+    0 0 10px rgba(185, 236, 255, 0.32);
 }
 
 .duo-text {
@@ -139,7 +142,7 @@ section {
   text-shadow:
     0 0 1px #fff,
     0 0 10px rgba(255, 255, 255, 0.32),
-    0 0 18px rgba(127, 214, 255, 0.22);
+    0 0 18px rgba(0, 87, 200, 0.32);
 }
 
 .navbar-menu-toggle {
@@ -175,7 +178,9 @@ section {
 
 .navbar-nav a.nav-blue {
   color: var(--blue-2);
-  text-shadow: 0 0 10px rgba(185, 236, 255, 0.24);
+  text-shadow:
+    0 0 1px rgba(255, 255, 255, 0.7),
+    0 0 10px rgba(185, 236, 255, 0.28);
 }
 
 .navbar-nav a:hover {
@@ -274,7 +279,7 @@ body.site-is-locked > :not(.site-lock) {
   padding: 1.5rem;
   background:
     radial-gradient(circle at 50% 15%, rgba(255, 0, 51, 0.2), transparent 34rem),
-    linear-gradient(135deg, rgba(7, 18, 33, 0.96), rgba(127, 214, 255, 0.16) 100%);
+    linear-gradient(135deg, rgba(7, 18, 33, 0.96), rgba(0, 87, 200, 0.22) 100%);
   color: var(--text-primary);
   /* consente lo scroll su iOS con momentum */
   -webkit-overflow-scrolling: touch;
@@ -444,8 +449,8 @@ body.site-is-locked > :not(.site-lock) {
 }
 
 .tag:nth-child(even) {
-  background: rgba(127, 214, 255, 0.12);
-  border-color: rgba(185, 236, 255, 0.42);
+  background: rgba(0, 87, 200, 0.16);
+  border-color: rgba(0, 87, 200, 0.5);
   color: var(--blue-2);
 }
 
@@ -466,7 +471,7 @@ body.site-is-locked > :not(.site-lock) {
   inset: 0;
   background:
     radial-gradient(circle at 12% 18%, rgba(255, 0, 51, 0.34), transparent 30rem),
-    radial-gradient(circle at 88% 22%, rgba(185, 236, 255, 0.28), transparent 32rem),
+    radial-gradient(circle at 88% 22%, rgba(0, 87, 200, 0.36), transparent 32rem),
     linear-gradient(135deg, #270812 0%, #071221 48%, #164260 100%);
   z-index: -1;
 }
@@ -499,7 +504,7 @@ body.site-is-locked > :not(.site-lock) {
   width: 100%;
   max-width: 420px;
   aspect-ratio: 4/5;
-  background: linear-gradient(135deg, rgba(255, 0, 51, 0.16), rgba(127, 214, 255, 0.14));
+  background: linear-gradient(135deg, rgba(255, 0, 51, 0.16), rgba(0, 87, 200, 0.18));
   border-radius: var(--radius-lg);
   border: 1px solid var(--border);
   display: flex;
@@ -873,7 +878,7 @@ body.plus-vote-is-open .app-install {
 .dedication-card:hover {
   transform: translateY(-6px);
   border-color: var(--border-hover);
-  box-shadow: var(--shadow-card), 0 0 30px rgba(127, 214, 255, 0.18);
+  box-shadow: var(--shadow-card), 0 0 30px rgba(0, 87, 200, 0.2);
 }
 
 .dedication-card-img-wrap {
@@ -972,7 +977,7 @@ body.plus-vote-is-open .app-install {
   outline: none;
   cursor: pointer;
   appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23b9ecff' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%230057c8' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 1rem center;
   transition: var(--transition);
@@ -1504,7 +1509,7 @@ button.video-poster {
   padding: 8.5rem 0 5rem;
   background:
     radial-gradient(circle at 20% 10%, rgba(255, 0, 51, 0.2), transparent 34%),
-    radial-gradient(circle at 80% 20%, rgba(185, 236, 255, 0.18), transparent 30%),
+    radial-gradient(circle at 80% 20%, rgba(0, 87, 200, 0.24), transparent 30%),
     var(--bg-base);
 }
 
@@ -1577,7 +1582,7 @@ button.video-poster {
   padding: 8.5rem 0 5rem;
   background:
     radial-gradient(circle at 18% 8%, rgba(255, 0, 51, 0.2), transparent 34%),
-    radial-gradient(circle at 82% 16%, rgba(185, 236, 255, 0.16), transparent 30%),
+    radial-gradient(circle at 82% 16%, rgba(0, 87, 200, 0.22), transparent 30%),
     var(--bg-base);
 }
 
