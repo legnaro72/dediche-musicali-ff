@@ -21,7 +21,7 @@ GOOGLE_SHEET_ID = "1Cv5fXc9yqp1qkODqL53qZhBFhF_Uha0ucyB4RJO8NQU"
 SERVICE_ACCOUNT_FILE = "service_account.json"
 
 DEFAULT_VOTE_URL = "https://docs.google.com/forms/d/17VuesL0BOupyw5M5MNCLs1gq_uqZioVKVkGC8oFfn38/viewform"
-SITE_NAME = "DDGPilliSite"
+SITE_NAME = "DDG FF"
 GITHUB_REPO = "legnaro72/dediche-musicali"
 GITHUB_BRANCH = "main"
 UPLOAD_DIR = "public/images/upload"
@@ -346,7 +346,7 @@ EXTENDED_EMOJIS = [
 ]
 
 app = ctk.CTk()
-app.title("DDGPilliSite — Aggiungi dedica")
+app.title("DDG FF - Aggiungi dedica")
 app.geometry("720x820")
 app.minsize(720, 760)
 

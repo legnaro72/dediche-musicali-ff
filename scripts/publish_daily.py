@@ -164,7 +164,7 @@ def main():
     args = parser.parse_args()
 
     date_str = args.date or get_rome_today()
-    logger.info("=== Pubblicazione giornaliera DDGPilliSite ===")
+    logger.info("=== Pubblicazione giornaliera DDG FF ===")
 
     ok = publish(
         date_str,

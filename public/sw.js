@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'ddgpilli-pwa-v4';
+const CACHE_VERSION = 'ddgff-pwa-v1';
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const RUNTIME_CACHE = `${CACHE_VERSION}-runtime`;
 const APP_SCOPE = new URL(self.registration.scope);

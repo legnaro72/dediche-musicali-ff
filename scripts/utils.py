@@ -1,5 +1,5 @@
 """
-utils.py — Funzioni condivise per DDGPilliSite.
+utils.py — Funzioni condivise per DDG FF.
 """
 import json
 import os
@@ -29,7 +29,7 @@ ITALIAN_MONTHS = ['gennaio', 'febbraio', 'marzo', 'aprile', 'maggio', 'giugno',
 
 
 # ── Logging ──────────────────────────────────────────────────────────────────
-def setup_logging(name: str = 'ddgpilli') -> logging.Logger:
+def setup_logging(name: str = 'ddgff') -> logging.Logger:
     logging.basicConfig(
         level=logging.INFO,
         format='%(asctime)s [%(levelname)s] %(name)s: %(message)s',

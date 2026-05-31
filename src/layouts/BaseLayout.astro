@@ -2,6 +2,7 @@
 // src/layouts/BaseLayout.astro
 import '../styles/global.css';
 import '../styles/landscape-pan.css';
+import UserIdentityModal from '../components/UserIdentityModal.astro';
 import { ViewTransitions } from 'astro:transitions';
 export interface Props {
   title: string;
@@ -24,11 +25,11 @@ const {
 } = Astro.props;
 
 const base = (import.meta.env.BASE_URL ?? '/').replace(/([^/])$/, '$1/');
-const feedbackApiUrl = import.meta.env.PUBLIC_DDGPILLI_FEEDBACK_API_URL ?? (import.meta.env.DEV ? 'http://127.0.0.1:8787' : '');
-const siteConfigUrl = import.meta.env.PUBLIC_DDGPILLI_SITE_CONFIG_URL
+const feedbackApiUrl = import.meta.env.PUBLIC_DDGFF_FEEDBACK_API_URL ?? (import.meta.env.DEV ? 'http://127.0.0.1:8787' : '');
+const siteConfigUrl = import.meta.env.PUBLIC_DDGFF_SITE_CONFIG_URL
   ?? (import.meta.env.DEV
     ? `${base}config/site-settings.json`
-    : 'https://raw.githubusercontent.com/legnaro72/dediche-musicali/main/public/config/site-settings.json');
+    : 'https://raw.githubusercontent.com/legnaro72/dediche-musicali-ff/main/public/config/site-settings.json');
 const siteUrl = import.meta.env.SITE ?? 'https://example.github.io';
 const fullCanonical = canonicalUrl ?? (siteUrl + Astro.url.pathname);
 const fullOgImage = ogImage
@@ -41,19 +42,19 @@ const fullOgImage = ogImage
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <meta name="theme-color" content="#08070f" />
+  <meta name="theme-color" content="#080810" />
   <meta name="color-scheme" content="dark" />
-  <meta name="application-name" content="DDGPilliSite" />
-  <meta name="ddgpilli-base" content={base} />
-  <meta name="ddgpilli-feedback-api" content={feedbackApiUrl} />
-  <meta name="ddgpilli-site-config-url" content={siteConfigUrl} />
+  <meta name="application-name" content="DDG FF" />
+  <meta name="ddgff-base" content={base} />
+  <meta name="ddgff-feedback-api" content={feedbackApiUrl} />
+  <meta name="ddgff-site-config-url" content={siteConfigUrl} />
 
   <!-- PWA / mobile app -->
   <link rel="manifest" href={`${base}manifest.json`} />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="apple-mobile-web-app-title" content="DDGPilli" />
+  <meta name="apple-mobile-web-app-title" content="DDG FF" />
   <link rel="apple-touch-icon" sizes="180x180" href={`${base}icons/apple-touch-icon.png`} />
   <link rel="apple-touch-startup-image" href={`${base}icons/apple-splash-2048.png`} />
 
@@ -111,7 +112,7 @@ const fullOgImage = ogImage
   <!-- Navbar -->
   <nav class="navbar" id="navbar">
     <div class="container navbar-inner">
-      <a class="navbar-brand" href={base}>♪ DDGPilli</a>
+      <a class="navbar-brand" href={base}>♪ DDG FF</a>
       
       <button
         class="navbar-menu-toggle"
@@ -149,6 +150,9 @@ const fullOgImage = ogImage
     </div>
   </nav>
 
+    <!-- Inserisce il modal nome/cognome una tantum -->
+    <UserIdentityModal />
+
   <!-- Main content -->
   <main>
     <slot />
@@ -156,7 +160,7 @@ const fullOgImage = ogImage
 
   <div class="app-install" data-app-install hidden>
     <div class="app-install-copy">
-      <strong>DDGPilli come app</strong>
+      <strong>DDG FF come app</strong>
       <span data-app-install-text>Installa sulla Home per aprirla a schermo intero.</span>
     </div>
     <div class="app-install-actions">
@@ -179,7 +183,7 @@ const fullOgImage = ogImage
     <>
       <div class="app-intro" data-audio-intro hidden>
         <div class="app-intro-panel">
-          <p class="app-intro-kicker">DDGPilli</p>
+          <p class="app-intro-kicker">DDG FF</p>
           <h2>Dedica del giorno</h2>
           <p class="app-intro-text">Tocca Entra per avviare l'esperienza con musica di sottofondo.</p>
           <div class="app-intro-progress" aria-hidden="true">
@@ -195,15 +199,16 @@ const fullOgImage = ogImage
     </>
   )}
 
-  <!-- Footer -->
   <footer class="footer">
     <div class="container">
       <p>
-        ♪ <strong>DDGPilliSite</strong> — Dediche musicali giornaliere
+        ♪ <strong>DDG FF</strong> — Dediche musicali giornaliere
         &nbsp;·&nbsp;
         <a href={`${base}archive/`}>Archivio</a>
         &nbsp;·&nbsp;
         <a href={`${base}statistiche/`}>Statistiche</a>
+        &nbsp;·&nbsp;
+        <button data-uid-edit class="uid-footer-edit-btn" aria-label="Modifica nome e cognome">✏️ Profilo</button>
       </p>
       <p style="margin-top:0.5rem; font-size:0.75rem; opacity:0.5;">
         Pubblicato su GitHub Pages · Gratuito, open source, fatto con amore 🎵
@@ -213,10 +218,10 @@ const fullOgImage = ogImage
 
   <!-- Navbar scroll effect + reveal animation -->
   <script>
-    const appBase = document.querySelector('meta[name="ddgpilli-base"]')?.getAttribute('content') ?? '/';
-    window.__DDGPILLI_BASE = appBase;
+    const appBase = document.querySelector('meta[name="ddgff-base"]')?.getAttribute('content') ?? '/';
+    window.__DDGFF_BASE = appBase;
 
-    const siteConfigUrl = document.querySelector('meta[name="ddgpilli-site-config-url"]')?.getAttribute('content')?.trim() || '';
+    const siteConfigUrl = document.querySelector('meta[name="ddgff-site-config-url"]')?.getAttribute('content')?.trim() || '';
     const resolveSiteAsset = (path) => {
       if (!path) return '';
       if (/^https?:\/\//i.test(path)) return path;
@@ -231,9 +236,9 @@ const fullOgImage = ogImage
     const applyFeedbackApiUrl = (settings) => {
       const configuredUrl = String(settings?.feedbackApiUrl || settings?.feedback?.apiUrl || '').trim();
       if (!configuredUrl) return;
-      const meta = document.querySelector('meta[name="ddgpilli-feedback-api"]');
+      const meta = document.querySelector('meta[name="ddgff-feedback-api"]');
       if (meta) meta.setAttribute('content', configuredUrl);
-      window.__DDGPILLI_FEEDBACK_API_URL = configuredUrl;
+      window.__DDGFF_FEEDBACK_API_URL = configuredUrl;
     };
 
     const applyFakeErrorMode = (fakeError) => {
@@ -286,7 +291,7 @@ const fullOgImage = ogImage
       }
 
       applyFakeErrorMode(settings?.fakeError || {});
-      window.dispatchEvent(new CustomEvent('ddgpilli:site-settings-updated'));
+      window.dispatchEvent(new CustomEvent('ddgff:site-settings-updated'));
     };
 
     const loadSiteSettings = async () => {
@@ -301,8 +306,8 @@ const fullOgImage = ogImage
       }
     };
 
-    if (!window.__DDGPILLI_SITE_CONFIG_READY) {
-      window.__DDGPILLI_SITE_CONFIG_READY = true;
+    if (!window.__DDGFF_SITE_CONFIG_READY) {
+      window.__DDGFF_SITE_CONFIG_READY = true;
       loadSiteSettings();
       window.setInterval(loadSiteSettings, 15000);
       window.addEventListener('focus', loadSiteSettings);
@@ -339,8 +344,8 @@ const fullOgImage = ogImage
       navToggle?.setAttribute('aria-expanded', String(isOpen));
     };
 
-    if (!window.__DDGPILLI_NAV_READY) {
-      window.__DDGPILLI_NAV_READY = true;
+    if (!window.__DDGFF_NAV_READY) {
+      window.__DDGFF_NAV_READY = true;
       document.addEventListener('click', (event) => {
         const target = event.target;
         if (!(target instanceof Element)) return;
@@ -441,8 +446,8 @@ const fullOgImage = ogImage
       const modalClose = document.querySelector('[data-app-install-modal-close]');
       if (!(root instanceof HTMLElement) || !(installButton instanceof HTMLButtonElement)) return;
 
-      const dismissedUntilKey = 'ddgpilli-install-dismissed-until';
-      const installedKey = 'ddgpilli-pwa-installed';
+      const dismissedUntilKey = 'ddgff-install-dismissed-until';
+      const installedKey = 'ddgff-pwa-installed';
       const isAppDisplayMode =
         window.matchMedia('(display-mode: fullscreen)').matches ||
         window.matchMedia('(display-mode: standalone)').matches ||
@@ -528,7 +533,7 @@ const fullOgImage = ogImage
   {enableBackgroundMusic && (
     <script>
       (() => {
-        const appBase = document.querySelector('meta[name="ddgpilli-base"]')?.getAttribute('content') ?? '/';
+        const appBase = document.querySelector('meta[name="ddgff-base"]')?.getAttribute('content') ?? '/';
         const root = document.querySelector('[data-background-music-control]');
         const button = root?.querySelector('.ambient-audio-toggle');
         const hint = root?.querySelector('[data-background-music-hint]');
@@ -539,9 +544,9 @@ const fullOgImage = ogImage
         const introStatus = document.querySelector('[data-audio-intro-status]');
         if (!(root instanceof HTMLElement) || !(button instanceof HTMLButtonElement)) return;
 
-        const storageKey = 'ddgpilli-background-audio-enabled';
-        const timeKey = 'ddgpilli-background-audio-current-time';
-        const introKey = 'ddgpilli-audio-intro-seen';
+        const storageKey = 'ddgff-background-audio-enabled';
+        const timeKey = 'ddgff-background-audio-current-time';
+        const introKey = 'ddgff-audio-intro-seen';
         let audio;
         let progressTimer;
         let config = {

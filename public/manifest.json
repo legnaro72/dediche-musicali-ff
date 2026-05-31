@@ -1,39 +1,39 @@
 {
-  "name": "DDGPilliSite - Dediche Musicali",
-  "short_name": "DDGPilli",
+  "name": "DDG FF - Dediche Musicali",
+  "short_name": "DDG FF",
   "description": "Una nuova dedica musicale ogni giorno.",
-  "id": "/dediche-musicali/",
-  "start_url": "/dediche-musicali/",
-  "scope": "/dediche-musicali/",
+  "id": "/dediche-musicali-ff/",
+  "start_url": "/dediche-musicali-ff/",
+  "scope": "/dediche-musicali-ff/",
   "display": "fullscreen",
   "display_override": ["fullscreen", "standalone", "minimal-ui", "browser"],
   "orientation": "portrait-primary",
-  "background_color": "#08070f",
-  "theme_color": "#08070f",
+  "background_color": "#080810",
+  "theme_color": "#080810",
   "categories": ["music", "entertainment", "lifestyle"],
   "lang": "it-IT",
   "dir": "ltr",
   "icons": [
     {
-      "src": "/dediche-musicali/icons/icon-192.png",
+      "src": "/dediche-musicali-ff/icons/icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/dediche-musicali/icons/icon-512.png",
+      "src": "/dediche-musicali-ff/icons/icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/dediche-musicali/icons/icon-maskable-192.png",
+      "src": "/dediche-musicali-ff/icons/icon-maskable-192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "maskable"
     },
     {
-      "src": "/dediche-musicali/icons/icon-maskable-512.png",
+      "src": "/dediche-musicali-ff/icons/icon-maskable-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
@@ -44,10 +44,10 @@
       "name": "Archivio",
       "short_name": "Archivio",
       "description": "Apri l'archivio delle dediche.",
-      "url": "/dediche-musicali/archive/",
+      "url": "/dediche-musicali-ff/archive/",
       "icons": [
         {
-          "src": "/dediche-musicali/icons/icon-192.png",
+          "src": "/dediche-musicali-ff/icons/icon-192.png",
           "sizes": "192x192"
         }
       ]

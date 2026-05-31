@@ -1,4 +1,4 @@
-name: 🎵 Pubblicazione Giornaliera
+name: 🎵 Pubblicazione Giornaliera DDG FF
 
 on:
   schedule:
@@ -67,7 +67,7 @@ jobs:
       - name: Installa dipendenze Python
         run: pip install -r requirements.txt
 
-      - name: Sync da Google Sheet
+      - name: Sync da Google Sheet DDG FF
         run: |
           TARGET_DATE="${{ inputs.date }}"
           [ -z "$TARGET_DATE" ] && TARGET_DATE="$(TZ=Europe/Rome date +%F)"
@@ -130,7 +130,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add data/ public/images/dedications/ || true
-          git diff --cached --quiet || git commit -m "🎵 Dedica del giorno - $(date +'%Y-%m-%d') [skip ci]"
+          git diff --cached --quiet || git commit -m "🎵 DDG FF - Dedica del giorno - $(date +'%Y-%m-%d') [skip ci]"
           git push || true
 
       - name: Upload artifact Pages
@@ -144,7 +144,7 @@ jobs:
         id: deployment
         uses: actions/deploy-pages@v5
 
-      - name: Invia email notifica DDG online
+      - name: Invia email notifica DDG FF online
         if: ${{ success() && inputs.dry_run != 'true' }}
         run: |
           if [ -z "$SMTP_HOST" ] || [ -z "$SMTP_USERNAME" ] || [ -z "$SMTP_PASSWORD" ]; then

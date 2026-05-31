@@ -1,9 +1,9 @@
 """
-sync_from_google_sheet.py - Legge le dediche dal Google Sheet e genera i JSON.
+sync_from_google_sheet.py - Legge le dediche dal Google Sheet DDG FF e genera i JSON.
 
 Richiede:
   GOOGLE_SERVICE_ACCOUNT_JSON  (contenuto JSON del service account)
-  GOOGLE_SHEET_ID              (ID del foglio Google)
+  GOOGLE_SHEET_ID              (ID del foglio Google DDG FF)
 
 Uso:
     python scripts/sync_from_google_sheet.py
@@ -291,7 +291,7 @@ def main():
                         help='Permette di sovrascrivere dediche gia published')
     args = parser.parse_args()
 
-    logger.info("=== Sync da Google Sheet ===")
+    logger.info("=== Sync da Google Sheet DDG FF ===")
     ok = sync(
         dry_run=args.dry_run,
         target_date=args.date,

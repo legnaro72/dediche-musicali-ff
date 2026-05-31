@@ -28,7 +28,7 @@ const statsJson = JSON.stringify(statsData).replace(/</g, '\\u003c');
 ---
 
 <BaseLayout
-  title="Statistiche | DDGPilliSite"
+  title="Statistiche | DDG FF"
   description="Panoramica dei voti Plus e delle reazioni raccolte sulle dediche musicali."
 >
   <section class="stats-page">
@@ -84,8 +84,8 @@ const statsJson = JSON.stringify(statsData).replace(/</g, '\\u003c');
               <th>Data</th>
               <th>Titolo</th>
               <th>Artista</th>
-              <th>Voto di Pilly</th>
-              <th>Pensiero di Pilly</th>
+              <th>Voto FF</th>
+              <th>Pensiero FF</th>
             </tr>
           </thead>
           <tbody data-voted-table>
@@ -103,8 +103,8 @@ const statsJson = JSON.stringify(statsData).replace(/</g, '\\u003c');
     let apiFeedback = {};
 
     function feedbackApiUrl() {
-      return document.querySelector('meta[name="ddgpilli-feedback-api"]')?.getAttribute('content')?.trim()
-        || window.__DDGPILLI_FEEDBACK_API_URL
+      return document.querySelector('meta[name="ddgff-feedback-api"]')?.getAttribute('content')?.trim()
+        || window.__DDGFF_FEEDBACK_API_URL
         || '';
     }
     const reactionLabels = { down: '👎', like: '👍', heart: '❤️', sun: '☀️' };
@@ -241,7 +241,7 @@ const statsJson = JSON.stringify(statsData).replace(/</g, '\\u003c');
 
     renderStats();
     loadApiFeedback();
-    window.addEventListener('ddgpilli:stats-updated', loadApiFeedback);
+    window.addEventListener('ddgff:stats-updated', loadApiFeedback);
     window.addEventListener('storage', renderStats);
   </script>
 </BaseLayout>

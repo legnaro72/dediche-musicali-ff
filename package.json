@@ -1,8 +1,8 @@
 {
-  "name": "ddgpillisite",
+  "name": "ddg-ff",
   "type": "module",
   "version": "0.1.0",
-  "description": "Sito di dediche musicali giornaliere - DDGPilliSite",
+  "description": "Sito di dediche musicali giornaliere - DDG FF",
   "scripts": {
     "dev": "astro dev",
     "feedback-api": "python scripts/feedback_api.py",

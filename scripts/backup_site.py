@@ -69,11 +69,11 @@ def create_backup(output_path: Path) -> bool:
 
 
 def main():
-    parser = argparse.ArgumentParser(description='Crea backup DDGPilliSite')
+    parser = argparse.ArgumentParser(description='Crea backup DDG FF')
     parser.add_argument('--output', default=None, help='Percorso output zip')
     args = parser.parse_args()
 
-    logger.info("=== Backup DDGPilliSite ===")
+    logger.info("=== Backup DDG FF ===")
 
     today = get_rome_now().strftime('%Y-%m-%d')
     output = Path(args.output) if args.output else ROOT_DIR / 'backups' / f'backup-{today}.zip'

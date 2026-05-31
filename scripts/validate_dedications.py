@@ -138,11 +138,11 @@ def validate_all(dedications: list) -> bool:
 
 
 def main():
-    parser = argparse.ArgumentParser(description='Valida le dediche DDGPilliSite')
+    parser = argparse.ArgumentParser(description='Valida le dediche DDG FF')
     parser.add_argument('--strict', action='store_true', help='Blocca anche su warning')
     args = parser.parse_args()
 
-    logger.info("=== Validazione dediche DDGPilliSite ===")
+    logger.info("=== Validazione dediche DDG FF ===")
 
     dedications = load_all_dedications()
     logger.info(f"Trovate {len(dedications)} dediche in data/dedications/")

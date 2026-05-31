@@ -33,13 +33,17 @@ const data = {
     <div class="plus-vote-modal" data-plus-vote-modal hidden>
       <div class="plus-vote-dialog" role="dialog" aria-modal="true" aria-labelledby={`plus-vote-title-${dedication.id}`}>
         <button class="plus-vote-close" type="button" aria-label="Chiudi" data-plus-vote-close>×</button>
-        <p class="plus-vote-kicker">Pensiero di Pilly</p>
+        <p class="plus-vote-kicker">Pensiero FF</p>
         <h2 id={`plus-vote-title-${dedication.id}`}>{dedication.song_title}</h2>
         <p class="plus-vote-artist">{dedication.artist}</p>
         <form class="plus-vote-form" data-plus-vote-form>
           <label>
             <span>Voto da 1 a 10</span>
             <input data-plus-vote-score type="text" inputmode="numeric" pattern="[1-9]|10" autocomplete="off" required />
+          </label>
+          <label class="plus-vote-identity-label" data-plus-vote-identity-label>
+            <span>Il tuo nome</span>
+            <input data-plus-vote-identity type="text" readonly tabindex="-1" placeholder="(inserisci nome e cognome dalla prima volta)" />
           </label>
           <label>
             <span>Pensiero di Pilly</span>
@@ -64,9 +68,9 @@ const data = {
 )}
 
 <script>
-  const voteStoreKey = 'ddgpilli-plus-votes';
-  const reactionCountKey = 'ddgpilli-reaction-counts';
-  const reactionChoiceKey = 'ddgpilli-reaction-choice';
+  const voteStoreKey = 'ddgff-plus-votes';
+  const reactionCountKey = 'ddgff-reaction-counts';
+  const reactionChoiceKey = 'ddgff-reaction-choice';
   const reactionKeys = ['down', 'like', 'heart', 'sun'];
 
   function readObject(key) {
@@ -80,12 +84,12 @@ const data = {
 
   function writeObject(key, value) {
     localStorage.setItem(key, JSON.stringify(value));
-    window.dispatchEvent(new CustomEvent('ddgpilli:stats-updated'));
+    window.dispatchEvent(new CustomEvent('ddgff:stats-updated'));
   }
 
   function feedbackApiUrl() {
-    return document.querySelector('meta[name="ddgpilli-feedback-api"]')?.getAttribute('content')?.trim()
-      || window.__DDGPILLI_FEEDBACK_API_URL
+    return document.querySelector('meta[name="ddgff-feedback-api"]')?.getAttribute('content')?.trim()
+      || window.__DDGFF_FEEDBACK_API_URL
       || '';
   }
 
@@ -148,9 +152,18 @@ const data = {
       const form = root.querySelector('[data-plus-vote-form]');
       const score = root.querySelector('[data-plus-vote-score]');
       const thought = root.querySelector('[data-plus-vote-thought]');
+      const identityInput = root.querySelector('[data-plus-vote-identity]');
       const status = root.querySelector('[data-plus-vote-status]');
       const submit = root.querySelector('[data-plus-vote-submit]');
       let serverFeedback = null;
+
+      // Precompila il campo nome dalla identity salvata
+      const prefillIdentity = () => {
+        if (!(identityInput instanceof HTMLInputElement)) return;
+        const identity = window.__DDGFF?.getUserIdentity?.() || {};
+        const fullName = [identity.nome, identity.cognome].filter(Boolean).join(' ');
+        identityInput.value = fullName || '(nome non impostato)';
+      };
 
       if (modal instanceof HTMLElement && modal.parentElement !== document.body) {
         document.body.appendChild(modal);
@@ -184,6 +197,12 @@ const data = {
       };
 
       open?.addEventListener('click', async () => {
+        // Se nome/cognome non presenti, chiede prima l'identità
+        if (window.__DDGFF?.hasIdentity && !window.__DDGFF.hasIdentity()) {
+          window.__DDGFF.showIdentityModal?.();
+          return;
+        }
+        prefillIdentity();
         if (status instanceof HTMLElement) status.textContent = feedbackApiUrl() ? 'Caricamento voto salvato...' : '';
         await fillForm();
         if (modal instanceof HTMLElement) modal.hidden = false;
@@ -204,6 +223,7 @@ const data = {
           return;
         }
 
+        const identity = window.__DDGFF?.getUserIdentity?.() || {};
         const votePayload = {
           id: data.id,
           date: data.date,
@@ -211,6 +231,8 @@ const data = {
           artist: data.artist,
           votoPilly: value,
           pensieroPilly: thought instanceof HTMLTextAreaElement ? thought.value.trim() : '',
+          nome: identity.nome || '',
+          cognome: identity.cognome || '',
           updatedAt: new Date().toISOString(),
         };
 
@@ -307,10 +329,13 @@ const data = {
           if (button instanceof HTMLButtonElement) button.disabled = true;
 
           try {
+            const identity = window.__DDGFF?.getUserIdentity?.() || {};
             const apiResult = await postFeedback('/save_reaction', {
               id: data.id,
               reaction: isToggleOff ? null : next,
               previousReaction: previous || null,
+              nome: identity.nome || '',
+              cognome: identity.cognome || '',
             });
             // Se l'API restituisce i conteggi aggiornati, sovrascriviamo lo store
             const savedReactions = feedbackReactions(apiResult);

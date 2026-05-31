@@ -38,7 +38,7 @@ jobs:
         env:
           SITE_NAME: ${{ secrets.SITE_NAME }}
           SITE_URL: ${{ secrets.SITE_URL }}
-          PUBLIC_DDGPILLI_FEEDBACK_API_URL: ${{ secrets.PUBLIC_DDGPILLI_FEEDBACK_API_URL }}
+          PUBLIC_DDGFF_FEEDBACK_API_URL: ${{ secrets.PUBLIC_DDGFF_FEEDBACK_API_URL }}
 
       - name: Upload artifact Pages
         uses: actions/upload-pages-artifact@v5

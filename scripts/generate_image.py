@@ -1,5 +1,5 @@
 """
-generate_image.py — Pipeline premium di generazione immagini DDGPilliSite.
+generate_image.py — Pipeline premium di generazione immagini DDG FF.
 
 Genera:
   - 1080x1350 px  (verticale, social/mobile)
@@ -194,7 +194,7 @@ def _save_images(bg, ded, fonts, palette,
 
 
 def main():
-    parser = argparse.ArgumentParser(description='Genera immagini premium DDGPilliSite')
+    parser = argparse.ArgumentParser(description='Genera immagini premium DDG FF')
     parser.add_argument('--date', help='Data specifica (YYYY-MM-DD) oppure id dedica')
     parser.add_argument('--all', action='store_true',
                         help='Genera per tutte le dediche scheduled/published')
@@ -206,7 +206,7 @@ def main():
                         help='Simula senza scrivere file')
     args = parser.parse_args()
 
-    logger.info('=== Generazione immagini DDGPilliSite ===')
+    logger.info('=== Generazione immagini DDG FF ===')
     fonts = ensure_fonts()
 
     if args.date:
