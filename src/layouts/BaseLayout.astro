@@ -126,22 +126,26 @@ const fullOgImage = ogImage
         Menu
       </button>
 
-      {enableBackgroundMusic && (
-        <div class="ambient-audio" data-background-music-control transition:persist>
-          <button
-            class="ambient-audio-toggle"
-            type="button"
-            aria-pressed="true"
-            aria-label="Disattiva musica di sottofondo"
-          >
-            <span class="ambient-audio-icon" aria-hidden="true">♪</span>
-            <span class="ambient-audio-label">Audio</span>
-          </button>
-          <p class="ambient-audio-hint" data-background-music-hint hidden>
-            Tocca per attivare la musica
-          </p>
-        </div>
-      )}
+      <div class="navbar-actions">
+        {enableBackgroundMusic && (
+          <div class="ambient-audio" data-background-music-control transition:persist>
+            <button
+              class="ambient-audio-toggle"
+              type="button"
+              aria-pressed="true"
+              aria-label="Disattiva musica di sottofondo"
+            >
+              <span class="ambient-audio-icon" aria-hidden="true">♪</span>
+              <span class="ambient-audio-label">Audio</span>
+            </button>
+            <p class="ambient-audio-hint" data-background-music-hint hidden>
+              Tocca per attivare la musica
+            </p>
+          </div>
+        )}
+
+        <UserIdentityModal />
+      </div>
 
       <ul class="navbar-nav" id="primary-navigation">
         <li><a class="nav-red" href={base}>Home</a></li>
@@ -151,9 +155,6 @@ const fullOgImage = ogImage
       </ul>
     </div>
   </nav>
-
-    <!-- Inserisce il modal nome/cognome una tantum -->
-    <UserIdentityModal />
 
   <!-- Main content -->
   <main>

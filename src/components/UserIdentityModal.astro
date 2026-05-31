@@ -60,7 +60,7 @@
 
 <!-- Trigger "Modifica profilo" — invisibile di default, attivabile da navbar/footer -->
 <button class="uid-edit-trigger" id="uid-edit-trigger" data-uid-edit type="button" hidden aria-label="Modifica nome e cognome">
-  ✏️ Modifica profilo
+  <span class="tone-red">Modifica</span> <span class="tone-blue">profilo</span>
 </button>
 
 <style>
@@ -211,32 +211,36 @@
     padding: 0.9rem 1.5rem;
   }
 
-  /* Edit trigger button — usato nella navbar/footer */
+  /* Edit trigger button — usato nella navbar */
   .uid-edit-trigger {
-    position: fixed;
-    top: max(0.75rem, env(safe-area-inset-top));
-    left: max(0.85rem, env(safe-area-inset-left));
-    z-index: 220;
+    position: relative;
+    z-index: 145;
     display: inline-flex;
     align-items: center;
-    gap: 0.4rem;
-    padding: 0.4rem 0.9rem;
-    border: 1px solid rgba(0, 87, 200, 0.32);
+    justify-content: center;
+    gap: 0.25rem;
+    min-height: 44px;
+    padding: 0.65rem 0.95rem;
+    border: 1px solid rgba(0, 87, 200, 0.5);
     border-radius: 9999px;
-    background: transparent;
-    color: rgba(247, 251, 255, 0.68);
+    background: rgba(0, 87, 200, 0.14);
+    color: #f7fbff;
     font-family: 'Inter', system-ui, sans-serif;
-    font-size: 0.78rem;
-    font-weight: 600;
+    font-size: 0.82rem;
+    font-weight: 800;
+    letter-spacing: 0.03em;
     cursor: pointer;
     transition: all 0.2s ease;
     pointer-events: auto;
+    white-space: nowrap;
+    box-shadow: 0 6px 18px rgba(0, 87, 200, 0.18);
   }
 
   .uid-edit-trigger:hover {
-    background: rgba(255, 0, 51, 0.1);
+    background: rgba(0, 87, 200, 0.22);
     color: #f7fbff;
-    border-color: rgba(255, 0, 51, 0.42);
+    border-color: rgba(0, 87, 200, 0.72);
+    transform: translateY(-2px);
   }
 
   .uid-edit-trigger[hidden] {

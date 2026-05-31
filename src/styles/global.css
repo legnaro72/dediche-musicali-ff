@@ -135,6 +135,13 @@ section {
 .navbar-inner { display:flex; align-items:center; justify-content:space-between; gap:1.5rem; }
 .navbar-brand { flex-shrink:0; }
 
+.navbar-actions {
+  display: inline-flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  margin-left: auto;
+}
+
 .navbar-brand {
   font-size: 1.3rem;
   font-weight: 800;
