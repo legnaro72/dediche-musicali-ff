@@ -1,4 +1,5 @@
-const CACHE_VERSION = 'ddgff-pwa-v1';
+const CACHE_VERSION = 'ddgff-pwa-v3';
+const CACHE_PREFIX = 'ddgff-pwa-';
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const RUNTIME_CACHE = `${CACHE_VERSION}-runtime`;
 const APP_SCOPE = new URL(self.registration.scope);
@@ -9,7 +10,6 @@ const CORE_ASSETS = [
   basePath('/'),
   basePath('/archive/'),
   basePath('/manifest.json'),
-  basePath('/pwa-config.json'),
   basePath('/favicon/favicon.svg'),
   basePath('/icons/icon-192.png'),
   basePath('/icons/icon-512.png'),
@@ -30,7 +30,11 @@ self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches
       .keys()
-      .then((keys) => Promise.all(keys.filter((key) => !key.startsWith(CACHE_VERSION)).map((key) => caches.delete(key))))
+      .then((keys) => Promise.all(
+        keys
+          .filter((key) => key.startsWith(CACHE_PREFIX) && !key.startsWith(CACHE_VERSION))
+          .map((key) => caches.delete(key))
+      ))
       .then(() => self.clients.claim())
   );
 });
@@ -41,6 +45,20 @@ self.addEventListener('fetch', (event) => {
 
   const url = new URL(request.url);
   if (url.origin !== self.location.origin || !url.pathname.startsWith(APP_BASE)) return;
+
+  if (url.pathname === basePath('/pwa-config.json') || url.pathname.startsWith(basePath('/background-music/'))) {
+    event.respondWith(
+      fetch(request, { cache: 'no-store' })
+        .then((response) => {
+          if (!response || response.status !== 200) return response;
+          const copy = response.clone();
+          caches.open(RUNTIME_CACHE).then((cache) => cache.put(request, copy));
+          return response;
+        })
+        .catch(() => caches.match(request))
+    );
+    return;
+  }
 
   if (request.mode === 'navigate') {
     event.respondWith(

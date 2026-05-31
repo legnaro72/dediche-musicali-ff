@@ -550,7 +550,7 @@ const fullOgImage = ogImage
         let audio;
         let progressTimer;
         let config = {
-          backgroundMusic: `${appBase}background-music/main.mp3`,
+          backgroundMusic: `${appBase}background-music/main-ff-v3.mp3`,
           audioDefaultEnabled: true,
           audioVolume: 0.3,
         };
@@ -562,6 +562,15 @@ const fullOgImage = ogImage
         const trackAudioEvent = (eventName) => {
           if (typeof window.gtag === 'function') window.gtag('event', eventName, { event_category: 'pwa_audio' });
           if (typeof window.fbq === 'function') window.fbq('trackCustom', eventName);
+        };
+
+        const normalizeBackgroundMusic = (value) => {
+          const fallback = `${appBase}background-music/main-ff-v3.mp3`;
+          const path = String(value || '').trim();
+          if (!path || path.startsWith('/dediche-musicali/')) return fallback;
+          if (/^https?:\/\//i.test(path)) return path;
+          if (path.startsWith(appBase)) return path;
+          return `${appBase}${path.replace(/^\//, '')}`;
         };
 
         const applyUi = (isWaiting = false) => {
@@ -748,11 +757,12 @@ const fullOgImage = ogImage
 
         const init = async () => {
           try {
-            const response = await fetch(`${appBase}pwa-config.json?v=4`, { cache: 'no-store' });
+            const response = await fetch(`${appBase}pwa-config.json?v=5`, { cache: 'no-store' });
             if (response.ok) config = { ...config, ...(await response.json()) };
           } catch {
             console.warn('Configurazione PWA non caricata, uso valori di default.');
           }
+          config.backgroundMusic = normalizeBackgroundMusic(config.backgroundMusic);
 
           readPreference();
           applyUi(false);
