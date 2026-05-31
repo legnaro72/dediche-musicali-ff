@@ -21,7 +21,7 @@ function getYoutubeEmbedUrl(url: string): string | null {
 
 function getSoundcloudEmbedUrl(url: string): string | null {
   if (!url.includes('soundcloud.com')) return null;
-  return `https://w.soundcloud.com/player/?url=${encodeURIComponent(url)}&color=%23e86070&auto_play=false&hide_related=true&show_comments=false&show_user=true&show_reposts=false&visual=true`;
+  return `https://w.soundcloud.com/player/?url=${encodeURIComponent(url)}&color=%23ff0033&auto_play=false&hide_related=true&show_comments=false&show_user=true&show_reposts=false&visual=true`;
 }
 
 let embedUrl: string | null = null;

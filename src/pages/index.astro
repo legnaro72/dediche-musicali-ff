@@ -38,11 +38,35 @@ const recent = published.slice(1, 5);
 const base = (import.meta.env.BASE_URL ?? '/').replace(/([^/])$/, '$1/');
 const whatsappUrl = 'https://wa.me/393346296520';
 
-function fmtDate(dateStr: string, dayName?: string) {
+function fmtDateParts(dateStr: string, dayName?: string) {
   const [y, m, d] = dateStr.split('-');
   const months = ['gennaio','febbraio','marzo','aprile','maggio','giugno','luglio','agosto','settembre','ottobre','novembre','dicembre'];
-  const label = `${parseInt(d)} ${months[parseInt(m)-1]} ${y}`;
-  return dayName ? `${dayName}, ${label}` : label;
+  return {
+    red: dayName ? `${dayName}, ${parseInt(d)}` : `${parseInt(d)}`,
+    blue: `${months[parseInt(m)-1]} ${y}`,
+  };
+}
+
+function splitName(label = '') {
+  const parts = label.trim().split(/\s+/).filter(Boolean);
+  return {
+    red: parts[0] ?? label,
+    blue: parts.slice(1).join(' '),
+  };
+}
+
+function splitFirstWord(label = '') {
+  const parts = label.trim().split(/\s+/).filter(Boolean);
+  return {
+    red: parts[0] ?? label,
+    blue: parts.slice(1).join(' '),
+  };
+}
+
+function splitDedicationLabel(label = 'Dedica del giorno') {
+  const match = label.trim().match(/^(?:la\s+)?(dedica)\s+(.+)$/i);
+  if (match) return { red: match[1], blue: match[2] };
+  return splitFirstWord(label);
 }
 ---
 
@@ -89,11 +113,21 @@ function fmtDate(dateStr: string, dayName?: string) {
         {dedication ? (
           <>
             <div class="hero-date anim-1">
-              {fmtDate(dedication.date, dedication.day_name)}
+              <span class="tone-red">{fmtDateParts(dedication.date, dedication.day_name).red}</span>
+              <span class="tone-blue">{fmtDateParts(dedication.date, dedication.day_name).blue}</span>
             </div>
             <h1 class="hero-song anim-2">{dedication.song_title}</h1>
-            <p class="hero-artist anim-2">{dedication.artist}</p>
-            <p class="hero-ded-label anim-3">{dedication.dedication_title}</p>
+            <p class="hero-artist anim-2">
+              <span class="artist-dash" aria-hidden="true"></span>
+              <span class="duo-text">
+                <span class="tone-red">{splitName(dedication.artist).red}</span>
+                {splitName(dedication.artist).blue && <span class="tone-blue">{splitName(dedication.artist).blue}</span>}
+              </span>
+            </p>
+            <p class="hero-ded-label anim-3">
+              <span class="tone-red">{splitDedicationLabel(dedication.dedication_title).red}</span>
+              {splitDedicationLabel(dedication.dedication_title).blue && <span class="tone-blue"> {splitDedicationLabel(dedication.dedication_title).blue}</span>}
+            </p>
 
             <p class="hero-text anim-3">{dedication.dedication_text}</p>
 

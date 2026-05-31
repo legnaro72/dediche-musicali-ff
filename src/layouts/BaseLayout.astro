@@ -112,7 +112,9 @@ const fullOgImage = ogImage
   <!-- Navbar -->
   <nav class="navbar" id="navbar">
     <div class="container navbar-inner">
-      <a class="navbar-brand" href={base}>♪ DDG FF</a>
+      <a class="navbar-brand" href={base}>
+        <span class="tone-red">♪ DD</span><span class="tone-blue">G FF</span>
+      </a>
       
       <button
         class="navbar-menu-toggle"
@@ -142,10 +144,10 @@ const fullOgImage = ogImage
       )}
 
       <ul class="navbar-nav" id="primary-navigation">
-        <li><a href={base}>Home</a></li>
-        <li><a href={`${base}archive/`}>Archivio</a></li>
-        <li><a href={`${base}statistiche/`}>Statistiche</a></li>
-        <li><a href={`${base}link-utili/`}>Link utili</a></li>
+        <li><a class="nav-red" href={base}>Home</a></li>
+        <li><a class="nav-red" href={`${base}archive/`}>Archivio</a></li>
+        <li><a class="nav-blue" href={`${base}statistiche/`}>Statistiche</a></li>
+        <li><a class="nav-blue" href={`${base}link-utili/`}>Link utili</a></li>
       </ul>
     </div>
   </nav>

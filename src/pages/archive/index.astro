@@ -43,8 +43,12 @@ const MONTH_NAMES: Record<string, string> = {
 
     <!-- Header -->
     <div style="text-align:center;margin-bottom:3rem;" class="anim-1">
-      <span class="section-label">Raccolta</span>
-      <h1 class="section-title" style="font-family:var(--font-serif)">Archivio Dediche</h1>
+      <span class="section-label">
+        <span class="tone-red">RACC</span><span class="tone-blue">OLTA</span>
+      </span>
+      <h1 class="section-title" style="font-family:var(--font-serif)">
+        <span class="tone-red">Archivio</span> <span class="tone-blue">Dediche</span>
+      </h1>
       <div class="divider"></div>
       <p style="color:var(--text-dim);max-width:500px;margin:0 auto;">
         {all.length} {all.length === 1 ? 'dedica pubblicata' : 'dediche pubblicate'}
