@@ -1,0 +1,44 @@
+{
+  "id": "2026-06-01-i-romantici-tommaso-paradiso",
+  "date": "2026-06-01",
+  "day_name": "lunedì",
+  "status": "published",
+  "song_title": "I romantici",
+  "artist": "Tommaso Paradiso",
+  "dedication_title": "La dedica del giorno",
+  "dedication_text": "La canzone preferita di Manfredi perché in fondo in fondo è un romantico. Credo che possa piacere anche Gabriele. Conoscendo i gusti💙",
+  "audio": {
+    "url": "https://open.spotify.com/track/3X6VETSe1orqobaME0KTzQ?si=fJtBRxbHRsy1kIHsxBcgXQ",
+    "type": "spotify"
+  },
+  "vote": {
+    "url": "https://docs.google.com/forms/d/17VuesL0BOupyw5M5MNCLs1gq_uqZioVKVkGC8oFfn38/viewform"
+  },
+  "image": {
+    "path": "/images/dedications/2026-06-01-i-romantici-tommaso-paradiso.webp",
+    "alt": "Dedica musicale I romantici di Tommaso Paradiso",
+    "mode": "raw",
+    "source": "public/images/upload/2026-06-01-i-romantici-tommaso-paradiso.webp"
+  },
+  "short_phrase": "Romantici rossoblù",
+  "tags": [
+    "musica",
+    "emozioni",
+    "dedica"
+  ],
+  "seo": {
+    "title": "I romantici - Tommaso Paradiso | DDGPilliSite",
+    "description": "Dedica musicale del giorno con \"I romantici\" di Tommaso Paradiso."
+  },
+  "created_at": "2026-06-01T00:58:50.184118+02:00",
+  "updated_at": "2026-06-01T00:58:50.562117+02:00",
+  "votoPilly": null,
+  "pensieroPilly": "",
+  "reactions": {
+    "down": 0,
+    "like": 0,
+    "heart": 0,
+    "sun": 0
+  },
+  "date_it": "1 giugno 2026"
+}
