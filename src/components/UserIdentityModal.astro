@@ -59,7 +59,7 @@
 </div>
 
 <!-- Trigger "Modifica profilo" — invisibile di default, attivabile da navbar/footer -->
-<button class="uid-edit-trigger" id="uid-edit-trigger" data-uid-edit hidden aria-label="Modifica nome e cognome">
+<button class="uid-edit-trigger" id="uid-edit-trigger" data-uid-edit type="button" hidden aria-label="Modifica nome e cognome">
   ✏️ Modifica profilo
 </button>
 
@@ -213,6 +213,10 @@
 
   /* Edit trigger button — usato nella navbar/footer */
   .uid-edit-trigger {
+    position: fixed;
+    top: max(0.75rem, env(safe-area-inset-top));
+    left: max(0.85rem, env(safe-area-inset-left));
+    z-index: 220;
     display: inline-flex;
     align-items: center;
     gap: 0.4rem;
@@ -226,6 +230,7 @@
     font-weight: 600;
     cursor: pointer;
     transition: all 0.2s ease;
+    pointer-events: auto;
   }
 
   .uid-edit-trigger:hover {
@@ -307,8 +312,6 @@
     const modal       = document.querySelector('[data-uid-modal]');
     const form        = document.getElementById('uid-form');
     const backdrop    = document.querySelector('[data-uid-backdrop]');
-    const editTriggers = document.querySelectorAll('[data-uid-edit]');
-
     if (!modal || !form) return;
 
     // Mostra se non ha ancora il nome
@@ -356,13 +359,15 @@
       if (hasIdentity()) hideModal();
     });
 
-    // Trigger "Modifica profilo"
-    editTriggers.forEach((trigger) => {
-      trigger.addEventListener('click', (e) => {
+    if (!window.__DDGFF_IDENTITY_EDIT_BOUND) {
+      window.__DDGFF_IDENTITY_EDIT_BOUND = true;
+      document.addEventListener('click', (e) => {
+        const trigger = e.target instanceof Element ? e.target.closest('[data-uid-edit]') : null;
+        if (!trigger) return;
         e.preventDefault();
         showModal(true);
       });
-    });
+    }
   }
 
   // Esporta per uso esterno (DedicationPlus, etc.)
