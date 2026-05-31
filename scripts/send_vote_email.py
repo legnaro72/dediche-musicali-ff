@@ -24,7 +24,7 @@ def build_message(args: argparse.Namespace) -> EmailMessage:
 
     thought = args.thought.strip() or "(nessuna frase inserita)"
     body = (
-        "Pilli ha votato!!!\n\n"
+        "Un Ferrando ha votato!!!\n\n"
         f"Data: {args.date}\n"
         f"Ora: {args.time}\n"
         f"Dedica: {args.title} - {args.artist}\n"
@@ -35,7 +35,7 @@ def build_message(args: argparse.Namespace) -> EmailMessage:
     message = EmailMessage()
     message["From"] = sender
     message["To"] = first_recipient()
-    message["Subject"] = "Pilli ha votato!!!"
+    message["Subject"] = "Un Ferrando ha votato!!!"
     message.set_content(body)
     return message
 

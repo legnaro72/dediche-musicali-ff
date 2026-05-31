@@ -19,7 +19,7 @@ except Exception:
 
 
 DEFAULT_TO = "massimiliano.ferrando@gmail.com"
-DEFAULT_BODY = "Amore mio santissimo la DDG \u00e8 online!! Gloria a Pilli !!!"
+DEFAULT_BODY = "Ferrandi la DDG \u00e8 online!! Gloria al Doria e ai Ferrandi !!!"
 
 
 def get_rome_today() -> str:
