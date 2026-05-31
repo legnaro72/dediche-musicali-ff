@@ -295,16 +295,19 @@
   }
 
   function updateEditTrigger() {
-    const btn = document.querySelector('[data-uid-edit]');
-    if (!(btn instanceof HTMLElement)) return;
-    btn.hidden = !hasIdentity();
+    const btns = document.querySelectorAll('[data-uid-edit]');
+    btns.forEach((btn) => {
+      if (btn instanceof HTMLElement) {
+        btn.hidden = !hasIdentity();
+      }
+    });
   }
 
   function initUserIdentityModal() {
     const modal       = document.querySelector('[data-uid-modal]');
     const form        = document.getElementById('uid-form');
     const backdrop    = document.querySelector('[data-uid-backdrop]');
-    const editTrigger = document.querySelector('[data-uid-edit]');
+    const editTriggers = document.querySelectorAll('[data-uid-edit]');
 
     if (!modal || !form) return;
 
@@ -354,8 +357,11 @@
     });
 
     // Trigger "Modifica profilo"
-    editTrigger?.addEventListener('click', () => {
-      showModal(true);
+    editTriggers.forEach((trigger) => {
+      trigger.addEventListener('click', (e) => {
+        e.preventDefault();
+        showModal(true);
+      });
     });
   }
 
