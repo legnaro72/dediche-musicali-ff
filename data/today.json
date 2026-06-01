@@ -27,18 +27,63 @@
     "dedica"
   ],
   "seo": {
-    "title": "I romantici - Tommaso Paradiso | DDG FF",
+    "title": "I romantici - Tommaso Paradiso | DDGPilliSite",
     "description": "Dedica musicale del giorno con \"I romantici\" di Tommaso Paradiso."
   },
   "created_at": "2026-06-01T00:58:50.184118+02:00",
-  "updated_at": "2026-06-01T11:48:51.098Z",
-  "voteAverage": 10,
-  "thoughtsText": "Manfredi approva",
+  "updated_at": "2026-06-01T23:04:32.816342+02:00",
+  "video": {
+    "type": "youtube",
+    "url": "https://www.youtube.com/watch?v=Z1-ffhywg1c",
+    "poster": "/images/og-default.png",
+    "title": "Un cuore grande cosi",
+    "description": "Solo chi soffre impara ad amare!noi soffriamo... ti amiamo... e cpon te torneremo grandi"
+  },
+  "voteAverage": 9.0,
+  "thoughtsText": "[Massimiliano Ferrando] piccoo",
   "reactions": {
     "down": 0,
-    "like": 1,
-    "heart": 0,
-    "sun": 0
+    "like": 0,
+    "heart": 1,
+    "sun": 1
   },
+  "votes": [
+    {
+      "userId": "91506645-6da8-4813-80c4-0b033b41af96",
+      "userKey": "massimiliano-ferrando",
+      "userName": "Massimiliano Ferrando",
+      "value": 9,
+      "createdAt": "2026-06-01T13:24:21.527Z",
+      "updatedAt": "2026-06-01T13:24:21.527Z"
+    }
+  ],
+  "thoughts": [
+    {
+      "userId": "91506645-6da8-4813-80c4-0b033b41af96",
+      "userKey": "massimiliano-ferrando",
+      "userName": "Massimiliano Ferrando",
+      "text": "piccoo",
+      "createdAt": "2026-06-01T13:24:21.527Z",
+      "updatedAt": "2026-06-01T13:24:21.527Z"
+    }
+  ],
+  "reactionEntries": [
+    {
+      "userId": "91506645-6da8-4813-80c4-0b033b41af96",
+      "userKey": "massimiliano-ferrando",
+      "userName": "Massimiliano Ferrando",
+      "value": "heart",
+      "createdAt": "2026-06-01T13:18:02.654Z",
+      "updatedAt": "2026-06-01T20:30:23.790Z"
+    },
+    {
+      "userId": "d6573b39-bbf2-4624-ab28-4acac2815c4a",
+      "userKey": "manfredi-ferrando",
+      "userName": "Manfredi Ferrando",
+      "value": "sun",
+      "createdAt": "2026-06-01T13:32:26.891Z",
+      "updatedAt": "2026-06-01T13:32:32.531Z"
+    }
+  ],
   "date_it": "1 giugno 2026"
 }
