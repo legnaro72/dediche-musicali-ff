@@ -460,12 +460,13 @@ const fullOgImage = ogImage
 
       if (isAppDisplayMode) {
         localStorage.setItem(installedKey, 'true');
+      } else {
+        localStorage.removeItem(installedKey);
       }
 
       const show = () => {
         const dismissedUntil = Number(localStorage.getItem(dismissedUntilKey) || 0);
-        const alreadyInstalled = localStorage.getItem(installedKey) === 'true';
-        if (isAppDisplayMode || alreadyInstalled || dismissedUntil > Date.now()) return;
+        if (isAppDisplayMode || dismissedUntil > Date.now()) return;
         root.hidden = false;
       };
 
