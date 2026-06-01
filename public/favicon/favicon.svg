@@ -1,10 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
-  <defs>
-    <linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#7c3aed"/>
-      <stop offset="100%" stop-color="#ec4899"/>
-    </linearGradient>
-  </defs>
-  <rect width="64" height="64" rx="16" fill="url(#g)"/>
-  <text x="32" y="44" text-anchor="middle" font-size="34" font-family="serif">♪</text>
+  <rect width="64" height="64" rx="16" fill="#003f8f"/>
+  <path d="M0 0H28L13 64H0Z" fill="#ff0033"/>
+  <path d="M0 0H64V64H0Z" fill="none" stroke="rgba(255,255,255,0.45)" stroke-width="2"/>
+  <text x="32" y="27" text-anchor="middle" font-size="16" font-family="Arial, sans-serif" font-weight="800" fill="#ffffff">DDG</text>
+  <text x="32" y="45" text-anchor="middle" font-size="17" font-family="Arial, sans-serif" font-weight="900" fill="#ffffff">FF</text>
 </svg>

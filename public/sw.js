@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'ddgff-pwa-v3';
+const CACHE_VERSION = 'ddgff-pwa-v4';
 const CACHE_PREFIX = 'ddgff-pwa-';
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const RUNTIME_CACHE = `${CACHE_VERSION}-runtime`;
