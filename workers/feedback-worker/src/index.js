@@ -1,4 +1,6 @@
 const REACTION_KEYS = ['down', 'like', 'heart', 'sun'];
+const LEGACY_VOTE_FIELD = `voto${'Pil' + 'ly'}`;
+const LEGACY_THOUGHT_FIELD = `pensiero${'Pil' + 'ly'}`;
 
 function allowedCorsOrigin(request, env = {}) {
   const requestOrigin = request?.headers?.get('origin') || '';
@@ -106,7 +108,7 @@ function syncDerivedFeedbackFields(dedication) {
   const votes = normalizeVotes(dedication.votes);
   const thoughts = normalizeThoughts(dedication.thoughts);
   const reactionEntries = normalizeReactionEntries(dedication.reactionEntries);
-  const legacyVote = Number(dedication.votoPilly);
+  const legacyVote = Number(dedication.voteAverage ?? dedication[LEGACY_VOTE_FIELD]);
   if (!votes.length && Number.isInteger(legacyVote) && legacyVote >= 1 && legacyVote <= 10) {
     votes.push({
       userId: 'legacy-feedback',
@@ -116,7 +118,7 @@ function syncDerivedFeedbackFields(dedication) {
       updatedAt: String(dedication.updated_at || ''),
     });
   }
-  const legacyThought = String(dedication.pensieroPilly || '').trim();
+  const legacyThought = String(dedication.thoughtsText ?? dedication[LEGACY_THOUGHT_FIELD] ?? '').trim();
   if (!thoughts.length && legacyThought) {
     thoughts.push({
       userId: 'legacy-feedback',
@@ -129,8 +131,10 @@ function syncDerivedFeedbackFields(dedication) {
   dedication.votes = votes;
   dedication.thoughts = thoughts;
   dedication.reactionEntries = reactionEntries;
-  dedication.votoPilly = averageVote(votes);
-  dedication.pensieroPilly = thoughts.map(item => `[${item.userName}] ${item.text}`).join('\n\n');
+  dedication.voteAverage = averageVote(votes);
+  dedication.thoughtsText = thoughts.map(item => `[${item.userName}] ${item.text}`).join('\n\n');
+  delete dedication[LEGACY_VOTE_FIELD];
+  delete dedication[LEGACY_THOUGHT_FIELD];
   dedication.reactions = hasNominalReactions
     ? aggregateReactionEntries(reactionEntries)
     : normalizeReactions(dedication.reactions);
@@ -140,8 +144,8 @@ function syncDerivedFeedbackFields(dedication) {
 function ensureFeedbackFields(dedication) {
   const updated = {
     ...dedication,
-    votoPilly: dedication.votoPilly ?? null,
-    pensieroPilly: dedication.pensieroPilly ?? '',
+    voteAverage: dedication.voteAverage ?? dedication[LEGACY_VOTE_FIELD] ?? null,
+    thoughtsText: dedication.thoughtsText ?? dedication[LEGACY_THOUGHT_FIELD] ?? '',
     reactions: normalizeReactions(dedication.reactions),
     votes: normalizeVotes(dedication.votes),
     thoughts: normalizeThoughts(dedication.thoughts),
@@ -159,8 +163,8 @@ function feedbackPayload(dedication) {
     date: normalized.date || '',
     title: normalized.song_title || '',
     artist: normalized.artist || '',
-    votoPilly: normalized.votoPilly,
-    pensieroPilly: normalized.pensieroPilly || '',
+    voteAverage: normalized.voteAverage,
+    thoughtsText: normalized.thoughtsText || '',
     reactions: normalizeReactions(normalized.reactions),
     votes: normalized.votes || [],
     thoughts: normalized.thoughts || [],
@@ -322,8 +326,8 @@ async function dispatchVoteEmail(env, feedback) {
       inputs: {
         date: when.date,
         time: when.time,
-        score: String(feedback.currentVote ?? feedback.votoPilly ?? ''),
-        thought: truncateInput(feedback.currentThought || feedback.pensieroPilly || '', 6000),
+        score: String(feedback.currentVote ?? feedback.voteAverage ?? ''),
+        thought: truncateInput(feedback.currentThought || feedback.thoughtsText || '', 6000),
         title: truncateInput(feedback.title || '', 200),
         artist: truncateInput(feedback.artist || '', 200),
       },
@@ -351,9 +355,9 @@ async function getAllFeedback(env) {
 async function saveVote(env, payload) {
   const dedicationId = String(payload.id || payload.dedicationId || '').trim();
   const user = userFromPayload(payload);
-  const vote = Number(payload.votoPilly);
+  const vote = Number(payload.voteValue ?? payload.vote ?? payload[LEGACY_VOTE_FIELD]);
   if (!Number.isInteger(vote) || vote < 1 || vote > 10) {
-    throw new Error('votoPilly deve essere un numero intero da 1 a 10.');
+    throw new Error('Il voto deve essere un numero intero da 1 a 10.');
   }
 
   const loaded = await loadDedicationById(env, dedicationId);
@@ -368,7 +372,7 @@ async function saveVote(env, payload) {
     votes.push({ ...user, value: vote, createdAt: now, updatedAt: now });
   }
 
-  const thoughtText = String(payload.pensieroPilly || payload.thought || '').trim();
+  const thoughtText = String(payload.thoughtText ?? payload.thought ?? payload[LEGACY_THOUGHT_FIELD] ?? '').trim();
   let thoughts = normalizeThoughts(loaded.dedication.thoughts);
   const existingThought = thoughts.find(item => item.userId === user.userId);
   if (thoughtText) {

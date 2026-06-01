@@ -20,8 +20,8 @@ const statsData = dedications.map(d => ({
   date: d.date,
   title: d.song_title,
   artist: d.artist,
-  votoPilly: d.votoPilly ?? null,
-  pensieroPilly: d.pensieroPilly ?? '',
+  voteAverage: d.voteAverage ?? null,
+  thoughtsText: d.thoughtsText ?? '',
   reactions: d.reactions ?? {},
   votes: d.votes ?? [],
   thoughts: d.thoughts ?? [],
@@ -148,7 +148,7 @@ const statsJson = JSON.stringify(statsData).replace(/</g, '\\u003c');
           ...item,
           userId: v.userId || '',
           userName: v.userName || 'Utente',
-          votoPilly: Number(v.value),
+          voteValue: Number(v.value),
         }));
     }
 
@@ -192,15 +192,15 @@ const statsJson = JSON.stringify(statsData).replace(/</g, '\\u003c');
       const votes = runtimeDedications.flatMap((item) => {
         const nominalVotes = normalizedVotes(item);
         if (nominalVotes.length) return nominalVotes;
-        if (Number.isInteger(Number(item.votoPilly)) && Number(item.votoPilly) >= 1 && Number(item.votoPilly) <= 10) {
-          return [{ ...item, userId: 'legacy', userName: 'Storico', votoPilly: Number(item.votoPilly) }];
+        if (Number.isInteger(Number(item.voteAverage)) && Number(item.voteAverage) >= 1 && Number(item.voteAverage) <= 10) {
+          return [{ ...item, userId: 'legacy', userName: 'Storico', voteValue: Number(item.voteAverage) }];
         }
         return [];
       });
 
-      const sum = votes.reduce((acc, item) => acc + item.votoPilly, 0);
-      const sortedVotes = [...votes].sort((a, b) => b.votoPilly - a.votoPilly || a.title.localeCompare(b.title));
-      const lowVotes = [...votes].sort((a, b) => a.votoPilly - b.votoPilly || a.title.localeCompare(b.title));
+      const sum = votes.reduce((acc, item) => acc + item.voteValue, 0);
+      const sortedVotes = [...votes].sort((a, b) => b.voteValue - a.voteValue || a.title.localeCompare(b.title));
+      const lowVotes = [...votes].sort((a, b) => a.voteValue - b.voteValue || a.title.localeCompare(b.title));
 
       const reactionTotals = { down: 0, like: 0, heart: 0, sun: 0 };
       const withReactions = runtimeDedications.map((item) => {
@@ -215,8 +215,8 @@ const statsJson = JSON.stringify(statsData).replace(/</g, '\\u003c');
 
       setText('[data-stat="totalVotes"]', votes.length);
       setText('[data-stat="averageVote"]', votes.length ? (sum / votes.length).toFixed(1) : '-');
-      setText('[data-stat="highestVote"]', sortedVotes[0]?.votoPilly ?? '-');
-      setText('[data-stat="lowestVote"]', lowVotes[0]?.votoPilly ?? '-');
+      setText('[data-stat="highestVote"]', sortedVotes[0]?.voteValue ?? '-');
+      setText('[data-stat="lowestVote"]', lowVotes[0]?.voteValue ?? '-');
       setText('[data-stat="totalReactions"]', totalReactions);
       setText('[data-stat="topReaction"]', totalReactions ? reactionLabels[topReaction] : '-');
       setText('[data-stat="highestSong"]', songLabel(sortedVotes[0]));
@@ -225,7 +225,7 @@ const statsJson = JSON.stringify(statsData).replace(/</g, '\\u003c');
       setText('[data-stat="likeSong"]', likeSong?.counts.like ? songLabel(likeSong) : '-');
       reactionKeys.forEach((key) => setText(`[data-reaction-total="${key}"]`, reactionTotals[key]));
 
-      renderRanking('[data-ranking="votes"]', sortedVotes, item => `${item.votoPilly}/10 - ${songLabel(item)}`);
+      renderRanking('[data-ranking="votes"]', sortedVotes, item => `${item.voteValue}/10 - ${songLabel(item)}`);
       renderRanking('[data-ranking="heart"]', withReactions.filter(i => i.counts.heart > 0).sort((a, b) => b.counts.heart - a.counts.heart), item => `${item.counts.heart} ❤️ - ${songLabel(item)}`);
       renderRanking('[data-ranking="sun"]', withReactions.filter(i => i.counts.sun > 0).sort((a, b) => b.counts.sun - a.counts.sun), item => `${item.counts.sun} ☀️ - ${songLabel(item)}`);
 
@@ -240,7 +240,7 @@ const statsJson = JSON.stringify(statsData).replace(/</g, '\\u003c');
       }
       votes.sort((a, b) => b.date.localeCompare(a.date) || String(a.userName).localeCompare(String(b.userName))).forEach((item) => {
         const row = document.createElement('tr');
-        [item.date, item.title, item.artist, `[${item.userName}] ${item.votoPilly}/10`, thoughtForVote(item)].forEach((value) => {
+        [item.date, item.title, item.artist, `[${item.userName}] ${item.voteValue}/10`, thoughtForVote(item)].forEach((value) => {
           const cell = document.createElement('td');
           cell.textContent = value;
           row.append(cell);

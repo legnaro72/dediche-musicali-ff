@@ -44,8 +44,8 @@ def main() -> int:
     print(json.dumps({
         "ok": True,
         "id": updated.get("id"),
-        "votoPilly": updated.get("votoPilly"),
-        "pensieroPilly": updated.get("pensieroPilly"),
+        "voteAverage": updated.get("voteAverage"),
+        "thoughtsText": updated.get("thoughtsText"),
         "reactions": updated.get("reactions"),
         "votes": updated.get("votes", []),
         "thoughts": updated.get("thoughts", []),

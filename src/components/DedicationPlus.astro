@@ -5,8 +5,8 @@ export interface Props {
     date: string;
     song_title: string;
     artist: string;
-    votoPilly?: number;
-    pensieroPilly?: string;
+    voteAverage?: number;
+    thoughtsText?: string;
     reactions?: Record<string, number>;
     votes?: Array<Record<string, unknown>>;
     thoughts?: Array<Record<string, unknown>>;
@@ -21,8 +21,8 @@ const data = {
   date: dedication.date,
   title: dedication.song_title,
   artist: dedication.artist,
-  votoPilly: dedication.votoPilly ?? null,
-  pensieroPilly: dedication.pensieroPilly ?? '',
+  voteAverage: dedication.voteAverage ?? null,
+  thoughtsText: dedication.thoughtsText ?? '',
   reactions: dedication.reactions ?? {},
   votes: dedication.votes ?? [],
   thoughts: dedication.thoughts ?? [],
@@ -184,19 +184,19 @@ const data = {
       votes: [{
         userId: votePayload.userId,
         userName: votePayload.userName,
-        value: votePayload.votoPilly,
+        value: votePayload.voteValue,
         createdAt: votePayload.updatedAt,
         updatedAt: votePayload.updatedAt,
       }],
-      thoughts: votePayload.pensieroPilly ? [{
+      thoughts: votePayload.thoughtText ? [{
         userId: votePayload.userId,
         userName: votePayload.userName,
-        text: votePayload.pensieroPilly,
+        text: votePayload.thoughtText,
         createdAt: votePayload.updatedAt,
         updatedAt: votePayload.updatedAt,
       }] : [],
-      votoPilly: votePayload.votoPilly,
-      pensieroPilly: votePayload.pensieroPilly ? `[${votePayload.userName}] ${votePayload.pensieroPilly}` : '',
+      voteAverage: votePayload.voteValue,
+      thoughtsText: votePayload.thoughtText ? `[${votePayload.userName}] ${votePayload.thoughtText}` : '',
     };
   }
 
@@ -293,8 +293,8 @@ const data = {
           date: data.date,
           title: data.title,
           artist: data.artist,
-          votoPilly: value,
-          pensieroPilly: thought instanceof HTMLTextAreaElement ? thought.value.trim() : '',
+          voteValue: value,
+          thoughtText: thought instanceof HTMLTextAreaElement ? thought.value.trim() : '',
           userId: identity.userId || '',
           userName: displayName(identity),
           nome: identity.nome || '',

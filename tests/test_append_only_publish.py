@@ -188,13 +188,13 @@ class AppendOnlyPublishTest(unittest.TestCase):
             user_name='Mario',
         )
 
-        self.assertEqual(updated['votoPilly'], 8)
-        self.assertEqual(updated['pensieroPilly'], '[Mario] Pensiero salvato')
+        self.assertEqual(updated['voteAverage'], 8)
+        self.assertEqual(updated['thoughtsText'], '[Mario] Pensiero salvato')
         self.assertEqual(updated['votes'][0]['userId'], 'user-a')
         self.assertEqual(updated['thoughts'][0]['userName'], 'Mario')
         saved = json.loads(path.read_text(encoding='utf-8'))
-        self.assertEqual(saved['votoPilly'], 8)
-        self.assertEqual(saved['pensieroPilly'], '[Mario] Pensiero salvato')
+        self.assertEqual(saved['voteAverage'], 8)
+        self.assertEqual(saved['thoughtsText'], '[Mario] Pensiero salvato')
         self.assertEqual(saved['reactions'], {'down': 0, 'like': 0, 'heart': 0, 'sun': 0})
 
     def test_update_reaction_can_switch_and_remove_browser_choice(self):
@@ -228,10 +228,10 @@ class AppendOnlyPublishTest(unittest.TestCase):
         updated = dedication_feedback.update_vote('ded-2026-05-19', 9, 'Ancora meglio', user_id='mario-id', user_name='Mario')
 
         self.assertEqual(len(updated['votes']), 2)
-        self.assertEqual(updated['votoPilly'], 9.5)
+        self.assertEqual(updated['voteAverage'], 9.5)
         self.assertEqual({vote['userName']: vote['value'] for vote in updated['votes']}, {'Mario': 9, 'Anna': 10})
-        self.assertIn('[Mario] Ancora meglio', updated['pensieroPilly'])
-        self.assertIn('[Anna] Perfetta', updated['pensieroPilly'])
+        self.assertIn('[Mario] Ancora meglio', updated['thoughtsText'])
+        self.assertIn('[Anna] Perfetta', updated['thoughtsText'])
 
         dedication_feedback.update_reaction('ded-2026-05-19', 'heart', user_id='mario-id', user_name='Mario')
         dedication_feedback.update_reaction('ded-2026-05-19', 'sun', user_id='anna-id', user_name='Anna')
@@ -244,8 +244,8 @@ class AppendOnlyPublishTest(unittest.TestCase):
         self.write_dedication('2026-05-17', 'scheduled')
         path = self.data_dir / '2026-05-17.json'
         before = json.loads(path.read_text(encoding='utf-8'))
-        before['votoPilly'] = 9
-        before['pensieroPilly'] = 'Da non perdere'
+        before['voteAverage'] = 9
+        before['thoughtsText'] = 'Da non perdere'
         before['reactions'] = {'down': 0, 'like': 2, 'heart': 4, 'sun': 1}
         path.write_text(json.dumps(before), encoding='utf-8')
 
@@ -260,8 +260,8 @@ class AppendOnlyPublishTest(unittest.TestCase):
         self.assertTrue(sync_ok)
         after = json.loads(path.read_text(encoding='utf-8'))
         self.assertEqual(after['song_title'], 'Changed in sheet')
-        self.assertEqual(after['votoPilly'], 9)
-        self.assertEqual(after['pensieroPilly'], '[Storico] Da non perdere')
+        self.assertEqual(after['voteAverage'], 9)
+        self.assertEqual(after['thoughtsText'], '[Storico] Da non perdere')
         self.assertEqual(after['reactions'], {'down': 0, 'like': 2, 'heart': 4, 'sun': 1})
 
 

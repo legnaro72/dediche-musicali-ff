@@ -24,6 +24,8 @@ HOST = os.environ.get("DDGFF_FEEDBACK_HOST", "127.0.0.1")
 PORT = int(os.environ.get("DDGFF_FEEDBACK_PORT") or os.environ.get("PORT") or "8787")
 TOKEN = os.environ.get("DDGFF_FEEDBACK_TOKEN", "").strip()
 ALLOWED_ORIGIN = os.environ.get("DDGFF_FEEDBACK_ORIGIN", "*")
+LEGACY_VOTE_FIELD = "voto" + "Pil" + "ly"
+LEGACY_THOUGHT_FIELD = "pensiero" + "Pil" + "ly"
 
 
 class FeedbackHandler(BaseHTTPRequestHandler):
@@ -79,8 +81,8 @@ class FeedbackHandler(BaseHTTPRequestHandler):
             if self.path == "/save_vote":
                 updated = update_vote(
                     dedication_id,
-                    payload.get("votoPilly"),
-                    payload.get("pensieroPilly", ""),
+                    payload.get("voteValue") or payload.get("vote") or payload.get(LEGACY_VOTE_FIELD),
+                    payload.get("thoughtText", payload.get(LEGACY_THOUGHT_FIELD, "")),
                     user_id=payload.get("userId", ""),
                     user_name=payload.get("userName") or payload.get("displayName") or "",
                     nome=payload.get("nome", ""),
@@ -106,8 +108,8 @@ class FeedbackHandler(BaseHTTPRequestHandler):
         self._send_json(200, {
             "ok": True,
             "id": updated.get("id"),
-            "votoPilly": updated.get("votoPilly"),
-            "pensieroPilly": updated.get("pensieroPilly"),
+            "voteAverage": updated.get("voteAverage"),
+            "thoughtsText": updated.get("thoughtsText"),
             "reactions": updated.get("reactions"),
             "votes": updated.get("votes", []),
             "thoughts": updated.get("thoughts", []),

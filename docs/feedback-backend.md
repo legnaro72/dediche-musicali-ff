@@ -96,8 +96,8 @@ Payload voto:
   "id": "2026-04-09-senza-un-perche-bowland",
   "userId": "uuid-utente",
   "userName": "Mario",
-  "votoPilly": 8,
-  "pensieroPilly": "Testo libero"
+  "voteValue": 8,
+  "thoughtText": "Testo libero"
 }
 ```
 

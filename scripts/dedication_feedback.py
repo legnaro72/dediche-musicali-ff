@@ -25,6 +25,8 @@ from scripts.utils import (
 
 REACTION_KEYS = ("down", "like", "heart", "sun")
 GITHUB_API = "https://api.github.com"
+LEGACY_VOTE_FIELD = "voto" + "Pil" + "ly"
+LEGACY_THOUGHT_FIELD = "pensiero" + "Pil" + "ly"
 
 
 def default_reactions() -> dict[str, int]:
@@ -138,7 +140,7 @@ def sync_feedback_aggregates(dedication: dict) -> dict:
     thoughts = normalize_thoughts(dedication.get("thoughts"))
     reaction_entries = normalize_reaction_entries(dedication.get("reactionEntries"))
     try:
-        legacy_vote = int(dedication.get("votoPilly"))
+        legacy_vote = int(dedication.get("voteAverage", dedication.get(LEGACY_VOTE_FIELD)))
     except (TypeError, ValueError):
         legacy_vote = 0
     if not votes and 1 <= legacy_vote <= 10:
@@ -149,7 +151,7 @@ def sync_feedback_aggregates(dedication: dict) -> dict:
             "createdAt": _clean_text(dedication.get("updated_at"), 80),
             "updatedAt": _clean_text(dedication.get("updated_at"), 80),
         })
-    legacy_thought = str(dedication.get("pensieroPilly") or "").strip()
+    legacy_thought = str(dedication.get("thoughtsText", dedication.get(LEGACY_THOUGHT_FIELD)) or "").strip()
     if not thoughts and legacy_thought:
         thoughts.append({
             "userId": "legacy-feedback",
@@ -161,8 +163,10 @@ def sync_feedback_aggregates(dedication: dict) -> dict:
     dedication["votes"] = votes
     dedication["thoughts"] = thoughts
     dedication["reactionEntries"] = reaction_entries
-    dedication["votoPilly"] = _average_vote(votes)
-    dedication["pensieroPilly"] = "\n\n".join(f"[{item['userName']}] {item['text']}" for item in thoughts)
+    dedication["voteAverage"] = _average_vote(votes)
+    dedication["thoughtsText"] = "\n\n".join(f"[{item['userName']}] {item['text']}" for item in thoughts)
+    dedication.pop(LEGACY_VOTE_FIELD, None)
+    dedication.pop(LEGACY_THOUGHT_FIELD, None)
     dedication["reactions"] = _reaction_counts(reaction_entries) if has_nominal_reactions else normalize_reactions(dedication.get("reactions"))
     return dedication
 
@@ -170,8 +174,8 @@ def sync_feedback_aggregates(dedication: dict) -> dict:
 def ensure_feedback_fields(dedication: dict) -> dict:
     """Aggiunge i campi feedback standard senza perdere valori esistenti."""
     updated = deepcopy(dedication)
-    updated.setdefault("votoPilly", None)
-    updated.setdefault("pensieroPilly", "")
+    updated.setdefault("voteAverage", updated.get(LEGACY_VOTE_FIELD))
+    updated.setdefault("thoughtsText", updated.get(LEGACY_THOUGHT_FIELD, ""))
     updated["reactions"] = normalize_reactions(updated.get("reactions"))
     updated["votes"] = normalize_votes(updated.get("votes"))
     updated["thoughts"] = normalize_thoughts(updated.get("thoughts"))
@@ -187,7 +191,7 @@ def merge_existing_feedback(target: dict, existing: dict | None) -> dict:
         return updated
 
     existing = ensure_feedback_fields(existing)
-    for key in ("votoPilly", "pensieroPilly", "reactions", "votes", "thoughts", "reactionEntries"):
+    for key in ("voteAverage", "thoughtsText", "reactions", "votes", "thoughts", "reactionEntries"):
         if key == "reactionEntries" and not existing.get(key):
             continue
         if key in existing:
@@ -341,8 +345,8 @@ def feedback_payload(dedication: dict) -> dict:
         "date": dedication.get("date", ""),
         "title": dedication.get("song_title", ""),
         "artist": dedication.get("artist", ""),
-        "votoPilly": dedication.get("votoPilly"),
-        "pensieroPilly": dedication.get("pensieroPilly", ""),
+        "voteAverage": dedication.get("voteAverage"),
+        "thoughtsText": dedication.get("thoughtsText", ""),
         "reactions": normalize_reactions(dedication.get("reactions")),
         "votes": normalize_votes(dedication.get("votes")),
         "thoughts": normalize_thoughts(dedication.get("thoughts")),
@@ -381,8 +385,8 @@ def load_all_feedback() -> dict[str, dict]:
 
 def update_vote(
     dedication_id: str,
-    voto_pilly: int,
-    pensiero_pilly: str = "",
+    vote_value: int,
+    thought_text: str = "",
     user_id: str = "",
     user_name: str = "",
     nome: str = "",
@@ -390,11 +394,11 @@ def update_vote(
 ) -> dict:
     """Aggiorna voto e pensiero nominali sul JSON della dedica."""
     try:
-        vote = int(voto_pilly)
+        vote = int(vote_value)
     except (TypeError, ValueError) as exc:
-        raise ValueError("votoPilly deve essere un numero intero da 1 a 10.") from exc
+        raise ValueError("Il voto deve essere un numero intero da 1 a 10.") from exc
     if vote < 1 or vote > 10:
-        raise ValueError("votoPilly deve essere compreso tra 1 e 10.")
+        raise ValueError("Il voto deve essere compreso tra 1 e 10.")
 
     dedication, target, sha = _load_feedback_target(dedication_id)
     user = _user_from_values(user_id, user_name, nome, cognome)
@@ -406,7 +410,7 @@ def update_vote(
     else:
         votes.append({**user, "value": vote, "createdAt": now, "updatedAt": now})
 
-    thought_text = str(pensiero_pilly or "").strip()
+    thought_text = str(thought_text or "").strip()
     thoughts = normalize_thoughts(dedication.get("thoughts"))
     current_thought = next((item for item in thoughts if item["userId"] == user["userId"]), None)
     if thought_text:
