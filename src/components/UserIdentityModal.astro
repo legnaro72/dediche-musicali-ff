@@ -60,7 +60,7 @@
 
 <!-- Trigger "Modifica profilo" — invisibile di default, attivabile da navbar/footer -->
 <button class="uid-edit-trigger" id="uid-edit-trigger" data-uid-edit type="button" hidden aria-label="Modifica nome e cognome">
-  <span class="tone-red">Modifica</span> <span class="tone-blue">profilo</span>
+  ✏️
 </button>
 
 <style>
@@ -252,13 +252,46 @@
   const UID_NOME_KEY    = 'ddgff-user-nome';
   const UID_COGNOME_KEY = 'ddgff-user-cognome';
   const UID_USER_ID_KEY = 'ddgff-user-id';
+  const UID_PROFILE_IDS_KEY = 'ddgff-profile-user-ids';
 
-  function getOrCreateUserId() {
-    let userId = localStorage.getItem(UID_USER_ID_KEY) || '';
-    if (!userId) {
-      userId = window.crypto?.randomUUID?.() || `local-${Date.now()}-${Math.random().toString(36).slice(2)}`;
-      localStorage.setItem(UID_USER_ID_KEY, userId);
+  function readProfileIds() {
+    try {
+      const value = JSON.parse(localStorage.getItem(UID_PROFILE_IDS_KEY) || '{}');
+      return value && typeof value === 'object' ? value : {};
+    } catch {
+      return {};
     }
+  }
+
+  function profileKey(nome, cognome) {
+    return [nome, cognome]
+      .map((part) => String(part || '').trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, ''))
+      .filter(Boolean)
+      .join('|');
+  }
+
+  function createUserId() {
+    return window.crypto?.randomUUID?.() || `local-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+  }
+
+  function getOrCreateUserId(nome = '', cognome = '') {
+    const key = profileKey(nome, cognome);
+    if (!key) {
+      let fallbackId = localStorage.getItem(UID_USER_ID_KEY) || '';
+      if (!fallbackId) {
+        fallbackId = createUserId();
+        localStorage.setItem(UID_USER_ID_KEY, fallbackId);
+      }
+      return fallbackId;
+    }
+    const ids = readProfileIds();
+    let userId = ids[key] || '';
+    if (!userId) {
+      userId = createUserId();
+      ids[key] = userId;
+      localStorage.setItem(UID_PROFILE_IDS_KEY, JSON.stringify(ids));
+    }
+    localStorage.setItem(UID_USER_ID_KEY, userId);
     return userId;
   }
 
@@ -266,7 +299,7 @@
     const nome = localStorage.getItem(UID_NOME_KEY) || '';
     const cognome = localStorage.getItem(UID_COGNOME_KEY) || '';
     return {
-      userId: getOrCreateUserId(),
+      userId: getOrCreateUserId(nome, cognome),
       nome,
       cognome,
       displayName: [nome, cognome].filter(Boolean).join(' ').trim() || 'Utente',
@@ -274,10 +307,14 @@
   }
 
   function saveUserIdentity(nome, cognome) {
-    localStorage.setItem(UID_NOME_KEY,    nome.trim());
-    localStorage.setItem(UID_COGNOME_KEY, cognome.trim());
+    const cleanNome = nome.trim();
+    const cleanCognome = cognome.trim();
+    const userId = getOrCreateUserId(cleanNome, cleanCognome);
+    localStorage.setItem(UID_NOME_KEY, cleanNome);
+    localStorage.setItem(UID_COGNOME_KEY, cleanCognome);
+    localStorage.setItem(UID_USER_ID_KEY, userId);
     window.dispatchEvent(new CustomEvent('ddgff:identity-saved', {
-      detail: { nome: nome.trim(), cognome: cognome.trim() },
+      detail: { userId, nome: cleanNome, cognome: cleanCognome },
     }));
   }
 
@@ -394,7 +431,7 @@
     const nome = localStorage.getItem('ddgff-user-nome') || '';
     const cognome = localStorage.getItem('ddgff-user-cognome') || '';
     return {
-      userId: getOrCreateUserId(),
+      userId: getOrCreateUserId(nome, cognome),
       nome,
       cognome,
       displayName: [nome, cognome].filter(Boolean).join(' ').trim() || 'Utente',
