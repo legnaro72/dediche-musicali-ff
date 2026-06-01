@@ -59,7 +59,9 @@ def send_message(message: EmailMessage) -> None:
     host = os.environ.get("SMTP_HOST", "").strip()
     username = os.environ.get("SMTP_USERNAME", "").strip()
     password = os.environ.get("SMTP_PASSWORD", "")
-    port = int(os.environ.get("SMTP_PORT", "465" if env_bool("SMTP_USE_SSL") else "587"))
+    default_port = "465" if env_bool("SMTP_USE_SSL") else "587"
+    port_value = os.environ.get("SMTP_PORT", "").strip() or default_port
+    port = int(port_value)
 
     if not host or not username or not password:
         raise ValueError("SMTP_HOST, SMTP_USERNAME e SMTP_PASSWORD sono obbligatori.")
