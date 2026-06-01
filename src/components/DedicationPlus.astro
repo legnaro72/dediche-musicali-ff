@@ -8,6 +8,9 @@ export interface Props {
     votoPilly?: number;
     pensieroPilly?: string;
     reactions?: Record<string, number>;
+    votes?: Array<Record<string, unknown>>;
+    thoughts?: Array<Record<string, unknown>>;
+    reactionEntries?: Array<Record<string, unknown>>;
   };
   mode: 'button' | 'reactions';
 }
@@ -21,6 +24,9 @@ const data = {
   votoPilly: dedication.votoPilly ?? null,
   pensieroPilly: dedication.pensieroPilly ?? '',
   reactions: dedication.reactions ?? {},
+  votes: dedication.votes ?? [],
+  thoughts: dedication.thoughts ?? [],
+  reactionEntries: dedication.reactionEntries ?? [],
 };
 ---
 
@@ -139,6 +145,57 @@ const data = {
     return result?.reactions || result?.feedback?.reactions || null;
   }
 
+  function currentIdentity() {
+    return window.__DDGFF?.getUserIdentity?.() || {};
+  }
+
+  function displayName(identity) {
+    return identity.displayName || [identity.nome, identity.cognome].filter(Boolean).join(' ').trim() || 'Utente';
+  }
+
+  function currentUserVote(feedback, identity) {
+    const userId = identity.userId || '';
+    const votes = Array.isArray(feedback?.votes) ? feedback.votes : [];
+    return votes.find((item) => item.userId === userId) || null;
+  }
+
+  function currentUserThought(feedback, identity) {
+    const userId = identity.userId || '';
+    const thoughts = Array.isArray(feedback?.thoughts) ? feedback.thoughts : [];
+    return thoughts.find((item) => item.userId === userId) || null;
+  }
+
+  function currentUserReaction(feedback, identity) {
+    const userId = identity.userId || '';
+    const entries = Array.isArray(feedback?.reactionEntries) ? feedback.reactionEntries : [];
+    return entries.find((item) => item.userId === userId)?.value || '';
+  }
+
+  function apiResultToLocalVote(data, votePayload) {
+    return {
+      id: data.id,
+      date: data.date,
+      title: data.title,
+      artist: data.artist,
+      votes: [{
+        userId: votePayload.userId,
+        userName: votePayload.userName,
+        value: votePayload.votoPilly,
+        createdAt: votePayload.updatedAt,
+        updatedAt: votePayload.updatedAt,
+      }],
+      thoughts: votePayload.pensieroPilly ? [{
+        userId: votePayload.userId,
+        userName: votePayload.userName,
+        text: votePayload.pensieroPilly,
+        createdAt: votePayload.updatedAt,
+        updatedAt: votePayload.updatedAt,
+      }] : [],
+      votoPilly: votePayload.votoPilly,
+      pensieroPilly: votePayload.pensieroPilly ? `[${votePayload.userName}] ${votePayload.pensieroPilly}` : '',
+    };
+  }
+
   function initPlusVotes() {
     document.querySelectorAll('[data-plus-vote]').forEach((root) => {
       if (root.dataset.ready === 'true') return;
@@ -161,7 +218,7 @@ const data = {
       const prefillIdentity = () => {
         if (!(identityInput instanceof HTMLInputElement)) return;
         const identity = window.__DDGFF?.getUserIdentity?.() || {};
-        const fullName = [identity.nome, identity.cognome].filter(Boolean).join(' ');
+        const fullName = displayName(identity);
         identityInput.value = fullName || '(nome non impostato)';
       };
 
@@ -183,11 +240,14 @@ const data = {
         } else if (status instanceof HTMLElement) {
           status.textContent = 'API feedback non configurata: il voto non puo essere salvato.';
         }
-        const saved = serverFeedback || (data.votoPilly ? data : null);
-        if (score instanceof HTMLInputElement) score.value = saved?.votoPilly ? String(saved.votoPilly) : '';
-        if (thought instanceof HTMLTextAreaElement) thought.value = saved?.pensieroPilly || '';
-        if (status instanceof HTMLElement && saved?.votoPilly) {
-          status.textContent = saved?.votoPilly ? 'Puoi modificare il voto gia salvato.' : '';
+        const identity = currentIdentity();
+        const source = serverFeedback || data;
+        const savedVote = currentUserVote(source, identity);
+        const savedThought = currentUserThought(source, identity);
+        if (score instanceof HTMLInputElement) score.value = savedVote?.value ? String(savedVote.value) : '';
+        if (thought instanceof HTMLTextAreaElement) thought.value = savedThought?.text || '';
+        if (status instanceof HTMLElement && savedVote?.value) {
+          status.textContent = 'Puoi modificare il tuo voto gia salvato.';
         }
       };
 
@@ -223,7 +283,7 @@ const data = {
           return;
         }
 
-        const identity = window.__DDGFF?.getUserIdentity?.() || {};
+        const identity = currentIdentity();
         const votePayload = {
           id: data.id,
           date: data.date,
@@ -231,6 +291,8 @@ const data = {
           artist: data.artist,
           votoPilly: value,
           pensieroPilly: thought instanceof HTMLTextAreaElement ? thought.value.trim() : '',
+          userId: identity.userId || '',
+          userName: displayName(identity),
           nome: identity.nome || '',
           cognome: identity.cognome || '',
           updatedAt: new Date().toISOString(),
@@ -239,8 +301,9 @@ const data = {
         if (status instanceof HTMLElement) status.textContent = 'Salvataggio in corso...';
         if (submit instanceof HTMLButtonElement) submit.disabled = true;
 
+        let apiResult = null;
         try {
-          const apiResult = await postFeedback('/save_vote', votePayload);
+          apiResult = await postFeedback('/save_vote', votePayload);
           votePayload.updatedAt = apiResult.updated_at || votePayload.updatedAt;
         } catch (error) {
           console.error('Salvataggio voto fallito:', error);
@@ -251,7 +314,9 @@ const data = {
           return;
         }
 
-        writeObject(voteStoreKey, { [data.id]: votePayload });
+        const voteStore = readObject(voteStoreKey);
+        voteStore[data.id] = apiResultToLocalVote(data, votePayload);
+        writeObject(voteStoreKey, voteStore);
         if (status instanceof HTMLElement) {
           status.textContent = 'Voto salvato nel dataset.';
         }
@@ -268,6 +333,7 @@ const data = {
 
       const data = parseData(root);
       const initialCounts = normalizeCounts(data.reactions);
+      let serverFeedback = null;
 
       // countsStore è sempre la fonte di verità per la visualizzazione
       const getDisplayCounts = () => {
@@ -289,18 +355,33 @@ const data = {
       // Sincronizza i conteggi dal server e aggiorna lo store locale
       const refreshServerReactions = async () => {
         const feedback = await fetchFeedback(data.id);
+        serverFeedback = feedback || serverFeedback;
         if (feedback?.reactions) {
           const store = readObject(reactionCountKey);
           store[data.id] = normalizeCounts(feedback.reactions);
           writeObject(reactionCountKey, store);
           render();
         }
+        const identity = currentIdentity();
+        const savedReaction = currentUserReaction(feedback, identity);
+        const choices = readObject(reactionChoiceKey);
+        if (savedReaction) {
+          choices[data.id] = savedReaction;
+        } else {
+          delete choices[data.id];
+        }
+        writeObject(reactionChoiceKey, choices);
+        render();
       };
 
       root.querySelectorAll('[data-reaction]').forEach((button) => {
         button.addEventListener('click', async () => {
           const next = button.getAttribute('data-reaction');
           if (!reactionKeys.includes(next)) return;
+          if (window.__DDGFF?.hasIdentity && !window.__DDGFF.hasIdentity()) {
+            window.__DDGFF.showIdentityModal?.();
+            return;
+          }
 
           const store = readObject(reactionCountKey);
           const choices = readObject(reactionChoiceKey);
@@ -329,11 +410,13 @@ const data = {
           if (button instanceof HTMLButtonElement) button.disabled = true;
 
           try {
-            const identity = window.__DDGFF?.getUserIdentity?.() || {};
+            const identity = currentIdentity();
             const apiResult = await postFeedback('/save_reaction', {
               id: data.id,
               reaction: isToggleOff ? null : next,
               previousReaction: previous || null,
+              userId: identity.userId || '',
+              userName: displayName(identity),
               nome: identity.nome || '',
               cognome: identity.cognome || '',
             });

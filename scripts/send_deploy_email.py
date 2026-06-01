@@ -19,7 +19,11 @@ except Exception:
 
 
 DEFAULT_TO = "massimiliano.ferrando@gmail.com"
-DEFAULT_BODY = "Ferrandi la DDG \u00e8 online!! Gloria al Doria e ai Ferrandi !!!"
+DEFAULT_BODY = """Ferrandi la DDG \u00e8 online!! Gloria al Doria e ai Ferrandi !!!
+
+Clicca sul seguente Link per accedere al Sito !!!
+https://legnaro72.github.io/dediche-musicali-ff/
+"""
 
 
 def get_rome_today() -> str:

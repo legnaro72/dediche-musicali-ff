@@ -184,13 +184,17 @@ class AppendOnlyPublishTest(unittest.TestCase):
             'ded-2026-05-16',
             8,
             'Pensiero salvato',
+            user_id='user-a',
+            user_name='Mario',
         )
 
         self.assertEqual(updated['votoPilly'], 8)
-        self.assertEqual(updated['pensieroPilly'], 'Pensiero salvato')
+        self.assertEqual(updated['pensieroPilly'], '[Mario] Pensiero salvato')
+        self.assertEqual(updated['votes'][0]['userId'], 'user-a')
+        self.assertEqual(updated['thoughts'][0]['userName'], 'Mario')
         saved = json.loads(path.read_text(encoding='utf-8'))
         self.assertEqual(saved['votoPilly'], 8)
-        self.assertEqual(saved['pensieroPilly'], 'Pensiero salvato')
+        self.assertEqual(saved['pensieroPilly'], '[Mario] Pensiero salvato')
         self.assertEqual(saved['reactions'], {'down': 0, 'like': 0, 'heart': 0, 'sun': 0})
 
     def test_update_reaction_can_switch_and_remove_browser_choice(self):
@@ -200,17 +204,41 @@ class AppendOnlyPublishTest(unittest.TestCase):
         data['id'] = 'ded-2026-05-18'
         path.write_text(json.dumps(data), encoding='utf-8')
 
-        first = dedication_feedback.update_reaction('ded-2026-05-18', 'heart')
+        first = dedication_feedback.update_reaction('ded-2026-05-18', 'heart', user_id='user-a', user_name='Mario')
         self.assertEqual(first['reactions'], {'down': 0, 'like': 0, 'heart': 1, 'sun': 0})
 
-        removed = dedication_feedback.update_reaction('ded-2026-05-18', None, 'heart')
+        removed = dedication_feedback.update_reaction('ded-2026-05-18', None, 'heart', user_id='user-a', user_name='Mario')
         self.assertEqual(removed['reactions'], {'down': 0, 'like': 0, 'heart': 0, 'sun': 0})
 
-        sun = dedication_feedback.update_reaction('ded-2026-05-18', 'sun')
+        sun = dedication_feedback.update_reaction('ded-2026-05-18', 'sun', user_id='user-a', user_name='Mario')
         self.assertEqual(sun['reactions'], {'down': 0, 'like': 0, 'heart': 0, 'sun': 1})
 
-        switched = dedication_feedback.update_reaction('ded-2026-05-18', 'heart', 'sun')
+        switched = dedication_feedback.update_reaction('ded-2026-05-18', 'heart', 'sun', user_id='user-a', user_name='Mario')
         self.assertEqual(switched['reactions'], {'down': 0, 'like': 0, 'heart': 1, 'sun': 0})
+
+    def test_feedback_is_nominal_and_updates_only_same_user(self):
+        self.write_dedication('2026-05-19', 'published')
+        path = self.data_dir / '2026-05-19.json'
+        data = json.loads(path.read_text(encoding='utf-8'))
+        data['id'] = 'ded-2026-05-19'
+        path.write_text(json.dumps(data), encoding='utf-8')
+
+        dedication_feedback.update_vote('ded-2026-05-19', 8, 'Bella', user_id='mario-id', user_name='Mario')
+        dedication_feedback.update_vote('ded-2026-05-19', 10, 'Perfetta', user_id='anna-id', user_name='Anna')
+        updated = dedication_feedback.update_vote('ded-2026-05-19', 9, 'Ancora meglio', user_id='mario-id', user_name='Mario')
+
+        self.assertEqual(len(updated['votes']), 2)
+        self.assertEqual(updated['votoPilly'], 9.5)
+        self.assertEqual({vote['userName']: vote['value'] for vote in updated['votes']}, {'Mario': 9, 'Anna': 10})
+        self.assertIn('[Mario] Ancora meglio', updated['pensieroPilly'])
+        self.assertIn('[Anna] Perfetta', updated['pensieroPilly'])
+
+        dedication_feedback.update_reaction('ded-2026-05-19', 'heart', user_id='mario-id', user_name='Mario')
+        dedication_feedback.update_reaction('ded-2026-05-19', 'sun', user_id='anna-id', user_name='Anna')
+        reactions = dedication_feedback.update_reaction('ded-2026-05-19', 'like', 'heart', user_id='mario-id', user_name='Mario')
+
+        self.assertEqual(len(reactions['reactionEntries']), 2)
+        self.assertEqual(reactions['reactions'], {'down': 0, 'like': 1, 'heart': 0, 'sun': 1})
 
     def test_sync_preserves_existing_feedback_when_forced(self):
         self.write_dedication('2026-05-17', 'scheduled')
@@ -233,7 +261,7 @@ class AppendOnlyPublishTest(unittest.TestCase):
         after = json.loads(path.read_text(encoding='utf-8'))
         self.assertEqual(after['song_title'], 'Changed in sheet')
         self.assertEqual(after['votoPilly'], 9)
-        self.assertEqual(after['pensieroPilly'], 'Da non perdere')
+        self.assertEqual(after['pensieroPilly'], '[Storico] Da non perdere')
         self.assertEqual(after['reactions'], {'down': 0, 'like': 2, 'heart': 4, 'sun': 1})
 
 

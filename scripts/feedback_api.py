@@ -81,12 +81,20 @@ class FeedbackHandler(BaseHTTPRequestHandler):
                     dedication_id,
                     payload.get("votoPilly"),
                     payload.get("pensieroPilly", ""),
+                    user_id=payload.get("userId", ""),
+                    user_name=payload.get("userName") or payload.get("displayName") or "",
+                    nome=payload.get("nome", ""),
+                    cognome=payload.get("cognome", ""),
                 )
             elif self.path == "/save_reaction":
                 updated = update_reaction(
                     dedication_id,
                     str(payload.get("reaction") or ""),
                     payload.get("previousReaction"),
+                    user_id=payload.get("userId", ""),
+                    user_name=payload.get("userName") or payload.get("displayName") or "",
+                    nome=payload.get("nome", ""),
+                    cognome=payload.get("cognome", ""),
                 )
             else:
                 self._send_json(404, {"ok": False, "error": "Endpoint non trovato."})
@@ -101,6 +109,9 @@ class FeedbackHandler(BaseHTTPRequestHandler):
             "votoPilly": updated.get("votoPilly"),
             "pensieroPilly": updated.get("pensieroPilly"),
             "reactions": updated.get("reactions"),
+            "votes": updated.get("votes", []),
+            "thoughts": updated.get("thoughts", []),
+            "reactionEntries": updated.get("reactionEntries", []),
             "updated_at": updated.get("updated_at"),
         })
 

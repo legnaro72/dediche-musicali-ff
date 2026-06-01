@@ -25,17 +25,21 @@ def main() -> int:
     vote_parser.add_argument("dedication_id")
     vote_parser.add_argument("--voto", required=True, type=int)
     vote_parser.add_argument("--pensiero", default="")
+    vote_parser.add_argument("--user-id", required=True)
+    vote_parser.add_argument("--user-name", required=True)
 
     reaction_parser = subparsers.add_parser("reaction", help="Aggiorna una reazione")
     reaction_parser.add_argument("dedication_id")
     reaction_parser.add_argument("--reaction", required=True, choices=("down", "like", "heart", "sun"))
     reaction_parser.add_argument("--previous", default=None, choices=("down", "like", "heart", "sun"))
+    reaction_parser.add_argument("--user-id", required=True)
+    reaction_parser.add_argument("--user-name", required=True)
 
     args = parser.parse_args()
     if args.command == "vote":
-        updated = update_vote(args.dedication_id, args.voto, args.pensiero)
+        updated = update_vote(args.dedication_id, args.voto, args.pensiero, user_id=args.user_id, user_name=args.user_name)
     else:
-        updated = update_reaction(args.dedication_id, args.reaction, args.previous)
+        updated = update_reaction(args.dedication_id, args.reaction, args.previous, user_id=args.user_id, user_name=args.user_name)
 
     print(json.dumps({
         "ok": True,
@@ -43,6 +47,9 @@ def main() -> int:
         "votoPilly": updated.get("votoPilly"),
         "pensieroPilly": updated.get("pensieroPilly"),
         "reactions": updated.get("reactions"),
+        "votes": updated.get("votes", []),
+        "thoughts": updated.get("thoughts", []),
+        "reactionEntries": updated.get("reactionEntries", []),
         "updated_at": updated.get("updated_at"),
     }, ensure_ascii=False, indent=2))
     return 0

@@ -23,6 +23,9 @@ const statsData = dedications.map(d => ({
   votoPilly: d.votoPilly ?? null,
   pensieroPilly: d.pensieroPilly ?? '',
   reactions: d.reactions ?? {},
+  votes: d.votes ?? [],
+  thoughts: d.thoughts ?? [],
+  reactionEntries: d.reactionEntries ?? [],
 }));
 const statsJson = JSON.stringify(statsData).replace(/</g, '\\u003c');
 ---
@@ -137,6 +140,27 @@ const statsJson = JSON.stringify(statsData).replace(/</g, '\\u003c');
       return item ? `${item.title} - ${item.artist}` : '-';
     }
 
+    function normalizedVotes(item) {
+      const votes = Array.isArray(item.votes) ? item.votes : [];
+      return votes
+        .filter(v => Number.isInteger(Number(v.value)) && Number(v.value) >= 1 && Number(v.value) <= 10)
+        .map(v => ({
+          ...item,
+          userId: v.userId || '',
+          userName: v.userName || 'Utente',
+          votoPilly: Number(v.value),
+        }));
+    }
+
+    function thoughtsFor(item) {
+      return Array.isArray(item.thoughts) ? item.thoughts : [];
+    }
+
+    function thoughtForVote(item) {
+      const thought = thoughtsFor(item).find(t => t.userId && t.userId === item.userId);
+      return thought?.text ? `[${thought.userName || item.userName}] ${thought.text}` : '-';
+    }
+
     function renderRanking(selector, items, formatter) {
       const list = document.querySelector(selector);
       if (!list) return;
@@ -165,15 +189,14 @@ const statsJson = JSON.stringify(statsData).replace(/</g, '\\u003c');
         title: item.title,
         artist: item.artist,
       }));
-      const voteMap = new Map();
-
-      runtimeDedications.forEach((item) => {
-        if (item.votoPilly) voteMap.set(item.id, item);
+      const votes = runtimeDedications.flatMap((item) => {
+        const nominalVotes = normalizedVotes(item);
+        if (nominalVotes.length) return nominalVotes;
+        if (Number.isInteger(Number(item.votoPilly)) && Number(item.votoPilly) >= 1 && Number(item.votoPilly) <= 10) {
+          return [{ ...item, userId: 'legacy', userName: 'Storico', votoPilly: Number(item.votoPilly) }];
+        }
+        return [];
       });
-
-      const votes = [...voteMap.values()]
-        .filter(v => Number.isInteger(Number(v.votoPilly)) && Number(v.votoPilly) >= 1 && Number(v.votoPilly) <= 10)
-        .map(v => ({ ...v, votoPilly: Number(v.votoPilly) }));
 
       const sum = votes.reduce((acc, item) => acc + item.votoPilly, 0);
       const sortedVotes = [...votes].sort((a, b) => b.votoPilly - a.votoPilly || a.title.localeCompare(b.title));
@@ -215,9 +238,9 @@ const statsJson = JSON.stringify(statsData).replace(/</g, '\\u003c');
         body.append(row);
         return;
       }
-      votes.sort((a, b) => b.date.localeCompare(a.date)).forEach((item) => {
+      votes.sort((a, b) => b.date.localeCompare(a.date) || String(a.userName).localeCompare(String(b.userName))).forEach((item) => {
         const row = document.createElement('tr');
-        [item.date, item.title, item.artist, `${item.votoPilly}/10`, item.pensieroPilly || '-'].forEach((value) => {
+        [item.date, item.title, item.artist, `[${item.userName}] ${item.votoPilly}/10`, thoughtForVote(item)].forEach((value) => {
           const cell = document.createElement('td');
           cell.textContent = value;
           row.append(cell);

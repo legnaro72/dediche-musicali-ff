@@ -35,13 +35,121 @@ function normalizeReactions(value) {
   }, {});
 }
 
+function normalizeText(value, maxLength = 120) {
+  const text = String(value || '').trim();
+  return text.length <= maxLength ? text : text.slice(0, maxLength);
+}
+
+function userFromPayload(payload) {
+  const userId = normalizeText(payload.userId || payload.user_id || '', 160);
+  if (!userId) throw new Error('userId obbligatorio per salvare feedback nominale.');
+  const fallbackName = [payload.nome, payload.cognome].filter(Boolean).join(' ').trim();
+  const userName = normalizeText(payload.userName || payload.displayName || fallbackName || 'Utente', 120);
+  return { userId, userName };
+}
+
+function normalizeVotes(value) {
+  const list = Array.isArray(value) ? value : [];
+  return list
+    .map(item => ({
+      userId: normalizeText(item?.userId || item?.user_id || '', 160),
+      userName: normalizeText(item?.userName || item?.user_name || 'Utente', 120),
+      value: Number(item?.value),
+      createdAt: String(item?.createdAt || item?.created_at || '').trim(),
+      updatedAt: String(item?.updatedAt || item?.updated_at || '').trim(),
+    }))
+    .filter(item => item.userId && Number.isInteger(item.value) && item.value >= 1 && item.value <= 10);
+}
+
+function normalizeThoughts(value) {
+  const list = Array.isArray(value) ? value : [];
+  return list
+    .map(item => ({
+      userId: normalizeText(item?.userId || item?.user_id || '', 160),
+      userName: normalizeText(item?.userName || item?.user_name || 'Utente', 120),
+      text: String(item?.text || '').trim(),
+      createdAt: String(item?.createdAt || item?.created_at || '').trim(),
+      updatedAt: String(item?.updatedAt || item?.updated_at || '').trim(),
+    }))
+    .filter(item => item.userId && item.text);
+}
+
+function normalizeReactionEntries(value) {
+  const list = Array.isArray(value) ? value : [];
+  return list
+    .map(item => ({
+      userId: normalizeText(item?.userId || item?.user_id || '', 160),
+      userName: normalizeText(item?.userName || item?.user_name || 'Utente', 120),
+      value: String(item?.value || item?.reaction || '').trim(),
+      createdAt: String(item?.createdAt || item?.created_at || '').trim(),
+      updatedAt: String(item?.updatedAt || item?.updated_at || '').trim(),
+    }))
+    .filter(item => item.userId && REACTION_KEYS.includes(item.value));
+}
+
+function averageVote(votes) {
+  if (!votes.length) return null;
+  const total = votes.reduce((sum, item) => sum + Number(item.value || 0), 0);
+  return Math.round((total / votes.length) * 10) / 10;
+}
+
+function aggregateReactionEntries(entries) {
+  const counts = normalizeReactions({});
+  entries.forEach(item => {
+    if (REACTION_KEYS.includes(item.value)) counts[item.value] += 1;
+  });
+  return counts;
+}
+
+function syncDerivedFeedbackFields(dedication) {
+  const hasNominalReactions = Array.isArray(dedication.reactionEntries);
+  const votes = normalizeVotes(dedication.votes);
+  const thoughts = normalizeThoughts(dedication.thoughts);
+  const reactionEntries = normalizeReactionEntries(dedication.reactionEntries);
+  const legacyVote = Number(dedication.votoPilly);
+  if (!votes.length && Number.isInteger(legacyVote) && legacyVote >= 1 && legacyVote <= 10) {
+    votes.push({
+      userId: 'legacy-feedback',
+      userName: 'Storico',
+      value: legacyVote,
+      createdAt: String(dedication.updated_at || ''),
+      updatedAt: String(dedication.updated_at || ''),
+    });
+  }
+  const legacyThought = String(dedication.pensieroPilly || '').trim();
+  if (!thoughts.length && legacyThought) {
+    thoughts.push({
+      userId: 'legacy-feedback',
+      userName: 'Storico',
+      text: legacyThought,
+      createdAt: String(dedication.updated_at || ''),
+      updatedAt: String(dedication.updated_at || ''),
+    });
+  }
+  dedication.votes = votes;
+  dedication.thoughts = thoughts;
+  dedication.reactionEntries = reactionEntries;
+  dedication.votoPilly = averageVote(votes);
+  dedication.pensieroPilly = thoughts.map(item => `[${item.userName}] ${item.text}`).join('\n\n');
+  dedication.reactions = hasNominalReactions
+    ? aggregateReactionEntries(reactionEntries)
+    : normalizeReactions(dedication.reactions);
+  return dedication;
+}
+
 function ensureFeedbackFields(dedication) {
-  return {
+  const updated = {
     ...dedication,
     votoPilly: dedication.votoPilly ?? null,
     pensieroPilly: dedication.pensieroPilly ?? '',
     reactions: normalizeReactions(dedication.reactions),
+    votes: normalizeVotes(dedication.votes),
+    thoughts: normalizeThoughts(dedication.thoughts),
   };
+  if (Array.isArray(dedication.reactionEntries)) {
+    updated.reactionEntries = normalizeReactionEntries(dedication.reactionEntries);
+  }
+  return syncDerivedFeedbackFields(updated);
 }
 
 function feedbackPayload(dedication) {
@@ -54,6 +162,9 @@ function feedbackPayload(dedication) {
     votoPilly: normalized.votoPilly,
     pensieroPilly: normalized.pensieroPilly || '',
     reactions: normalizeReactions(normalized.reactions),
+    votes: normalized.votes || [],
+    thoughts: normalized.thoughts || [],
+    reactionEntries: normalized.reactionEntries || [],
     updated_at: normalized.updated_at || '',
   };
 }
@@ -211,8 +322,8 @@ async function dispatchVoteEmail(env, feedback) {
       inputs: {
         date: when.date,
         time: when.time,
-        score: String(feedback.votoPilly ?? ''),
-        thought: truncateInput(feedback.pensieroPilly || '', 6000),
+        score: String(feedback.currentVote ?? feedback.votoPilly ?? ''),
+        thought: truncateInput(feedback.currentThought || feedback.pensieroPilly || '', 6000),
         title: truncateInput(feedback.title || '', 200),
         artist: truncateInput(feedback.artist || '', 200),
       },
@@ -239,17 +350,48 @@ async function getAllFeedback(env) {
 
 async function saveVote(env, payload) {
   const dedicationId = String(payload.id || payload.dedicationId || '').trim();
+  const user = userFromPayload(payload);
   const vote = Number(payload.votoPilly);
   if (!Number.isInteger(vote) || vote < 1 || vote > 10) {
     throw new Error('votoPilly deve essere un numero intero da 1 a 10.');
   }
 
   const loaded = await loadDedicationById(env, dedicationId);
-  loaded.dedication.votoPilly = vote;
-  loaded.dedication.pensieroPilly = String(payload.pensieroPilly || '').trim();
-  loaded.dedication.updated_at = nowIsoRomeApprox();
+  const now = nowIsoRomeApprox();
+  const votes = normalizeVotes(loaded.dedication.votes);
+  const existingVote = votes.find(item => item.userId === user.userId);
+  if (existingVote) {
+    existingVote.userName = user.userName;
+    existingVote.value = vote;
+    existingVote.updatedAt = now;
+  } else {
+    votes.push({ ...user, value: vote, createdAt: now, updatedAt: now });
+  }
+
+  const thoughtText = String(payload.pensieroPilly || payload.thought || '').trim();
+  let thoughts = normalizeThoughts(loaded.dedication.thoughts);
+  const existingThought = thoughts.find(item => item.userId === user.userId);
+  if (thoughtText) {
+    if (existingThought) {
+      existingThought.userName = user.userName;
+      existingThought.text = thoughtText;
+      existingThought.updatedAt = now;
+    } else {
+      thoughts.push({ ...user, text: thoughtText, createdAt: now, updatedAt: now });
+    }
+  } else if (existingThought) {
+    thoughts = thoughts.filter(item => item.userId !== user.userId);
+  }
+
+  loaded.dedication.votes = votes;
+  loaded.dedication.thoughts = thoughts;
+  loaded.dedication.updated_at = now;
+  syncDerivedFeedbackFields(loaded.dedication);
   await saveDedication(env, loaded, `Salva voto Pilly ${dedicationId}`);
   const feedback = feedbackPayload(loaded.dedication);
+  feedback.currentVote = vote;
+  feedback.currentThought = thoughtText;
+  feedback.currentUserName = user.userName;
   try {
     await dispatchVoteEmail(env, feedback);
     feedback.vote_email_dispatched = true;
@@ -262,6 +404,7 @@ async function saveVote(env, payload) {
 
 async function saveReaction(env, payload) {
   const dedicationId = String(payload.id || payload.dedicationId || '').trim();
+  const user = userFromPayload(payload);
   const reaction = payload.reaction === null || payload.reaction === undefined
     ? ''
     : String(payload.reaction).trim();
@@ -277,15 +420,23 @@ async function saveReaction(env, payload) {
   }
 
   const loaded = await loadDedicationById(env, dedicationId);
-  const reactions = normalizeReactions(loaded.dedication.reactions);
-  if (previousReaction) {
-    reactions[previousReaction] = Math.max(0, reactions[previousReaction] - 1);
-  }
+  const now = nowIsoRomeApprox();
+  let reactionEntries = normalizeReactionEntries(loaded.dedication.reactionEntries);
+  const existing = reactionEntries.find(item => item.userId === user.userId);
   if (reaction) {
-    reactions[reaction] += 1;
+    if (existing) {
+      existing.userName = user.userName;
+      existing.value = reaction;
+      existing.updatedAt = now;
+    } else {
+      reactionEntries.push({ ...user, value: reaction, createdAt: now, updatedAt: now });
+    }
+  } else {
+    reactionEntries = reactionEntries.filter(item => item.userId !== user.userId);
   }
-  loaded.dedication.reactions = reactions;
-  loaded.dedication.updated_at = nowIsoRomeApprox();
+  loaded.dedication.reactionEntries = reactionEntries;
+  loaded.dedication.updated_at = now;
+  syncDerivedFeedbackFields(loaded.dedication);
   await saveDedication(env, loaded, `Salva reazione Pilly ${dedicationId}`);
   return feedbackPayload(loaded.dedication);
 }

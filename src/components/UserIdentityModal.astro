@@ -60,7 +60,7 @@
 
 <!-- Trigger "Modifica profilo" — invisibile di default, attivabile da navbar/footer -->
 <button class="uid-edit-trigger" id="uid-edit-trigger" data-uid-edit type="button" hidden aria-label="Modifica nome e cognome">
-  ✏️
+  <span class="tone-red">Modifica</span> <span class="tone-blue">profilo</span>
 </button>
 
 <style>
@@ -251,11 +251,25 @@
 <script>
   const UID_NOME_KEY    = 'ddgff-user-nome';
   const UID_COGNOME_KEY = 'ddgff-user-cognome';
+  const UID_USER_ID_KEY = 'ddgff-user-id';
+
+  function getOrCreateUserId() {
+    let userId = localStorage.getItem(UID_USER_ID_KEY) || '';
+    if (!userId) {
+      userId = window.crypto?.randomUUID?.() || `local-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+      localStorage.setItem(UID_USER_ID_KEY, userId);
+    }
+    return userId;
+  }
 
   function getUserIdentity() {
+    const nome = localStorage.getItem(UID_NOME_KEY) || '';
+    const cognome = localStorage.getItem(UID_COGNOME_KEY) || '';
     return {
-      nome:    localStorage.getItem(UID_NOME_KEY)    || '',
-      cognome: localStorage.getItem(UID_COGNOME_KEY) || '',
+      userId: getOrCreateUserId(),
+      nome,
+      cognome,
+      displayName: [nome, cognome].filter(Boolean).join(' ').trim() || 'Utente',
     };
   }
 
@@ -377,9 +391,13 @@
   // Esporta per uso esterno (DedicationPlus, etc.)
   window.__DDGFF = window.__DDGFF || {};
   window.__DDGFF.getUserIdentity = () => {
+    const nome = localStorage.getItem('ddgff-user-nome') || '';
+    const cognome = localStorage.getItem('ddgff-user-cognome') || '';
     return {
-      nome:    localStorage.getItem('ddgff-user-nome')    || '',
-      cognome: localStorage.getItem('ddgff-user-cognome') || '',
+      userId: getOrCreateUserId(),
+      nome,
+      cognome,
+      displayName: [nome, cognome].filter(Boolean).join(' ').trim() || 'Utente',
     };
   };
   window.__DDGFF.hasIdentity = () => {
