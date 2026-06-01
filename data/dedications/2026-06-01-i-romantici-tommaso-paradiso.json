@@ -31,14 +31,14 @@
     "description": "Dedica musicale del giorno con \"I romantici\" di Tommaso Paradiso."
   },
   "created_at": "2026-06-01T00:58:50.184118+02:00",
-  "updated_at": "2026-06-01T13:32:30.241Z",
+  "updated_at": "2026-06-01T13:32:32.531Z",
   "voteAverage": 9,
   "thoughtsText": "[Massimiliano Ferrando] piccoo",
   "reactions": {
     "down": 0,
     "like": 0,
-    "heart": 2,
-    "sun": 0
+    "heart": 1,
+    "sun": 1
   },
   "date_it": "1 giugno 2026",
   "votes": [
@@ -70,9 +70,9 @@
     {
       "userId": "d6573b39-bbf2-4624-ab28-4acac2815c4a",
       "userName": "Manfredi Ferrando",
-      "value": "heart",
+      "value": "sun",
       "createdAt": "2026-06-01T13:32:26.891Z",
-      "updatedAt": "2026-06-01T13:32:30.241Z"
+      "updatedAt": "2026-06-01T13:32:32.531Z"
     }
   ]
 }
