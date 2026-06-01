@@ -74,7 +74,7 @@ UPLOAD_IMAGE_MAX_SIDE = int(os.environ.get("UPLOAD_IMAGE_MAX_SIDE", "1400"))
 UPLOAD_IMAGE_WEBP_QUALITY = int(os.environ.get("UPLOAD_IMAGE_WEBP_QUALITY", "78"))
 UPLOAD_IMAGE_TARGET_BYTES = int(os.environ.get("UPLOAD_IMAGE_TARGET_BYTES", str(450 * 1024)))
 UPLOAD_IMAGE_HARD_MAX_BYTES = int(os.environ.get("UPLOAD_IMAGE_HARD_MAX_BYTES", str(700 * 1024)))
-STREAMLIT_ICON_PATH = Path(__file__).resolve().parents[1] / "static" / "pwa" / "icons" / "icon-192.png"
+STREAMLIT_ICON_PATH = Path(__file__).resolve().parents[1] / "public" / "favicon" / "favicon.png"
 
 
 class UploadedImageSnapshot:
@@ -122,38 +122,46 @@ EXTENDED_EMOJIS = [
 
 
 def inject_streamlit_pwa_tags() -> None:
+    favicon_href = ""
+    if STREAMLIT_ICON_PATH.exists():
+        favicon_href = (
+            "data:image/png;base64,"
+            + base64.b64encode(STREAMLIT_ICON_PATH.read_bytes()).decode("ascii")
+        )
+    favicon_href_js = json.dumps(favicon_href or "/app/static/pwa/icons/icon-192.png?v=ddgff-admin-v2")
     components.html(
-        """
+        f"""
         <script>
-        (function () {
+        (function () {{
           const doc = window.parent.document;
+          const faviconHref = {favicon_href_js};
           const tags = [
-            ['link', { rel: 'manifest', href: '/app/static/pwa/manifest.json?v=ddgff-admin-v2' }],
-            ['link', { rel: 'icon', type: 'image/png', sizes: '192x192', href: '/app/static/pwa/icons/icon-192.png?v=ddgff-admin-v2' }],
-            ['link', { rel: 'shortcut icon', type: 'image/png', href: '/app/static/pwa/icons/icon-192.png?v=ddgff-admin-v2' }],
-            ['link', { rel: 'apple-touch-icon', href: '/app/static/pwa/icons/apple-touch-icon.png?v=ddgff-admin-v2' }],
-            ['link', { rel: 'apple-touch-startup-image', href: '/app/static/pwa/icons/apple-splash-2048.png?v=ddgff-admin-v2' }],
-            ['meta', { name: 'theme-color', content: '#08070f' }],
-            ['meta', { name: 'apple-mobile-web-app-capable', content: 'yes' }],
-            ['meta', { name: 'apple-mobile-web-app-title', content: 'DDG FF Admin' }],
-            ['meta', { name: 'apple-mobile-web-app-status-bar-style', content: 'black-translucent' }],
-            ['meta', { name: 'mobile-web-app-capable', content: 'yes' }]
+            ['link', {{ rel: 'manifest', href: '/app/static/pwa/manifest.json?v=ddgff-admin-v2' }}],
+            ['link', {{ rel: 'icon', type: 'image/png', href: faviconHref }}],
+            ['link', {{ rel: 'shortcut icon', type: 'image/png', href: faviconHref }}],
+            ['link', {{ rel: 'apple-touch-icon', href: '/app/static/pwa/icons/apple-touch-icon.png?v=ddgff-admin-v2' }}],
+            ['link', {{ rel: 'apple-touch-startup-image', href: '/app/static/pwa/icons/apple-splash-2048.png?v=ddgff-admin-v2' }}],
+            ['meta', {{ name: 'theme-color', content: '#08070f' }}],
+            ['meta', {{ name: 'apple-mobile-web-app-capable', content: 'yes' }}],
+            ['meta', {{ name: 'apple-mobile-web-app-title', content: 'DDG FF Admin' }}],
+            ['meta', {{ name: 'apple-mobile-web-app-status-bar-style', content: 'black-translucent' }}],
+            ['meta', {{ name: 'mobile-web-app-capable', content: 'yes' }}]
           ];
 
-          for (const [tagName, attrs] of tags) {
+          for (const [tagName, attrs] of tags) {{
             const selector = attrs.rel
-              ? `${tagName}[rel="${attrs.rel}"]`
-              : `${tagName}[name="${attrs.name}"]`;
+              ? `${{tagName}}[rel="${{attrs.rel}}"]`
+              : `${{tagName}}[name="${{attrs.name}}"]`;
             let el = doc.querySelector(selector);
-            if (!el) {
+            if (!el) {{
               el = doc.createElement(tagName);
               doc.head.appendChild(el);
-            }
-            for (const [key, value] of Object.entries(attrs)) {
+            }}
+            for (const [key, value] of Object.entries(attrs)) {{
               el.setAttribute(key, value);
-            }
-          }
-        })();
+            }}
+          }}
+        }})();
         </script>
         """,
         height=0,
