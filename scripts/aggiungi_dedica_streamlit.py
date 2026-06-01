@@ -44,6 +44,8 @@ UPLOAD_DIR = "public/images/upload"
 SITE_LOCK_IMAGE_DIR = "public/images/site-lock"
 SITE_SETTINGS_PATH = "public/config/site-settings.json"
 VISITS_PATH = "data/visits.json"
+DEDICATIONS_DIR = "data/dedications"
+REACTION_KEYS = ("down", "like", "heart", "sun")
 WHATSAPP_NOTIFY_NUMBER = os.environ.get("WHATSAPP_NOTIFY_NUMBER", "393403813481")
 WHATSAPP_NOTIFY_MESSAGE = os.environ.get(
     "WHATSAPP_NOTIFY_MESSAGE",
@@ -1499,6 +1501,167 @@ def visits_dataframe(visits: list[dict]) -> pd.DataFrame:
     return df.sort_values("datetime", ascending=False)
 
 
+def load_visits_json_for_edit() -> tuple[dict, str | None]:
+    payload, sha = read_github_json(VISITS_PATH, {"visits": []})
+    if not isinstance(payload, dict):
+        payload = {"visits": []}
+    if not isinstance(payload.get("visits"), list):
+        payload["visits"] = []
+    return payload, sha
+
+
+def save_visits_json(visits: list[dict], sha: str | None, message: str) -> None:
+    write_github_json(VISITS_PATH, {"visits": visits}, sha, message)
+    load_site_visits.clear()
+
+
+def list_github_json_files(repo_dir: str) -> list[dict]:
+    api_url = f"https://api.github.com/repos/{GITHUB_REPO}/contents/{repo_dir.strip('/')}"
+    response = requests.get(
+        api_url,
+        headers=github_headers(),
+        params={"ref": GITHUB_BRANCH},
+        timeout=20,
+    )
+    if response.status_code != 200:
+        raise ValueError(f"Lettura directory GitHub fallita: {response.text}")
+    items = response.json()
+    return [
+        item for item in items
+        if item.get("type") == "file" and str(item.get("name", "")).endswith(".json")
+    ]
+
+
+@st.cache_data(ttl=60)
+def load_garbage_dedications() -> list[dict]:
+    dedications = []
+    for item in list_github_json_files(DEDICATIONS_DIR):
+        data, sha = read_github_json(item["path"], {})
+        if isinstance(data, dict):
+            dedications.append({"path": item["path"], "sha": sha, "data": data})
+    return dedications
+
+
+def dedication_label(dedication: dict) -> str:
+    return (
+        f"{dedication.get('date', '')} - {dedication.get('song_title', '')} "
+        f"({dedication.get('artist', '')})"
+    ).strip()
+
+
+def feedback_garbage_dataframe(dedications: list[dict]) -> pd.DataFrame:
+    rows = []
+    for item in dedications:
+        data = item["data"]
+        path = item["path"]
+        dedication_id = str(data.get("id") or Path(path).stem)
+        label = dedication_label(data)
+        for field_name, type_label in (
+            ("votes", "voto"),
+            ("thoughts", "pensiero"),
+            ("reactionEntries", "reaction"),
+        ):
+            entries = data.get(field_name)
+            if not isinstance(entries, list):
+                continue
+            for index, entry in enumerate(entries):
+                if not isinstance(entry, dict):
+                    continue
+                user_key = str(entry.get("userKey") or entry.get("user_key") or entry.get("userName") or "").strip()
+                user_name = str(entry.get("userName") or entry.get("user_name") or "Utente").strip()
+                if type_label == "pensiero":
+                    value = str(entry.get("text") or "").strip()
+                else:
+                    value = str(entry.get("value") or entry.get("reaction") or "").strip()
+                rows.append({
+                    "entryId": f"{path}|{field_name}|{index}",
+                    "path": path,
+                    "dedicationId": dedication_id,
+                    "dedica": label,
+                    "tipo": type_label,
+                    "field": field_name,
+                    "index": index,
+                    "utente": user_name,
+                    "userKey": user_key,
+                    "valore": value,
+                    "createdAt": str(entry.get("createdAt") or entry.get("created_at") or ""),
+                    "updatedAt": str(entry.get("updatedAt") or entry.get("updated_at") or ""),
+                })
+    if not rows:
+        return pd.DataFrame(columns=["entryId", "path", "dedicationId", "dedica", "tipo", "field", "index", "utente", "userKey", "valore"])
+    return pd.DataFrame(rows)
+
+
+def sync_dedication_feedback_fields(dedication: dict) -> dict:
+    votes = [item for item in dedication.get("votes", []) if isinstance(item, dict)]
+    thoughts = [item for item in dedication.get("thoughts", []) if isinstance(item, dict)]
+    reactions = [item for item in dedication.get("reactionEntries", []) if isinstance(item, dict)]
+
+    numeric_votes = []
+    for item in votes:
+        try:
+            value = int(item.get("value"))
+        except (TypeError, ValueError):
+            continue
+        if 1 <= value <= 10:
+            numeric_votes.append(value)
+
+    dedication["votes"] = votes
+    dedication["thoughts"] = thoughts
+    dedication["reactionEntries"] = reactions
+    dedication["voteAverage"] = round(sum(numeric_votes) / len(numeric_votes), 1) if numeric_votes else None
+    dedication["thoughtsText"] = "\n\n".join(
+        f"[{item.get('userName') or item.get('user_name') or 'Utente'}] {str(item.get('text') or '').strip()}"
+        for item in thoughts
+        if str(item.get("text") or "").strip()
+    )
+    counts = {key: 0 for key in REACTION_KEYS}
+    for item in reactions:
+        value = str(item.get("value") or item.get("reaction") or "").strip()
+        if value in counts:
+            counts[value] += 1
+    dedication["reactions"] = counts
+    dedication["updated_at"] = datetime.datetime.now(datetime.timezone.utc).isoformat()
+    return dedication
+
+
+def delete_feedback_entries(selected_ids: set[str], dedications: list[dict]) -> int:
+    by_path = {item["path"]: item for item in dedications}
+    selected_by_path: dict[str, dict[str, set[int]]] = {}
+    for entry_id in selected_ids:
+        parts = str(entry_id).split("|")
+        if len(parts) != 3:
+            continue
+        path, field_name, index_text = parts
+        try:
+            index = int(index_text)
+        except ValueError:
+            continue
+        selected_by_path.setdefault(path, {}).setdefault(field_name, set()).add(index)
+
+    deleted = 0
+    for path, fields in selected_by_path.items():
+        source = by_path.get(path)
+        if not source:
+            continue
+        dedication = json.loads(json.dumps(source["data"]))
+        for field_name, indexes in fields.items():
+            entries = dedication.get(field_name)
+            if not isinstance(entries, list):
+                continue
+            before = len(entries)
+            dedication[field_name] = [
+                entry for idx, entry in enumerate(entries)
+                if idx not in indexes
+            ]
+            deleted += before - len(dedication[field_name])
+        sync_dedication_feedback_fields(dedication)
+        write_github_json(path, dedication, source["sha"], f"Ripulisci feedback {dedication.get('id') or Path(path).stem}")
+
+    load_garbage_dedications.clear()
+    return deleted
+
+
 def render_visit_statistics() -> None:
     st.title("Accessi sito")
     st.caption("Statistiche amministrative delle visite registrate dal sito. Non sono mostrate nelle pagine pubbliche.")
@@ -1577,6 +1740,184 @@ def render_visit_statistics() -> None:
     st.subheader("Dettaglio visite")
     detail = filtered[["data", "ora", "utente", "pagina"]].sort_values(["data", "ora"], ascending=[False, False])
     st.dataframe(detail, use_container_width=True, hide_index=True)
+
+
+def render_garbage() -> None:
+    st.title("Garbage")
+    st.caption("Pulizia manuale delle visite sito salvate in data/visits.json.")
+
+    if st.button("Ricarica dati Garbage", use_container_width=True, key="garbage_reload"):
+        load_site_visits.clear()
+
+    try:
+        payload, sha = load_visits_json_for_edit()
+        visits = payload.get("visits", [])
+        df = visits_dataframe(visits)
+    except Exception as exc:
+        st.error(str(exc))
+        return
+
+    if df.empty:
+        st.info("Nessuna visita da cancellare.")
+        return
+
+    mode = st.radio(
+        "Cosa vuoi cancellare?",
+        ["Singole visite", "Visite per utente", "Visite per data"],
+        horizontal=True,
+        key="garbage_visit_delete_mode",
+    )
+
+    selected_ids: set[str] = set()
+    if mode == "Singole visite":
+        options = {}
+        for row in df.itertuples(index=False):
+            label = f"{row.data} {row.ora} | {row.utente} | {row.pagina} | {row.visitId}"
+            options[label] = row.visitId
+        selected_labels = st.multiselect(
+            "Seleziona visite da cancellare",
+            list(options.keys()),
+            key="garbage_single_visit_ids",
+        )
+        selected_ids = {options[label] for label in selected_labels}
+    elif mode == "Visite per utente":
+        users = sorted(df["utente"].dropna().unique().tolist())
+        selected_user = st.selectbox("Utente", users, key="garbage_user")
+        selected_ids = set(df.loc[df["utente"] == selected_user, "visitId"].tolist())
+    else:
+        days = sorted(df["data"].dropna().unique().tolist(), reverse=True)
+        selected_day = st.selectbox("Data", days, key="garbage_day")
+        selected_ids = set(df.loc[df["data"] == selected_day, "visitId"].tolist())
+
+    preview = df[df["visitId"].isin(selected_ids)].copy()
+    st.metric("Visite selezionate per cancellazione", int(len(preview)))
+    if not preview.empty:
+        st.dataframe(
+            preview[["data", "ora", "utente", "pagina", "visitId"]],
+            use_container_width=True,
+            hide_index=True,
+        )
+
+    confirm = st.checkbox(
+        "Confermo la cancellazione delle visite selezionate",
+        key="garbage_confirm_delete_visits",
+        disabled=preview.empty,
+    )
+    if st.button(
+        "Cancella visite selezionate",
+        type="primary",
+        use_container_width=True,
+        disabled=preview.empty or not confirm,
+        key="garbage_delete_visits",
+    ):
+        try:
+            remaining = [
+                visit for visit in visits
+                if str(visit.get("visitId") or visit.get("visit_id") or "").strip() not in selected_ids
+            ]
+            save_visits_json(
+                remaining,
+                sha,
+                f"Rimuovi {len(visits) - len(remaining)} visite sito",
+            )
+            st.success(f"Cancellate {len(visits) - len(remaining)} visite.")
+            st.session_state["garbage_confirm_delete_visits"] = False
+        except Exception as exc:
+            st.error(str(exc))
+
+    st.divider()
+    st.subheader("Feedback dediche")
+    st.caption("Cancella voti, pensieri e reaction dai JSON delle dediche.")
+
+    try:
+        dedications = load_garbage_dedications()
+        feedback_df = feedback_garbage_dataframe(dedications)
+    except Exception as exc:
+        st.error(str(exc))
+        return
+
+    if feedback_df.empty:
+        st.info("Nessun voto, pensiero o reaction da cancellare.")
+        return
+
+    feedback_mode = st.radio(
+        "Cosa vuoi cancellare dai feedback?",
+        ["Singoli elementi", "Per dedica", "Per utente", "Per tipo"],
+        horizontal=True,
+        key="garbage_feedback_delete_mode",
+    )
+
+    selected_feedback_ids: set[str] = set()
+    if feedback_mode == "Singoli elementi":
+        options = {}
+        display_df = feedback_df.sort_values(["dedica", "tipo", "utente"])
+        for row in display_df.itertuples(index=False):
+            label = f"{row.dedica} | {row.tipo} | {row.utente} | {row.valore}"
+            options[label] = row.entryId
+        selected_labels = st.multiselect(
+            "Seleziona elementi da cancellare",
+            list(options.keys()),
+            key="garbage_feedback_single_ids",
+        )
+        selected_feedback_ids = {options[label] for label in selected_labels}
+    elif feedback_mode == "Per dedica":
+        dediche = sorted(feedback_df["dedica"].dropna().unique().tolist())
+        selected_dedica = st.selectbox("Dedica", dediche, key="garbage_feedback_dedica")
+        type_filter = st.multiselect(
+            "Tipi da cancellare",
+            ["voto", "pensiero", "reaction"],
+            default=["voto", "pensiero", "reaction"],
+            key="garbage_feedback_dedica_types",
+        )
+        selected = feedback_df[(feedback_df["dedica"] == selected_dedica) & (feedback_df["tipo"].isin(type_filter))]
+        selected_feedback_ids = set(selected["entryId"].tolist())
+    elif feedback_mode == "Per utente":
+        users = sorted(feedback_df["utente"].dropna().unique().tolist())
+        selected_user = st.selectbox("Utente feedback", users, key="garbage_feedback_user")
+        type_filter = st.multiselect(
+            "Tipi da cancellare",
+            ["voto", "pensiero", "reaction"],
+            default=["voto", "pensiero", "reaction"],
+            key="garbage_feedback_user_types",
+        )
+        selected = feedback_df[(feedback_df["utente"] == selected_user) & (feedback_df["tipo"].isin(type_filter))]
+        selected_feedback_ids = set(selected["entryId"].tolist())
+    else:
+        selected_type = st.selectbox(
+            "Tipo feedback",
+            ["voto", "pensiero", "reaction"],
+            key="garbage_feedback_type",
+        )
+        selected = feedback_df[feedback_df["tipo"] == selected_type]
+        selected_feedback_ids = set(selected["entryId"].tolist())
+
+    feedback_preview = feedback_df[feedback_df["entryId"].isin(selected_feedback_ids)].copy()
+    st.metric("Elementi feedback selezionati", int(len(feedback_preview)))
+    if not feedback_preview.empty:
+        st.dataframe(
+            feedback_preview[["dedica", "tipo", "utente", "valore", "createdAt", "updatedAt"]],
+            use_container_width=True,
+            hide_index=True,
+        )
+
+    confirm_feedback = st.checkbox(
+        "Confermo la cancellazione dei feedback selezionati",
+        key="garbage_confirm_delete_feedback",
+        disabled=feedback_preview.empty,
+    )
+    if st.button(
+        "Cancella feedback selezionati",
+        type="primary",
+        use_container_width=True,
+        disabled=feedback_preview.empty or not confirm_feedback,
+        key="garbage_delete_feedback",
+    ):
+        try:
+            deleted = delete_feedback_entries(selected_feedback_ids, dedications)
+            st.success(f"Cancellati {deleted} elementi feedback.")
+            st.session_state["garbage_confirm_delete_feedback"] = False
+        except Exception as exc:
+            st.error(str(exc))
 
 
 def render_site_configuration() -> None:
@@ -1798,11 +2139,12 @@ def main() -> None:
     page_icon = STREAMLIT_ICON_PATH.read_bytes() if STREAMLIT_ICON_PATH.exists() else "🎵"
     st.set_page_config(page_title="DDG FF Admin", page_icon=page_icon, layout="centered")
     inject_streamlit_pwa_tags()
-    tab_new, tab_historical, tab_config, tab_visits = st.tabs([
+    tab_new, tab_historical, tab_config, tab_visits, tab_garbage = st.tabs([
         "Nuova dedica",
         "Historical",
         "Configurazione sito",
         "Accessi sito",
+        "Garbage",
     ])
     with tab_new:
         render_new_dedication()
@@ -1812,6 +2154,8 @@ def main() -> None:
         render_site_configuration()
     with tab_visits:
         render_visit_statistics()
+    with tab_garbage:
+        render_garbage()
 
 
 if __name__ == "__main__":
