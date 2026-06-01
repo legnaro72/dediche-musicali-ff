@@ -1,5 +1,5 @@
 """
-Invia la notifica email quando Pilli salva un Votami Plus.
+Invia la notifica email quando un Ferrando salva un Votami Plus.
 
 Usa gli stessi secret SMTP del deploy. Il destinatario e' il primo indirizzo
 di DEPLOY_NOTIFICATION_TO, oppure massimiliano.ferrando@gmail.com.

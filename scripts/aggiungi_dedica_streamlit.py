@@ -45,7 +45,7 @@ SITE_SETTINGS_PATH = "public/config/site-settings.json"
 WHATSAPP_NOTIFY_NUMBER = os.environ.get("WHATSAPP_NOTIFY_NUMBER", "393403813481")
 WHATSAPP_NOTIFY_MESSAGE = os.environ.get(
     "WHATSAPP_NOTIFY_MESSAGE",
-    "Ciao AmorPilli , la DDG \u00e8 online.",
+    "Ciao Ferrandi , la DDG \u00e8 online.",
 )
 DEFAULT_SITE_SETTINGS = {
     "buttons": {

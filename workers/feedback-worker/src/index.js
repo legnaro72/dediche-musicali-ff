@@ -450,7 +450,7 @@ export default {
       if (request.method === 'GET' && url.pathname === '/') {
         return jsonResponse({
           ok: true,
-          service: 'DDGPilli feedback worker',
+          service: 'DDG FF feedback worker',
           endpoints: ['/feedback/all', '/feedback?id=<dedication_id>', '/save_vote', '/save_reaction'],
         }, 200, env, request);
       }
