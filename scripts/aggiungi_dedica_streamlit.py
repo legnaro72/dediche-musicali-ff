@@ -1821,7 +1821,6 @@ def render_garbage() -> None:
                 f"Rimuovi {len(visits) - len(remaining)} visite sito",
             )
             st.success(f"Cancellate {len(visits) - len(remaining)} visite.")
-            st.session_state["garbage_confirm_delete_visits"] = False
         except Exception as exc:
             st.error(str(exc))
 
@@ -1915,7 +1914,6 @@ def render_garbage() -> None:
         try:
             deleted = delete_feedback_entries(selected_feedback_ids, dedications)
             st.success(f"Cancellati {deleted} elementi feedback.")
-            st.session_state["garbage_confirm_delete_feedback"] = False
         except Exception as exc:
             st.error(str(exc))
 
