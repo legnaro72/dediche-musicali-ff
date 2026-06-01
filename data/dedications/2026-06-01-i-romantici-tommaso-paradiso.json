@@ -31,14 +31,14 @@
     "description": "Dedica musicale del giorno con \"I romantici\" di Tommaso Paradiso."
   },
   "created_at": "2026-06-01T00:58:50.184118+02:00",
-  "updated_at": "2026-06-01T12:22:05.798Z",
+  "updated_at": "2026-06-01T12:24:34.463Z",
   "votoPilly": 9.5,
   "pensieroPilly": "[Storico] Manfredi approva\n\n[Massimiliano Ferrando] A PAPA' PIACCCC",
   "reactions": {
     "down": 0,
     "like": 0,
-    "heart": 1,
-    "sun": 0
+    "heart": 0,
+    "sun": 1
   },
   "date_it": "1 giugno 2026",
   "votes": [
@@ -76,10 +76,10 @@
   "reactionEntries": [
     {
       "userId": "f6db9c19-ff1f-4429-b8bc-da4245ab1fc3",
-      "userName": "Massimiliano Ferrando",
-      "value": "heart",
+      "userName": "Manfredi Ferrando",
+      "value": "sun",
       "createdAt": "2026-06-01T12:21:32.200Z",
-      "updatedAt": "2026-06-01T12:21:32.200Z"
+      "updatedAt": "2026-06-01T12:24:34.463Z"
     }
   ]
 }
