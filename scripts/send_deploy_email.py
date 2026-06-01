@@ -26,6 +26,15 @@ https://legnaro72.github.io/dediche-musicali-ff/
 """
 
 
+def ensure_expected_repository() -> bool:
+    expected = os.environ.get("DEPLOY_EXPECTED_REPOSITORY", "").strip().lower()
+    current = os.environ.get("GITHUB_REPOSITORY", "").strip().lower()
+    if not expected or not current or expected == current:
+        return True
+    print(f"Email notifica saltata: repository corrente {current}, atteso {expected}.")
+    return False
+
+
 def get_rome_today() -> str:
     if ZoneInfo is not None:
         return datetime.datetime.now(ZoneInfo("Europe/Rome")).date().isoformat()
@@ -87,6 +96,8 @@ def main() -> None:
     args = parser.parse_args()
 
     date_str = args.date.strip() or os.environ.get("DDG_ONLINE_DATE", "").strip() or get_rome_today()
+    if not ensure_expected_repository():
+        return
     message = build_message(date_str)
     send_message(message)
     print(f"Email notifica inviata a {message['To']}")

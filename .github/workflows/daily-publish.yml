@@ -166,3 +166,4 @@ jobs:
           SMTP_USE_TLS: ${{ secrets.SMTP_USE_TLS }}
           SMTP_USE_SSL: ${{ secrets.SMTP_USE_SSL }}
           DEPLOY_NOTIFICATION_TO: ${{ secrets.DEPLOY_NOTIFICATION_TO || 'massimiliano.ferrando@gmail.com' }}
+          DEPLOY_EXPECTED_REPOSITORY: legnaro72/dediche-musicali-ff
