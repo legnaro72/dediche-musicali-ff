@@ -47,6 +47,13 @@ function fmtDateParts(dateStr: string, dayName?: string) {
   };
 }
 
+function fmtDate(dateStr: string, dayName?: string) {
+  const [y, m, d] = dateStr.split('-');
+  const months = ['gennaio','febbraio','marzo','aprile','maggio','giugno','luglio','agosto','settembre','ottobre','novembre','dicembre'];
+  const label = `${parseInt(d)} ${months[parseInt(m)-1]} ${y}`;
+  return dayName ? `${dayName}, ${label}` : label;
+}
+
 function splitName(label = '') {
   const parts = label.trim().split(/\s+/).filter(Boolean);
   return {
@@ -113,16 +120,12 @@ function splitDedicationLabel(label = 'Dedica del giorno') {
         {dedication ? (
           <>
             <div class="hero-date anim-1">
-              <span class="tone-red">{fmtDateParts(dedication.date, dedication.day_name).red}</span>
-              <span class="tone-blue">{fmtDateParts(dedication.date, dedication.day_name).blue}</span>
+              <span class="hero-date-red">{fmtDate(dedication.date, dedication.day_name)}</span>
             </div>
             <h1 class="hero-song anim-2">{dedication.song_title}</h1>
             <p class="hero-artist anim-2">
               <span class="artist-dash" aria-hidden="true"></span>
-              <span class="duo-text">
-                <span class="tone-red">{splitName(dedication.artist).red}</span>
-                {splitName(dedication.artist).blue && <span class="tone-blue">{splitName(dedication.artist).blue}</span>}
-              </span>
+              <span class="tone-blue">{dedication.artist}</span>
             </p>
             <p class="hero-ded-label anim-3">
               <span class="tone-red">{splitDedicationLabel(dedication.dedication_title).red}</span>

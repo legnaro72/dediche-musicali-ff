@@ -43,6 +43,14 @@ const dateLabel = `${parseInt(d)} ${MONTHS[parseInt(m)-1]} ${y}`;
 
 const imgSrc = dedication.image?.path ? base + dedication.image.path.replace(/^\//, '') : null;
 const ogImg  = dedication.image?.path?.replace('.webp', '-og.webp');
+
+function formatDetailTitle(title = '') {
+  const match = title.trim().match(/^(dedica)\s+(del\s+giorno)$/i);
+  if (match) {
+    return { isMatch: true, red: match[1], blue: match[2] };
+  }
+  return { isMatch: false, original: title };
+}
 ---
 
 <BaseLayout
@@ -112,8 +120,19 @@ const ogImg  = dedication.image?.path?.replace('.webp', '-og.webp');
 
     <!-- Dedication text -->
     <div class="card" style="padding:2rem;margin-bottom:2rem;" class="anim-3">
-      <p style="font-size:0.8rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--accent);margin-bottom:1rem;">
-        {dedication.dedication_title}
+      <p style="font-size:0.8rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:1rem;">
+        {(() => {
+          const formatted = formatDetailTitle(dedication.dedication_title);
+          if (formatted.isMatch) {
+            return (
+              <>
+                <span class="tone-red">{formatted.red}</span>
+                <span class="tone-blue"> {formatted.blue}</span>
+              </>
+            );
+          }
+          return <span style="color:var(--accent);">{dedication.dedication_title}</span>;
+        })()}
       </p>
       <p style="color:var(--text-dim);font-size:1.05rem;line-height:1.9;white-space:pre-line;">
         {dedication.dedication_text}

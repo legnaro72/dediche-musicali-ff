@@ -751,7 +751,7 @@ body.plus-vote-is-open .app-install {
 
 .plus-vote-kicker {
   margin-bottom: 0.5rem;
-  color: var(--accent);
+  color: var(--red-2);
   font-size: 0.76rem;
   font-weight: 800;
   letter-spacing: 0.16em;
@@ -763,6 +763,10 @@ body.plus-vote-is-open .app-install {
   margin-bottom: 0.25rem;
   font-family: var(--font-serif);
   font-size: 1.65rem;
+  color: var(--blue-2);
+  text-shadow:
+    0 0 1px rgba(255, 255, 255, 0.75),
+    0 0 10px rgba(185, 236, 255, 0.32);
 }
 
 .plus-vote-artist {
@@ -918,7 +922,7 @@ body.plus-vote-is-open .app-install {
 
 .dedication-card-date {
   font-size: 0.72rem;
-  color: var(--accent);
+  color: var(--red-2);
   font-weight: 700;
   letter-spacing: 0.1em;
   text-transform: uppercase;
@@ -929,6 +933,10 @@ body.plus-vote-is-open .app-install {
   font-size: 1rem;
   font-weight: 700;
   margin-bottom: 0.25rem;
+  color: var(--blue-2);
+  text-shadow:
+    0 0 1px rgba(255, 255, 255, 0.75),
+    0 0 10px rgba(185, 236, 255, 0.32);
 }
 
 .dedication-card-artist {
@@ -1477,6 +1485,16 @@ button.video-poster {
   color: #fff;
   font-size: 1rem;
   line-height: 1;
+}
+
+.ambient-audio-label {
+  color: var(--red-2);
+  font-weight: 700;
+  transition: var(--transition);
+}
+
+.ambient-audio.is-off .ambient-audio-label {
+  color: var(--red-1);
 }
 
 .ambient-audio.is-off .ambient-audio-toggle {
