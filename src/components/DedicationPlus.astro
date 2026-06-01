@@ -73,11 +73,58 @@ const data = {
   </div>
 )}
 
+<style>
+  .quick-reactions {
+    position: relative;
+  }
+
+  .reaction-detail-toggle {
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    background: rgba(255, 255, 255, 0.12);
+    color: inherit;
+  }
+
+  .reaction-detail-popover {
+    position: absolute;
+    z-index: 20;
+    top: calc(100% + 0.6rem);
+    right: 0;
+    min-width: min(260px, 86vw);
+    padding: 0.85rem 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    border-radius: 8px;
+    background: rgba(5, 12, 28, 0.94);
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.28);
+    color: #fff;
+    text-align: left;
+  }
+
+  .reaction-detail-title {
+    margin-bottom: 0.55rem;
+    font-size: 0.78rem;
+    font-weight: 800;
+    text-transform: uppercase;
+  }
+
+  .reaction-detail-list {
+    display: grid;
+    gap: 0.35rem;
+    font-size: 0.92rem;
+    line-height: 1.35;
+  }
+</style>
+
 <script>
   const voteStoreKey = 'ddgff-plus-votes';
   const reactionCountKey = 'ddgff-reaction-counts';
   const reactionChoiceKey = 'ddgff-reaction-choice';
   const reactionKeys = ['down', 'like', 'heart', 'sun'];
+  const reactionLabels = {
+    down: '👎',
+    like: '👍',
+    heart: '❤️',
+    sun: '☀️',
+  };
 
   function readObject(key) {
     try {
@@ -153,26 +200,46 @@ const data = {
     return identity.displayName || [identity.nome, identity.cognome].filter(Boolean).join(' ').trim() || 'Utente';
   }
 
+  function normalizeUserKey(value) {
+    return String(value || '')
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .trim()
+      .toLowerCase()
+      .replace(/\s+/g, ' ')
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '')
+      .slice(0, 160);
+  }
+
+  function identityUserKey(identity) {
+    return normalizeUserKey(identity.userKey || [identity.nome, identity.cognome].filter(Boolean).join(' ') || displayName(identity) || identity.email || identity.userId);
+  }
+
+  function entryUserKey(item) {
+    return normalizeUserKey(item?.userKey || item?.user_key || item?.userName || item?.user_name || item?.userId || item?.user_id);
+  }
+
   function currentUserVote(feedback, identity) {
-    const userId = identity.userId || '';
+    const userKey = identityUserKey(identity);
     const votes = Array.isArray(feedback?.votes) ? feedback.votes : [];
-    return votes.find((item) => item.userId === userId) || null;
+    return votes.find((item) => entryUserKey(item) === userKey) || null;
   }
 
   function currentUserThought(feedback, identity) {
-    const userId = identity.userId || '';
+    const userKey = identityUserKey(identity);
     const thoughts = Array.isArray(feedback?.thoughts) ? feedback.thoughts : [];
-    return thoughts.find((item) => item.userId === userId) || null;
+    return thoughts.find((item) => entryUserKey(item) === userKey) || null;
   }
 
   function currentUserReaction(feedback, identity) {
-    const userId = identity.userId || '';
+    const userKey = identityUserKey(identity);
     const entries = Array.isArray(feedback?.reactionEntries) ? feedback.reactionEntries : [];
-    return entries.find((item) => item.userId === userId)?.value || '';
+    return entries.find((item) => entryUserKey(item) === userKey)?.value || '';
   }
 
   function reactionChoiceId(dedicationId, identity = currentIdentity()) {
-    return `${dedicationId}:${identity.userId || 'anonymous'}`;
+    return `${dedicationId}:${identityUserKey(identity) || 'anonymous'}`;
   }
 
   function apiResultToLocalVote(data, votePayload) {
@@ -183,6 +250,7 @@ const data = {
       artist: data.artist,
       votes: [{
         userId: votePayload.userId,
+        userKey: votePayload.userKey,
         userName: votePayload.userName,
         value: votePayload.voteValue,
         createdAt: votePayload.updatedAt,
@@ -190,6 +258,7 @@ const data = {
       }],
       thoughts: votePayload.thoughtText ? [{
         userId: votePayload.userId,
+        userKey: votePayload.userKey,
         userName: votePayload.userName,
         text: votePayload.thoughtText,
         createdAt: votePayload.updatedAt,
@@ -296,6 +365,7 @@ const data = {
           voteValue: value,
           thoughtText: thought instanceof HTMLTextAreaElement ? thought.value.trim() : '',
           userId: identity.userId || '',
+          userKey: identityUserKey(identity),
           userName: displayName(identity),
           nome: identity.nome || '',
           cognome: identity.cognome || '',
@@ -338,6 +408,52 @@ const data = {
       const data = parseData(root);
       const initialCounts = normalizeCounts(data.reactions);
       let serverFeedback = null;
+      let detailButton = root.querySelector('[data-reaction-detail-toggle]');
+      let detailPopover = root.querySelector('[data-reaction-detail-popover]');
+      let detailList = root.querySelector('[data-reaction-detail-list]');
+
+      if (!(detailButton instanceof HTMLButtonElement)) {
+        detailButton = document.createElement('button');
+        detailButton.type = 'button';
+        detailButton.className = 'reaction-detail-toggle';
+        detailButton.dataset.reactionDetailToggle = 'true';
+        detailButton.setAttribute('aria-label', 'Dettaglio reaction');
+        detailButton.textContent = '💬';
+        root.append(detailButton);
+      }
+      if (!(detailPopover instanceof HTMLElement)) {
+        detailPopover = document.createElement('div');
+        detailPopover.className = 'reaction-detail-popover';
+        detailPopover.dataset.reactionDetailPopover = 'true';
+        detailPopover.hidden = true;
+        detailPopover.innerHTML = '<div class="reaction-detail-title">Dettaglio reaction</div><div class="reaction-detail-list" data-reaction-detail-list>Nessuna reaction salvata.</div>';
+        root.append(detailPopover);
+        detailList = detailPopover.querySelector('[data-reaction-detail-list]');
+      }
+
+      const renderDetails = () => {
+        if (!(detailList instanceof HTMLElement)) return;
+        const entries = Array.isArray(serverFeedback?.reactionEntries)
+          ? serverFeedback.reactionEntries
+          : (Array.isArray(data.reactionEntries) ? data.reactionEntries : []);
+        const validEntries = entries.filter((item) => reactionKeys.includes(String(item?.value || item?.reaction || '')));
+        if (!validEntries.length) {
+          detailList.textContent = 'Nessuna reaction salvata.';
+          return;
+        }
+        detailList.replaceChildren(...validEntries.map((item) => {
+          const row = document.createElement('div');
+          const value = String(item.value || item.reaction || '');
+          row.textContent = `${reactionLabels[value] || value} ${item.userName || item.user_name || 'Utente'}`;
+          return row;
+        }));
+      };
+
+      detailButton?.addEventListener('click', () => {
+        if (!(detailPopover instanceof HTMLElement)) return;
+        renderDetails();
+        detailPopover.hidden = !detailPopover.hidden;
+      });
 
       // countsStore è sempre la fonte di verità per la visualizzazione
       const getDisplayCounts = () => {
@@ -377,6 +493,7 @@ const data = {
           delete choices[choiceId];
         }
         writeObject(reactionChoiceKey, choices);
+        renderDetails();
         render();
       };
 
@@ -423,6 +540,7 @@ const data = {
               reaction: isToggleOff ? null : next,
               previousReaction: previous || null,
               userId: identity.userId || '',
+              userKey: identityUserKey(identity),
               userName: displayName(identity),
               nome: identity.nome || '',
               cognome: identity.cognome || '',
@@ -434,6 +552,8 @@ const data = {
               latestStore[data.id] = normalizeCounts(savedReactions);
               writeObject(reactionCountKey, latestStore);
             }
+            serverFeedback = apiResult?.feedback || apiResult || serverFeedback;
+            renderDetails();
           } catch (error) {
             console.warn('Salvataggio reaction fallito, rollback locale.', error);
             // In caso di errore: ripristino conteggi e scelta precedente

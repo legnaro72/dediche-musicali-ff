@@ -9,6 +9,8 @@ from __future__ import annotations
 import base64
 import json
 import os
+import re
+import unicodedata
 from copy import deepcopy
 from typing import Any
 
@@ -49,17 +51,31 @@ def _clean_text(value: Any, max_length: int = 160) -> str:
     return text[:max_length]
 
 
-def _user_from_values(user_id: str = "", user_name: str = "", nome: str = "", cognome: str = "") -> dict[str, str]:
-    user_id = _clean_text(user_id)
-    if not user_id:
-        raise ValueError("userId obbligatorio per salvare feedback nominale.")
+def normalize_user_key(value: Any) -> str:
+    text = unicodedata.normalize("NFD", str(value or ""))
+    text = "".join(char for char in text if unicodedata.category(char) != "Mn")
+    text = re.sub(r"\s+", " ", text.strip().lower())
+    text = re.sub(r"[^a-z0-9]+", "-", text)
+    return text.strip("-")[:160]
+
+
+def _user_from_values(
+    user_id: str = "",
+    user_name: str = "",
+    nome: str = "",
+    cognome: str = "",
+    user_key: str = "",
+) -> dict[str, str]:
     display_name = _clean_text(user_name or " ".join(part for part in (nome, cognome) if part).strip() or "Utente", 120)
-    return {"userId": user_id, "userName": display_name}
+    user_key = normalize_user_key(user_key or " ".join(part for part in (nome, cognome) if part).strip() or display_name or user_id)
+    if not user_key:
+        raise ValueError("nome e cognome obbligatori per salvare feedback nominale.")
+    return {"userId": _clean_text(user_id or user_key), "userKey": user_key, "userName": display_name}
 
 
 def normalize_votes(value: Any) -> list[dict[str, Any]]:
     items = value if isinstance(value, list) else []
-    normalized = []
+    normalized = {}
     for item in items:
         if not isinstance(item, dict):
             continue
@@ -68,56 +84,65 @@ def normalize_votes(value: Any) -> list[dict[str, Any]]:
         except (TypeError, ValueError):
             continue
         user_id = _clean_text(item.get("userId") or item.get("user_id"))
-        if not user_id or vote < 1 or vote > 10:
+        user_key = normalize_user_key(item.get("userKey") or item.get("user_key") or item.get("userName") or item.get("user_name") or user_id)
+        if not user_key or vote < 1 or vote > 10:
             continue
-        normalized.append({
-            "userId": user_id,
+        previous = normalized.get(user_key, {})
+        normalized[user_key] = {
+            "userId": user_id or user_key,
+            "userKey": user_key,
             "userName": _clean_text(item.get("userName") or item.get("user_name") or "Utente", 120),
             "value": vote,
-            "createdAt": _clean_text(item.get("createdAt") or item.get("created_at"), 80),
+            "createdAt": previous.get("createdAt") or _clean_text(item.get("createdAt") or item.get("created_at"), 80),
             "updatedAt": _clean_text(item.get("updatedAt") or item.get("updated_at"), 80),
-        })
-    return normalized
+        }
+    return list(normalized.values())
 
 
 def normalize_thoughts(value: Any) -> list[dict[str, str]]:
     items = value if isinstance(value, list) else []
-    normalized = []
+    normalized = {}
     for item in items:
         if not isinstance(item, dict):
             continue
         user_id = _clean_text(item.get("userId") or item.get("user_id"))
+        user_key = normalize_user_key(item.get("userKey") or item.get("user_key") or item.get("userName") or item.get("user_name") or user_id)
         text = str(item.get("text") or "").strip()
-        if not user_id or not text:
+        if not user_key or not text:
             continue
-        normalized.append({
-            "userId": user_id,
+        previous = normalized.get(user_key, {})
+        normalized[user_key] = {
+            "userId": user_id or user_key,
+            "userKey": user_key,
             "userName": _clean_text(item.get("userName") or item.get("user_name") or "Utente", 120),
             "text": text,
-            "createdAt": _clean_text(item.get("createdAt") or item.get("created_at"), 80),
+            "createdAt": previous.get("createdAt") or _clean_text(item.get("createdAt") or item.get("created_at"), 80),
             "updatedAt": _clean_text(item.get("updatedAt") or item.get("updated_at"), 80),
-        })
-    return normalized
+        }
+    return list(normalized.values())
 
 
 def normalize_reaction_entries(value: Any) -> list[dict[str, str]]:
     items = value if isinstance(value, list) else []
-    normalized = []
+    normalized = {}
     for item in items:
         if not isinstance(item, dict):
             continue
         user_id = _clean_text(item.get("userId") or item.get("user_id"))
+        user_key = normalize_user_key(item.get("userKey") or item.get("user_key") or item.get("userName") or item.get("user_name") or user_id)
         reaction = _clean_text(item.get("value") or item.get("reaction"), 40)
-        if not user_id or reaction not in REACTION_KEYS:
+        if not user_key or reaction not in REACTION_KEYS:
             continue
-        normalized.append({
-            "userId": user_id,
+        previous = normalized.get(user_key, {})
+        normalized[user_key] = {
+            "userId": user_id or user_key,
+            "userKey": user_key,
             "userName": _clean_text(item.get("userName") or item.get("user_name") or "Utente", 120),
             "value": reaction,
-            "createdAt": _clean_text(item.get("createdAt") or item.get("created_at"), 80),
+            "createdAt": previous.get("createdAt") or _clean_text(item.get("createdAt") or item.get("created_at"), 80),
             "updatedAt": _clean_text(item.get("updatedAt") or item.get("updated_at"), 80),
-        })
-    return normalized
+        }
+    return list(normalized.values())
 
 
 def _average_vote(votes: list[dict[str, Any]]) -> float | None:
@@ -391,6 +416,7 @@ def update_vote(
     user_name: str = "",
     nome: str = "",
     cognome: str = "",
+    user_key: str = "",
 ) -> dict:
     """Aggiorna voto e pensiero nominali sul JSON della dedica."""
     try:
@@ -401,10 +427,10 @@ def update_vote(
         raise ValueError("Il voto deve essere compreso tra 1 e 10.")
 
     dedication, target, sha = _load_feedback_target(dedication_id)
-    user = _user_from_values(user_id, user_name, nome, cognome)
+    user = _user_from_values(user_id, user_name, nome, cognome, user_key)
     now = get_rome_now().isoformat()
     votes = normalize_votes(dedication.get("votes"))
-    current_vote = next((item for item in votes if item["userId"] == user["userId"]), None)
+    current_vote = next((item for item in votes if item["userKey"] == user["userKey"]), None)
     if current_vote:
         current_vote.update({**user, "value": vote, "updatedAt": now})
     else:
@@ -412,14 +438,14 @@ def update_vote(
 
     thought_text = str(thought_text or "").strip()
     thoughts = normalize_thoughts(dedication.get("thoughts"))
-    current_thought = next((item for item in thoughts if item["userId"] == user["userId"]), None)
+    current_thought = next((item for item in thoughts if item["userKey"] == user["userKey"]), None)
     if thought_text:
         if current_thought:
             current_thought.update({**user, "text": thought_text, "updatedAt": now})
         else:
             thoughts.append({**user, "text": thought_text, "createdAt": now, "updatedAt": now})
     elif current_thought:
-        thoughts = [item for item in thoughts if item["userId"] != user["userId"]]
+        thoughts = [item for item in thoughts if item["userKey"] != user["userKey"]]
 
     dedication["votes"] = votes
     dedication["thoughts"] = thoughts
@@ -442,6 +468,7 @@ def update_reaction(
     user_name: str = "",
     nome: str = "",
     cognome: str = "",
+    user_key: str = "",
 ) -> dict:
     """Aggiorna la reaction nominale per una dedica."""
     reaction = str(reaction or "").strip()
@@ -454,17 +481,17 @@ def update_reaction(
         raise ValueError("reaction o previous_reaction obbligatoria.")
 
     dedication, target, sha = _load_feedback_target(dedication_id)
-    user = _user_from_values(user_id, user_name, nome, cognome)
+    user = _user_from_values(user_id, user_name, nome, cognome, user_key)
     now = get_rome_now().isoformat()
     reaction_entries = normalize_reaction_entries(dedication.get("reactionEntries"))
-    current = next((item for item in reaction_entries if item["userId"] == user["userId"]), None)
+    current = next((item for item in reaction_entries if item["userKey"] == user["userKey"]), None)
     if reaction:
         if current:
             current.update({**user, "value": reaction, "updatedAt": now})
         else:
             reaction_entries.append({**user, "value": reaction, "createdAt": now, "updatedAt": now})
     else:
-        reaction_entries = [item for item in reaction_entries if item["userId"] != user["userId"]]
+        reaction_entries = [item for item in reaction_entries if item["userKey"] != user["userKey"]]
     dedication["reactionEntries"] = reaction_entries
     dedication["updated_at"] = now
     sync_feedback_aggregates(dedication)

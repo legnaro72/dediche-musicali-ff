@@ -240,6 +240,52 @@ class AppendOnlyPublishTest(unittest.TestCase):
         self.assertEqual(len(reactions['reactionEntries']), 2)
         self.assertEqual(reactions['reactions'], {'down': 0, 'like': 1, 'heart': 0, 'sun': 1})
 
+    def test_feedback_uses_stable_user_key_across_browser_ids(self):
+        self.write_dedication('2026-05-20', 'published')
+        path = self.data_dir / '2026-05-20.json'
+        data = json.loads(path.read_text(encoding='utf-8'))
+        data['id'] = 'ded-2026-05-20'
+        path.write_text(json.dumps(data), encoding='utf-8')
+
+        dedication_feedback.update_vote(
+            'ded-2026-05-20',
+            8,
+            'Primo browser',
+            user_id='chrome-random-id',
+            user_name=' Maxwell  Ferrando ',
+        )
+        updated = dedication_feedback.update_vote(
+            'ded-2026-05-20',
+            9,
+            'Secondo browser',
+            user_id='edge-random-id',
+            user_name='MAXWELL FERRANDO',
+        )
+
+        self.assertEqual(len(updated['votes']), 1)
+        self.assertEqual(updated['votes'][0]['userKey'], 'maxwell-ferrando')
+        self.assertEqual(updated['votes'][0]['value'], 9)
+        self.assertEqual(updated['thoughts'][0]['text'], 'Secondo browser')
+
+        dedication_feedback.update_reaction(
+            'ded-2026-05-20',
+            'heart',
+            user_id='chrome-random-id',
+            user_name='Maxwell Ferrando',
+        )
+        reactions = dedication_feedback.update_reaction(
+            'ded-2026-05-20',
+            'sun',
+            'heart',
+            user_id='mobile-random-id',
+            user_name=' maxwell ferrando ',
+        )
+
+        self.assertEqual(len(reactions['reactionEntries']), 1)
+        self.assertEqual(reactions['reactionEntries'][0]['userKey'], 'maxwell-ferrando')
+        self.assertEqual(reactions['reactionEntries'][0]['value'], 'sun')
+        self.assertEqual(reactions['reactions'], {'down': 0, 'like': 0, 'heart': 0, 'sun': 1})
+
     def test_sync_preserves_existing_feedback_when_forced(self):
         self.write_dedication('2026-05-17', 'scheduled')
         path = self.data_dir / '2026-05-17.json'

@@ -42,51 +42,99 @@ function normalizeText(value, maxLength = 120) {
   return text.length <= maxLength ? text : text.slice(0, maxLength);
 }
 
+function normalizeUserKey(value) {
+  return String(value || '')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, ' ')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 160);
+}
+
 function userFromPayload(payload) {
-  const userId = normalizeText(payload.userId || payload.user_id || '', 160);
-  if (!userId) throw new Error('userId obbligatorio per salvare feedback nominale.');
   const fallbackName = [payload.nome, payload.cognome].filter(Boolean).join(' ').trim();
+  const nameSource = fallbackName || payload.userName || payload.displayName || '';
+  const email = normalizeText(payload.email || payload.mail || '', 160);
+  const userKey = normalizeUserKey(payload.userKey || payload.user_key || nameSource || email || payload.userId || payload.user_id);
+  if (!userKey) throw new Error('nome e cognome obbligatori per salvare feedback nominale.');
+  const userId = normalizeText(payload.userId || payload.user_id || userKey, 160);
   const userName = normalizeText(payload.userName || payload.displayName || fallbackName || 'Utente', 120);
-  return { userId, userName };
+  return { userId, userKey, userName };
 }
 
 function normalizeVotes(value) {
   const list = Array.isArray(value) ? value : [];
-  return list
+  const byUser = new Map();
+  list
     .map(item => ({
       userId: normalizeText(item?.userId || item?.user_id || '', 160),
+      userKey: normalizeUserKey(item?.userKey || item?.user_key || item?.userName || item?.user_name || item?.userId || item?.user_id),
       userName: normalizeText(item?.userName || item?.user_name || 'Utente', 120),
       value: Number(item?.value),
       createdAt: String(item?.createdAt || item?.created_at || '').trim(),
       updatedAt: String(item?.updatedAt || item?.updated_at || '').trim(),
     }))
-    .filter(item => item.userId && Number.isInteger(item.value) && item.value >= 1 && item.value <= 10);
+    .filter(item => item.userKey && Number.isInteger(item.value) && item.value >= 1 && item.value <= 10)
+    .forEach(item => {
+      const existing = byUser.get(item.userKey);
+      byUser.set(item.userKey, {
+        ...item,
+        userId: item.userId || item.userKey,
+        createdAt: existing?.createdAt || item.createdAt,
+      });
+    });
+  return [...byUser.values()];
 }
 
 function normalizeThoughts(value) {
   const list = Array.isArray(value) ? value : [];
-  return list
+  const byUser = new Map();
+  list
     .map(item => ({
       userId: normalizeText(item?.userId || item?.user_id || '', 160),
+      userKey: normalizeUserKey(item?.userKey || item?.user_key || item?.userName || item?.user_name || item?.userId || item?.user_id),
       userName: normalizeText(item?.userName || item?.user_name || 'Utente', 120),
       text: String(item?.text || '').trim(),
       createdAt: String(item?.createdAt || item?.created_at || '').trim(),
       updatedAt: String(item?.updatedAt || item?.updated_at || '').trim(),
     }))
-    .filter(item => item.userId && item.text);
+    .filter(item => item.userKey && item.text)
+    .forEach(item => {
+      const existing = byUser.get(item.userKey);
+      byUser.set(item.userKey, {
+        ...item,
+        userId: item.userId || item.userKey,
+        createdAt: existing?.createdAt || item.createdAt,
+      });
+    });
+  return [...byUser.values()];
 }
 
 function normalizeReactionEntries(value) {
   const list = Array.isArray(value) ? value : [];
-  return list
+  const byUser = new Map();
+  list
     .map(item => ({
       userId: normalizeText(item?.userId || item?.user_id || '', 160),
+      userKey: normalizeUserKey(item?.userKey || item?.user_key || item?.userName || item?.user_name || item?.userId || item?.user_id),
       userName: normalizeText(item?.userName || item?.user_name || 'Utente', 120),
       value: String(item?.value || item?.reaction || '').trim(),
       createdAt: String(item?.createdAt || item?.created_at || '').trim(),
       updatedAt: String(item?.updatedAt || item?.updated_at || '').trim(),
     }))
-    .filter(item => item.userId && REACTION_KEYS.includes(item.value));
+    .filter(item => item.userKey && REACTION_KEYS.includes(item.value))
+    .forEach(item => {
+      const existing = byUser.get(item.userKey);
+      byUser.set(item.userKey, {
+        ...item,
+        userId: item.userId || item.userKey,
+        createdAt: existing?.createdAt || item.createdAt,
+      });
+    });
+  return [...byUser.values()];
 }
 
 function averageVote(votes) {
@@ -363,7 +411,7 @@ async function saveVote(env, payload) {
   const loaded = await loadDedicationById(env, dedicationId);
   const now = nowIsoRomeApprox();
   const votes = normalizeVotes(loaded.dedication.votes);
-  const existingVote = votes.find(item => item.userId === user.userId);
+  const existingVote = votes.find(item => item.userKey === user.userKey);
   if (existingVote) {
     existingVote.userName = user.userName;
     existingVote.value = vote;
@@ -374,7 +422,7 @@ async function saveVote(env, payload) {
 
   const thoughtText = String(payload.thoughtText ?? payload.thought ?? payload[LEGACY_THOUGHT_FIELD] ?? '').trim();
   let thoughts = normalizeThoughts(loaded.dedication.thoughts);
-  const existingThought = thoughts.find(item => item.userId === user.userId);
+  const existingThought = thoughts.find(item => item.userKey === user.userKey);
   if (thoughtText) {
     if (existingThought) {
       existingThought.userName = user.userName;
@@ -384,7 +432,7 @@ async function saveVote(env, payload) {
       thoughts.push({ ...user, text: thoughtText, createdAt: now, updatedAt: now });
     }
   } else if (existingThought) {
-    thoughts = thoughts.filter(item => item.userId !== user.userId);
+    thoughts = thoughts.filter(item => item.userKey !== user.userKey);
   }
 
   loaded.dedication.votes = votes;
@@ -426,7 +474,7 @@ async function saveReaction(env, payload) {
   const loaded = await loadDedicationById(env, dedicationId);
   const now = nowIsoRomeApprox();
   let reactionEntries = normalizeReactionEntries(loaded.dedication.reactionEntries);
-  const existing = reactionEntries.find(item => item.userId === user.userId);
+  const existing = reactionEntries.find(item => item.userKey === user.userKey);
   if (reaction) {
     if (existing) {
       existing.userName = user.userName;
@@ -436,7 +484,7 @@ async function saveReaction(env, payload) {
       reactionEntries.push({ ...user, value: reaction, createdAt: now, updatedAt: now });
     }
   } else {
-    reactionEntries = reactionEntries.filter(item => item.userId !== user.userId);
+    reactionEntries = reactionEntries.filter(item => item.userKey !== user.userKey);
   }
   loaded.dedication.reactionEntries = reactionEntries;
   loaded.dedication.updated_at = now;
