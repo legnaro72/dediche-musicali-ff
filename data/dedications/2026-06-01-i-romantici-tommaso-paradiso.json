@@ -31,19 +31,20 @@
     "description": "Dedica musicale del giorno con \"I romantici\" di Tommaso Paradiso."
   },
   "created_at": "2026-06-01T00:58:50.184118+02:00",
-  "updated_at": "2026-06-01T14:09:56.633Z",
+  "updated_at": "2026-06-01T20:30:20.573Z",
   "voteAverage": 9,
   "thoughtsText": "[Massimiliano Ferrando] piccoo",
   "reactions": {
     "down": 0,
-    "like": 0,
-    "heart": 1,
+    "like": 1,
+    "heart": 0,
     "sun": 1
   },
   "date_it": "1 giugno 2026",
   "votes": [
     {
       "userId": "91506645-6da8-4813-80c4-0b033b41af96",
+      "userKey": "massimiliano-ferrando",
       "userName": "Massimiliano Ferrando",
       "value": 9,
       "createdAt": "2026-06-01T13:24:21.527Z",
@@ -53,6 +54,7 @@
   "thoughts": [
     {
       "userId": "91506645-6da8-4813-80c4-0b033b41af96",
+      "userKey": "massimiliano-ferrando",
       "userName": "Massimiliano Ferrando",
       "text": "piccoo",
       "createdAt": "2026-06-01T13:24:21.527Z",
@@ -62,13 +64,15 @@
   "reactionEntries": [
     {
       "userId": "91506645-6da8-4813-80c4-0b033b41af96",
+      "userKey": "massimiliano-ferrando",
       "userName": "Massimiliano Ferrando",
-      "value": "heart",
+      "value": "like",
       "createdAt": "2026-06-01T13:18:02.654Z",
-      "updatedAt": "2026-06-01T13:24:28.379Z"
+      "updatedAt": "2026-06-01T20:30:20.573Z"
     },
     {
       "userId": "d6573b39-bbf2-4624-ab28-4acac2815c4a",
+      "userKey": "manfredi-ferrando",
       "userName": "Manfredi Ferrando",
       "value": "sun",
       "createdAt": "2026-06-01T13:32:26.891Z",
