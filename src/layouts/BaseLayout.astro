@@ -321,6 +321,68 @@ const fullOgImage = ogImage
       document.addEventListener('astro:page-load', loadSiteSettings);
     }
 
+    const feedbackApiUrl = () => (
+      document.querySelector('meta[name="ddgff-feedback-api"]')?.getAttribute('content')?.trim()
+      || window.__DDGFF_FEEDBACK_API_URL
+      || ''
+    );
+
+    const normalizeUserKey = (value) => String(value || '')
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .trim()
+      .toLowerCase()
+      .replace(/\s+/g, ' ')
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '')
+      .slice(0, 160);
+
+    const currentVisitPage = () => {
+      const path = window.location.pathname || '/';
+      const basePath = appBase === '/' ? '' : appBase.replace(/\/$/, '');
+      return basePath && path.startsWith(basePath) ? path.slice(basePath.length) || '/' : path;
+    };
+
+    const trackSiteVisit = async () => {
+      if (window.__DDGFF_VISIT_TRACKED_FOR_PAGE === window.location.pathname) return;
+      const apiUrl = feedbackApiUrl();
+      if (!apiUrl || !window.__DDGFF?.hasIdentity?.()) return;
+
+      const identity = window.__DDGFF.getUserIdentity?.() || {};
+      const userName = [identity.nome, identity.cognome].filter(Boolean).join(' ').trim() || identity.displayName || '';
+      const userKey = normalizeUserKey([identity.nome, identity.cognome].filter(Boolean).join(' ') || userName);
+      if (!userKey || !userName) return;
+
+      window.__DDGFF_VISIT_TRACKED_FOR_PAGE = window.location.pathname;
+      try {
+        const response = await fetch(`${apiUrl.replace(/\/$/, '')}/track_visit`, {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({
+            userKey,
+            userName,
+            page: currentVisitPage(),
+          }),
+          keepalive: true,
+        });
+        if (!response.ok) window.__DDGFF_VISIT_TRACKED_FOR_PAGE = '';
+      } catch (error) {
+        window.__DDGFF_VISIT_TRACKED_FOR_PAGE = '';
+        console.warn('Tracciamento visita non salvato:', error);
+      }
+    };
+
+    if (!window.__DDGFF_VISIT_TRACKING_READY) {
+      window.__DDGFF_VISIT_TRACKING_READY = true;
+      window.addEventListener('load', trackSiteVisit, { once: true });
+      window.addEventListener('ddgff:identity-saved', trackSiteVisit);
+      window.addEventListener('ddgff:site-settings-updated', trackSiteVisit);
+      document.addEventListener('astro:page-load', () => {
+        window.__DDGFF_VISIT_TRACKED_FOR_PAGE = '';
+        trackSiteVisit();
+      });
+    }
+
     document.addEventListener('click', (event) => {
       const target = event.target;
       if (!(target instanceof Element)) return;

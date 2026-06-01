@@ -14,6 +14,7 @@ except Exception:
     ZoneInfo = None
 
 import gspread
+import pandas as pd
 import requests
 import streamlit as st
 import streamlit.components.v1 as components
@@ -42,6 +43,7 @@ DAILY_WORKFLOW_FILE = os.environ.get("DAILY_WORKFLOW_FILE", "daily-publish.yml")
 UPLOAD_DIR = "public/images/upload"
 SITE_LOCK_IMAGE_DIR = "public/images/site-lock"
 SITE_SETTINGS_PATH = "public/config/site-settings.json"
+VISITS_PATH = "data/visits.json"
 WHATSAPP_NOTIFY_NUMBER = os.environ.get("WHATSAPP_NOTIFY_NUMBER", "393403813481")
 WHATSAPP_NOTIFY_MESSAGE = os.environ.get(
     "WHATSAPP_NOTIFY_MESSAGE",
@@ -1414,6 +1416,161 @@ def render_historical() -> None:
             st.error(str(exc))
 
 
+def configured_feedback_api_url() -> str:
+    configured = (
+        get_secret_or_env("DDGFF_FEEDBACK_API_URL")
+        or get_secret_or_env("PUBLIC_DDGFF_FEEDBACK_API_URL")
+        or get_secret_or_env("FEEDBACK_API_URL")
+    )
+    if configured:
+        return configured.rstrip("/")
+    try:
+        settings, _ = read_github_json(SITE_SETTINGS_PATH, DEFAULT_SITE_SETTINGS)
+        return str(settings.get("feedbackApiUrl", "") or "").strip().rstrip("/")
+    except Exception:
+        return ""
+
+
+def visits_read_headers() -> dict:
+    token = get_secret_or_env("VISITS_READ_TOKEN")
+    return {"Authorization": f"Bearer {token}"} if token else {}
+
+
+@st.cache_data(ttl=60)
+def load_site_visits() -> list[dict]:
+    api_url = configured_feedback_api_url()
+    if api_url:
+        response = requests.get(
+            f"{api_url}/visits",
+            headers=visits_read_headers(),
+            timeout=20,
+        )
+        if response.status_code != 200:
+            raise ValueError(f"Lettura visite dal Worker fallita: {response.text}")
+        payload = response.json()
+        return payload.get("visits", []) if isinstance(payload, dict) else []
+
+    local_path = Path(__file__).resolve().parents[1] / VISITS_PATH
+    if local_path.exists():
+        payload = json.loads(local_path.read_text(encoding="utf-8"))
+        return payload.get("visits", []) if isinstance(payload, dict) else []
+
+    payload, _ = read_github_json(VISITS_PATH, {"visits": []})
+    return payload.get("visits", []) if isinstance(payload, dict) else []
+
+
+def visits_dataframe(visits: list[dict]) -> pd.DataFrame:
+    rows = []
+    for visit in visits:
+        if not isinstance(visit, dict):
+            continue
+        user_key = str(visit.get("userKey") or visit.get("user_key") or "").strip()
+        user_name = str(visit.get("userName") or visit.get("user_name") or "Utente").strip()
+        visited_at = str(visit.get("visitedAt") or visit.get("visited_at") or "").strip()
+        visit_date = str(visit.get("visitDate") or visit.get("visit_date") or visited_at[:10]).strip()
+        if not user_key or not user_name or not visited_at or not visit_date:
+            continue
+        rows.append(
+            {
+                "visitId": str(visit.get("visitId") or visit.get("visit_id") or "").strip(),
+                "userKey": user_key,
+                "utente": user_name,
+                "visitedAt": visited_at,
+                "data": visit_date,
+                "pagina": str(visit.get("page") or "/").strip() or "/",
+                "source": str(visit.get("source") or "site").strip(),
+            }
+        )
+    df = pd.DataFrame(rows)
+    if df.empty:
+        return pd.DataFrame(columns=["visitId", "userKey", "utente", "visitedAt", "data", "ora", "pagina", "source"])
+    df["datetime"] = pd.to_datetime(df["visitedAt"], errors="coerce", utc=True)
+    df["data_dt"] = pd.to_datetime(df["data"], errors="coerce").dt.date
+    df["ora"] = df["datetime"].dt.tz_convert("Europe/Rome").dt.strftime("%H:%M:%S")
+    df["data"] = df["data_dt"].astype(str)
+    return df.sort_values("datetime", ascending=False)
+
+
+def render_visit_statistics() -> None:
+    st.title("Accessi sito")
+    st.caption("Statistiche amministrative delle visite registrate dal sito. Non sono mostrate nelle pagine pubbliche.")
+
+    col_reload, col_source = st.columns([1, 2])
+    if col_reload.button("Ricarica visite", use_container_width=True):
+        load_site_visits.clear()
+    api_url = configured_feedback_api_url()
+    col_source.caption(f"Sorgente: {api_url}/visits" if api_url else VISITS_PATH)
+
+    try:
+        df = visits_dataframe(load_site_visits())
+    except Exception as exc:
+        st.error(str(exc))
+        return
+
+    if df.empty:
+        st.info("Nessuna visita registrata.")
+        return
+
+    users = sorted(df["utente"].dropna().unique().tolist())
+    selected_user = st.selectbox("Utente", ["Tutti gli utenti", *users], key="visits_user_filter")
+    all_days = st.checkbox("Tutti i giorni", value=True, key="visits_all_days")
+
+    filtered = df.copy()
+    if selected_user != "Tutti gli utenti":
+        filtered = filtered[filtered["utente"] == selected_user]
+
+    if not all_days:
+        mode = st.radio(
+            "Filtro data",
+            ["Singolo giorno", "Intervallo temporale"],
+            horizontal=True,
+            key="visits_date_mode",
+        )
+        min_day = df["data_dt"].min()
+        max_day = df["data_dt"].max()
+        if mode == "Singolo giorno":
+            selected_day = st.date_input("Giorno", value=max_day, min_value=min_day, max_value=max_day, key="visits_single_day")
+            filtered = filtered[filtered["data_dt"] == selected_day]
+        else:
+            selected_range = st.date_input(
+                "Intervallo",
+                value=(min_day, max_day),
+                min_value=min_day,
+                max_value=max_day,
+                key="visits_date_range",
+            )
+            if isinstance(selected_range, tuple) and len(selected_range) == 2:
+                start_day, end_day = selected_range
+            else:
+                start_day = end_day = selected_range
+            if start_day > end_day:
+                start_day, end_day = end_day, start_day
+            filtered = filtered[(filtered["data_dt"] >= start_day) & (filtered["data_dt"] <= end_day)]
+
+    total_visits = int(len(filtered))
+    unique_users = int(filtered["userKey"].nunique()) if total_visits else 0
+    metric_total, metric_users = st.columns(2)
+    metric_total.metric("Visite totali", total_visits)
+    metric_users.metric("Utenti unici", unique_users)
+
+    if filtered.empty:
+        st.warning("Nessuna visita nel filtro selezionato.")
+        return
+
+    st.subheader("Visite per giorno")
+    by_day = filtered.groupby("data", as_index=False).size().rename(columns={"size": "visite"})
+    st.bar_chart(by_day.set_index("data"))
+    st.dataframe(by_day.sort_values("data", ascending=False), use_container_width=True, hide_index=True)
+
+    st.subheader("Visite per utente")
+    by_user = filtered.groupby("utente", as_index=False).size().rename(columns={"size": "visite"})
+    st.dataframe(by_user.sort_values(["visite", "utente"], ascending=[False, True]), use_container_width=True, hide_index=True)
+
+    st.subheader("Dettaglio visite")
+    detail = filtered[["data", "ora", "utente", "pagina"]].sort_values(["data", "ora"], ascending=[False, False])
+    st.dataframe(detail, use_container_width=True, hide_index=True)
+
+
 def render_site_configuration() -> None:
     st.title("Configurazione sito")
     st.caption(
@@ -1633,13 +1790,20 @@ def main() -> None:
     page_icon = STREAMLIT_ICON_PATH.read_bytes() if STREAMLIT_ICON_PATH.exists() else "🎵"
     st.set_page_config(page_title="DDG FF Admin", page_icon=page_icon, layout="centered")
     inject_streamlit_pwa_tags()
-    tab_new, tab_historical, tab_config = st.tabs(["Nuova dedica", "Historical", "Configurazione sito"])
+    tab_new, tab_historical, tab_config, tab_visits = st.tabs([
+        "Nuova dedica",
+        "Historical",
+        "Configurazione sito",
+        "Accessi sito",
+    ])
     with tab_new:
         render_new_dedication()
     with tab_historical:
         render_historical()
     with tab_config:
         render_site_configuration()
+    with tab_visits:
+        render_visit_statistics()
 
 
 if __name__ == "__main__":

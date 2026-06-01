@@ -1,6 +1,7 @@
 const REACTION_KEYS = ['down', 'like', 'heart', 'sun'];
 const LEGACY_VOTE_FIELD = `voto${'Pil' + 'ly'}`;
 const LEGACY_THOUGHT_FIELD = `pensiero${'Pil' + 'ly'}`;
+const VISITS_PATH = 'data/visits.json';
 
 function allowedCorsOrigin(request, env = {}) {
   const requestOrigin = request?.headers?.get('origin') || '';
@@ -21,7 +22,7 @@ function jsonResponse(payload, status = 200, env = {}, request = null) {
       'content-type': 'application/json; charset=utf-8',
       'access-control-allow-origin': origin,
       'access-control-allow-methods': 'GET, POST, OPTIONS',
-      'access-control-allow-headers': 'content-type',
+      'access-control-allow-headers': 'content-type, authorization, x-admin-token',
       'cache-control': 'no-store',
       vary: 'Origin',
     },
@@ -221,10 +222,57 @@ function feedbackPayload(dedication) {
   };
 }
 
+function normalizePage(value) {
+  const page = normalizeText(value || '/', 240) || '/';
+  if (/^https?:\/\//i.test(page)) {
+    try {
+      return new URL(page).pathname || '/';
+    } catch {
+      return '/';
+    }
+  }
+  return page.startsWith('/') ? page : `/${page}`;
+}
+
+function normalizeVisit(item) {
+  const visitId = normalizeText(item?.visitId || item?.visit_id || '', 220);
+  const userKey = normalizeUserKey(item?.userKey || item?.user_key || item?.userName || item?.user_name);
+  const userName = normalizeText(item?.userName || item?.user_name || 'Utente', 120);
+  const visitedAt = normalizeText(item?.visitedAt || item?.visited_at || item?.createdAt || item?.created_at || '', 80);
+  const visitDate = normalizeText(item?.visitDate || item?.visit_date || String(visitedAt).slice(0, 10), 20);
+  if (!visitId || !userKey || !userName || !visitedAt || !visitDate) return null;
+  return {
+    visitId,
+    userKey,
+    userName,
+    visitedAt,
+    visitDate,
+    page: normalizePage(item?.page || '/'),
+    source: normalizeText(item?.source || 'site', 40),
+    userAgent: normalizeText(item?.userAgent || item?.user_agent || '', 240),
+    createdAt: normalizeText(item?.createdAt || item?.created_at || visitedAt, 80),
+  };
+}
+
+function normalizeVisitsPayload(value) {
+  const visits = Array.isArray(value?.visits) ? value.visits : [];
+  return { visits: visits.map(normalizeVisit).filter(Boolean) };
+}
+
 function requiredEnv(env, key) {
   const value = env[key];
   if (!value) throw new Error(`Secret/variabile mancante: ${key}`);
   return value;
+}
+
+function assertVisitsReadAllowed(env, request) {
+  const expected = String(env.VISITS_READ_TOKEN || '').trim();
+  if (!expected) return;
+  const authorization = request.headers.get('authorization') || '';
+  const bearer = authorization.replace(/^Bearer\s+/i, '').trim();
+  const headerToken = request.headers.get('x-admin-token') || '';
+  if (bearer === expected || headerToken === expected) return;
+  throw new Error('Non autorizzato a leggere le visite.');
 }
 
 function githubHeaders(env) {
@@ -287,6 +335,45 @@ async function loadDedicationPath(env, repoPath) {
     path: payload.path,
     sha: payload.sha,
   };
+}
+
+async function loadJsonPath(env, repoPath, defaultValue) {
+  try {
+    const response = await githubRequest(
+      env,
+      `contents/${repoPath}?ref=${encodeURIComponent(githubBranch(env))}`,
+      { method: 'GET', cf: { cacheTtl: 0 }, headers: {} },
+    );
+    const payload = await response.json();
+    return {
+      data: JSON.parse(decodeBase64Utf8(payload.content)),
+      path: payload.path,
+      sha: payload.sha,
+    };
+  } catch (error) {
+    const message = error instanceof Error ? error.message : '';
+    if (message.includes('GitHub API 404')) {
+      return { data: defaultValue, path: repoPath, sha: null };
+    }
+    throw error;
+  }
+}
+
+async function saveJsonPath(env, loaded, message) {
+  const content = encodeBase64Utf8(JSON.stringify(loaded.data, null, 2));
+  const body = {
+    message,
+    content,
+    branch: githubBranch(env),
+  };
+  if (loaded.sha) body.sha = loaded.sha;
+  const response = await githubRequest(env, `contents/${loaded.path}`, {
+    method: 'PUT',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify(body),
+  });
+  await response.json();
+  return loaded.data;
 }
 
 async function listDedicationFiles(env) {
@@ -493,6 +580,35 @@ async function saveReaction(env, payload) {
   return feedbackPayload(loaded.dedication);
 }
 
+async function getVisits(env) {
+  const loaded = await loadJsonPath(env, VISITS_PATH, { visits: [] });
+  return normalizeVisitsPayload(loaded.data);
+}
+
+async function trackVisit(env, request, payload) {
+  const user = userFromPayload(payload);
+  const now = new Date();
+  const visitedAt = now.toISOString();
+  const visitDate = romeDateTimeParts(now).date;
+  const loaded = await loadJsonPath(env, VISITS_PATH, { visits: [] });
+  const current = normalizeVisitsPayload(loaded.data);
+  const visit = {
+    visitId: crypto.randomUUID ? crypto.randomUUID() : `${visitedAt}-${user.userKey}-${Math.random().toString(36).slice(2)}`,
+    userKey: user.userKey,
+    userName: user.userName,
+    visitedAt,
+    visitDate,
+    page: normalizePage(payload.page || payload.path || '/'),
+    source: 'site',
+    userAgent: normalizeText(request.headers.get('user-agent') || payload.userAgent || '', 240),
+    createdAt: visitedAt,
+  };
+  current.visits.push(visit);
+  loaded.data = current;
+  await saveJsonPath(env, loaded, `Registra visita sito ${visitDate}`);
+  return visit;
+}
+
 export default {
   async fetch(request, env) {
     if (request.method === 'OPTIONS') return jsonResponse({ ok: true }, 200, env, request);
@@ -503,7 +619,7 @@ export default {
         return jsonResponse({
           ok: true,
           service: 'DDG FF feedback worker',
-          endpoints: ['/feedback/all', '/feedback?id=<dedication_id>', '/save_vote', '/save_reaction'],
+          endpoints: ['/feedback/all', '/feedback?id=<dedication_id>', '/save_vote', '/save_reaction', '/track_visit', '/visits'],
         }, 200, env, request);
       }
 
@@ -518,6 +634,11 @@ export default {
         return jsonResponse({ ok: true, feedback: await getAllFeedback(env) }, 200, env, request);
       }
 
+      if (request.method === 'GET' && url.pathname === '/visits') {
+        assertVisitsReadAllowed(env, request);
+        return jsonResponse({ ok: true, visits: (await getVisits(env)).visits }, 200, env, request);
+      }
+
       if (request.method === 'POST' && url.pathname === '/save_vote') {
         const payload = await request.json();
         const feedback = await saveVote(env, payload);
@@ -528,6 +649,12 @@ export default {
         const payload = await request.json();
         const feedback = await saveReaction(env, payload);
         return jsonResponse({ ok: true, ...feedback }, 200, env, request);
+      }
+
+      if (request.method === 'POST' && url.pathname === '/track_visit') {
+        const payload = await request.json();
+        const visit = await trackVisit(env, request, payload);
+        return jsonResponse({ ok: true, visit }, 200, env, request);
       }
 
       return jsonResponse({ ok: false, error: 'Endpoint non trovato.' }, 404, env, request);
