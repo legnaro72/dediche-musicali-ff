@@ -260,7 +260,7 @@ def apply_premium_template_vertical(bg_img, ded: dict, fonts: dict,
 
     # Nome sito
     f_site = get_font(fonts, 'bold', 28)
-    site_name = os.environ.get('SITE_NAME', 'DDGPilliSite')
+    site_name = os.environ.get('SITE_NAME', 'DDG FF')
     draw.line([(60, H - 115), (W - 60, H - 115)], fill=(*ACCENT, 90), width=1)
     _draw_text_shadow(draw, (W // 2, H - 80), f'✦ {site_name} ✦', f_site, (*ACCENT, 175))
 
@@ -306,7 +306,7 @@ def apply_premium_template_og(bg_img, ded: dict, fonts: dict,
 
     # Nome sito a sinistra
     f_site = get_font(fonts, 'bold', 26)
-    site_name = os.environ.get('SITE_NAME', 'DDGPilliSite')
+    site_name = os.environ.get('SITE_NAME', 'DDG FF')
     draw.text((70, 55), site_name, font=f_site, fill=(*ACCENT, 200), anchor='lm')
 
     return base.convert('RGB')

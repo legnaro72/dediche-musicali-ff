@@ -126,14 +126,14 @@ def inject_streamlit_pwa_tags() -> None:
         (function () {
           const doc = window.parent.document;
           const tags = [
-            ['link', { rel: 'manifest', href: '/app/static/pwa/manifest.json?v=ddgpilli-admin-v2' }],
-            ['link', { rel: 'icon', type: 'image/png', sizes: '192x192', href: '/app/static/pwa/icons/icon-192.png?v=ddgpilli-admin-v2' }],
-            ['link', { rel: 'shortcut icon', type: 'image/png', href: '/app/static/pwa/icons/icon-192.png?v=ddgpilli-admin-v2' }],
-            ['link', { rel: 'apple-touch-icon', href: '/app/static/pwa/icons/apple-touch-icon.png?v=ddgpilli-admin-v2' }],
-            ['link', { rel: 'apple-touch-startup-image', href: '/app/static/pwa/icons/apple-splash-2048.png?v=ddgpilli-admin-v2' }],
+            ['link', { rel: 'manifest', href: '/app/static/pwa/manifest.json?v=ddgff-admin-v2' }],
+            ['link', { rel: 'icon', type: 'image/png', sizes: '192x192', href: '/app/static/pwa/icons/icon-192.png?v=ddgff-admin-v2' }],
+            ['link', { rel: 'shortcut icon', type: 'image/png', href: '/app/static/pwa/icons/icon-192.png?v=ddgff-admin-v2' }],
+            ['link', { rel: 'apple-touch-icon', href: '/app/static/pwa/icons/apple-touch-icon.png?v=ddgff-admin-v2' }],
+            ['link', { rel: 'apple-touch-startup-image', href: '/app/static/pwa/icons/apple-splash-2048.png?v=ddgff-admin-v2' }],
             ['meta', { name: 'theme-color', content: '#08070f' }],
             ['meta', { name: 'apple-mobile-web-app-capable', content: 'yes' }],
-            ['meta', { name: 'apple-mobile-web-app-title', content: 'DDGPilli Admin' }],
+            ['meta', { name: 'apple-mobile-web-app-title', content: 'DDG FF Admin' }],
             ['meta', { name: 'apple-mobile-web-app-status-bar-style', content: 'black-translucent' }],
             ['meta', { name: 'mobile-web-app-capable', content: 'yes' }]
           ];
@@ -262,7 +262,7 @@ def fetch_spotify_oembed(url: str) -> tuple[str, str]:
         "https://open.spotify.com/oembed",
         params={"url": url},
         timeout=12,
-        headers={"User-Agent": "DDGPilliAdmin/1.0"},
+        headers={"User-Agent": "DDGFFAdmin/1.0"},
     )
     if response.status_code >= 400:
         raise ValueError("Spotify oEmbed non ha restituito metadati.")
@@ -1468,7 +1468,7 @@ def render_site_configuration() -> None:
     st.subheader("API feedback")
     feedback_api_url = st.text_input(
         "URL API feedback per Votami Plus e reaction",
-        placeholder="https://ddgpilli-feedback.<account>.workers.dev",
+        placeholder="https://ddgff-feedback.<account>.workers.dev",
         key="config_feedback_api_url",
     )
     if not feedback_api_url.strip():
@@ -1631,7 +1631,7 @@ def render_site_configuration() -> None:
 
 def main() -> None:
     page_icon = STREAMLIT_ICON_PATH.read_bytes() if STREAMLIT_ICON_PATH.exists() else "🎵"
-    st.set_page_config(page_title="DDGPilli Admin", page_icon=page_icon, layout="centered")
+    st.set_page_config(page_title="DDG FF Admin", page_icon=page_icon, layout="centered")
     inject_streamlit_pwa_tags()
     tab_new, tab_historical, tab_config = st.tabs(["Nuova dedica", "Historical", "Configurazione sito"])
     with tab_new:

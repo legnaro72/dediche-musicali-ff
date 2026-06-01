@@ -180,7 +180,7 @@ function githubHeaders(env) {
     accept: 'application/vnd.github+json',
     authorization: `Bearer ${requiredEnv(env, 'GITHUB_TOKEN')}`,
     'x-github-api-version': '2022-11-28',
-    'user-agent': 'ddgpilli-feedback-worker',
+    'user-agent': 'ddgff-feedback-worker',
   };
 }
 
@@ -387,7 +387,7 @@ async function saveVote(env, payload) {
   loaded.dedication.thoughts = thoughts;
   loaded.dedication.updated_at = now;
   syncDerivedFeedbackFields(loaded.dedication);
-  await saveDedication(env, loaded, `Salva voto Pilly ${dedicationId}`);
+  await saveDedication(env, loaded, `Salva voto FF ${dedicationId}`);
   const feedback = feedbackPayload(loaded.dedication);
   feedback.currentVote = vote;
   feedback.currentThought = thoughtText;
@@ -396,7 +396,7 @@ async function saveVote(env, payload) {
     await dispatchVoteEmail(env, feedback);
     feedback.vote_email_dispatched = true;
   } catch (error) {
-    console.warn('Email voto Pilly non inviata:', error);
+    console.warn('Email voto FF non inviata:', error);
     feedback.vote_email_dispatched = false;
   }
   return feedback;
@@ -437,7 +437,7 @@ async function saveReaction(env, payload) {
   loaded.dedication.reactionEntries = reactionEntries;
   loaded.dedication.updated_at = now;
   syncDerivedFeedbackFields(loaded.dedication);
-  await saveDedication(env, loaded, `Salva reazione Pilly ${dedicationId}`);
+  await saveDedication(env, loaded, `Salva reazione FF ${dedicationId}`);
   return feedbackPayload(loaded.dedication);
 }
 

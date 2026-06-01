@@ -39,7 +39,7 @@ def _download(url: str) -> 'Image':
     from PIL import Image, ImageOps
     logger.info(f'    Downloading image...')
     r = requests.get(url, timeout=20, allow_redirects=True,
-                     headers={'User-Agent': 'DDGPilliSite/1.0'})
+                     headers={'User-Agent': 'DDGFFSite/1.0'})
     r.raise_for_status()
     img = Image.open(io.BytesIO(r.content))
     img = ImageOps.exif_transpose(img)  # corregge rotazione EXIF (foto smartphone)
@@ -144,7 +144,7 @@ def _og_with_minimal_branding(img: 'Image', ded: dict, fonts: dict) -> 'Image':
 
     song = ded.get('song_title', '')
     artist = ded.get('artist', '')
-    site = os.environ.get('SITE_NAME', 'DDGPilliSite')
+    site = os.environ.get('SITE_NAME', 'DDG FF')
 
     f_title  = get_font('bold', 36)
     f_artist = get_font('regular', 26)

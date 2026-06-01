@@ -229,7 +229,7 @@ def try_openverse(query: str):
         r = _get('https://api.openverse.org/v1/images/', params={
             'q': q, 'orientation': 'tall',
             'license_type': 'commercial,modification', 'page_size': 10,
-        }, headers={'User-Agent': 'DDGPilliSite/1.0'})
+        }, headers={'User-Agent': 'DDGFFSite/1.0'})
         if not r:
             continue
         results = [x for x in r.json().get('results', [])
@@ -262,7 +262,7 @@ def try_wikimedia(query: str):
             'action': 'query', 'list': 'search',
             'srsearch': f'{q} filetype:jpg|png',
             'srnamespace': '6', 'srlimit': '10', 'format': 'json',
-        }, headers={'User-Agent': 'DDGPilliSite/1.0'})
+        }, headers={'User-Agent': 'DDGFFSite/1.0'})
         if not r:
             continue
         items = r.json().get('query', {}).get('search', [])
@@ -274,7 +274,7 @@ def try_wikimedia(query: str):
             ir = _get('https://commons.wikimedia.org/w/api.php', params={
                 'action': 'query', 'titles': title,
                 'prop': 'imageinfo', 'iiprop': 'url|user|extmetadata', 'format': 'json',
-            }, headers={'User-Agent': 'DDGPilliSite/1.0'})
+            }, headers={'User-Agent': 'DDGFFSite/1.0'})
             if not ir:
                 continue
             for page in ir.json().get('query', {}).get('pages', {}).values():

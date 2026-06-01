@@ -214,7 +214,7 @@ def _load_existing_dedication(dedication_id: str) -> tuple[dict, Any]:
 
 def _github_token() -> str:
     return (
-        os.environ.get("DDGPILLI_GITHUB_TOKEN")
+        os.environ.get("DDGFF_GITHUB_TOKEN")
         or os.environ.get("GITHUB_PAT")
         or os.environ.get("GH_TOKEN")
         or os.environ.get("GITHUB_TOKEN")
@@ -223,25 +223,25 @@ def _github_token() -> str:
 
 
 def use_github_backend() -> bool:
-    return os.environ.get("DDGPILLI_FEEDBACK_BACKEND", "").strip().lower() == "github"
+    return os.environ.get("DDGFF_FEEDBACK_BACKEND", "").strip().lower() == "github"
 
 
 def _github_repo() -> str:
-    repo = os.environ.get("DDGPILLI_GITHUB_REPO") or os.environ.get("GITHUB_REPO") or ""
+    repo = os.environ.get("DDGFF_GITHUB_REPO") or os.environ.get("GITHUB_REPO") or ""
     repo = repo.strip()
     if not repo:
-        raise ValueError("DDGPILLI_GITHUB_REPO mancante, esempio: legnaro72/dediche-musicali.")
+        raise ValueError("DDGFF_GITHUB_REPO mancante, esempio: legnaro72/dediche-musicali-ff.")
     return repo
 
 
 def _github_branch() -> str:
-    return (os.environ.get("DDGPILLI_GITHUB_BRANCH") or os.environ.get("GITHUB_BRANCH") or "main").strip()
+    return (os.environ.get("DDGFF_GITHUB_BRANCH") or os.environ.get("GITHUB_BRANCH") or "main").strip()
 
 
 def _github_headers() -> dict[str, str]:
     token = _github_token()
     if not token:
-        raise ValueError("Token GitHub mancante. Configura DDGPILLI_GITHUB_TOKEN come secret del backend.")
+        raise ValueError("Token GitHub mancante. Configura DDGFF_GITHUB_TOKEN come secret del backend.")
     return {
         "Accept": "application/vnd.github+json",
         "Authorization": f"Bearer {token}",
@@ -426,7 +426,7 @@ def update_vote(
         dedication,
         target,
         sha,
-        f"Salva voto Pilly {dedication_id}",
+        f"Salva voto FF {dedication_id}",
     )
 
 
@@ -469,5 +469,5 @@ def update_reaction(
         dedication,
         target,
         sha,
-        f"Salva reazione Pilly {dedication_id}",
+        f"Salva reazione FF {dedication_id}",
     )
