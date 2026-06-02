@@ -1,3 +1,235 @@
 {
-  "visits": []
+  "visits": [
+    {
+      "visitId": "2f7a7e74-46fa-4f60-a793-70dd9cdc3c02",
+      "userKey": "manfredi-ferrando",
+      "userName": "Manfredi Ferrando",
+      "visitedAt": "2026-06-02T11:59:59.948Z",
+      "visitDate": "2026-06-02",
+      "page": "/",
+      "source": "site",
+      "userAgent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Mobile Safari/537.36",
+      "createdAt": "2026-06-02T11:59:59.948Z"
+    },
+    {
+      "visitId": "666f7234-4464-4d08-8a22-b02b48487c13",
+      "userKey": "manfredi-ferrando",
+      "userName": "Manfredi Ferrando",
+      "visitedAt": "2026-06-02T12:00:00.771Z",
+      "visitDate": "2026-06-02",
+      "page": "/",
+      "source": "site",
+      "userAgent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Mobile Safari/537.36",
+      "createdAt": "2026-06-02T12:00:00.771Z"
+    },
+    {
+      "visitId": "ef6be2a6-1502-4fdd-a957-5a73b7398944",
+      "userKey": "manfredi-ferrando",
+      "userName": "Manfredi Ferrando",
+      "visitedAt": "2026-06-02T12:00:24.089Z",
+      "visitDate": "2026-06-02",
+      "page": "/",
+      "source": "site",
+      "userAgent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Mobile Safari/537.36",
+      "createdAt": "2026-06-02T12:00:24.089Z"
+    },
+    {
+      "visitId": "5370bf87-2a49-4f33-9d50-f80811bb1aa3",
+      "userKey": "manfredi-ferrando",
+      "userName": "Manfredi Ferrando",
+      "visitedAt": "2026-06-02T12:05:37.418Z",
+      "visitDate": "2026-06-02",
+      "page": "/",
+      "source": "site",
+      "userAgent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Mobile Safari/537.36",
+      "createdAt": "2026-06-02T12:05:37.418Z"
+    },
+    {
+      "visitId": "8f40443f-8d08-4648-b4f1-da7b91b97d5b",
+      "userKey": "manfredi-ferrando",
+      "userName": "Manfredi Ferrando",
+      "visitedAt": "2026-06-02T12:05:38.899Z",
+      "visitDate": "2026-06-02",
+      "page": "/",
+      "source": "site",
+      "userAgent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Mobile Safari/537.36",
+      "createdAt": "2026-06-02T12:05:38.899Z"
+    },
+    {
+      "visitId": "bbdd35b4-5fc2-4d88-942f-02cbe9625a00",
+      "userKey": "manfredi-ferrando",
+      "userName": "Manfredi Ferrando",
+      "visitedAt": "2026-06-02T13:51:46.508Z",
+      "visitDate": "2026-06-02",
+      "page": "/",
+      "source": "site",
+      "userAgent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Mobile Safari/537.36",
+      "createdAt": "2026-06-02T13:51:46.508Z"
+    },
+    {
+      "visitId": "70d650b6-1525-4d1d-8ffc-84c11947221d",
+      "userKey": "manfredi-ferrando",
+      "userName": "Manfredi Ferrando",
+      "visitedAt": "2026-06-02T13:52:00.765Z",
+      "visitDate": "2026-06-02",
+      "page": "/",
+      "source": "site",
+      "userAgent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Mobile Safari/537.36",
+      "createdAt": "2026-06-02T13:52:00.765Z"
+    },
+    {
+      "visitId": "37067981-5f24-47b7-aa05-047dce1351fd",
+      "userKey": "manfredi-ferrando",
+      "userName": "Manfredi Ferrando",
+      "visitedAt": "2026-06-02T13:52:04.755Z",
+      "visitDate": "2026-06-02",
+      "page": "/dediche/2026-06-02-comuni-immortali-achille-lauro/",
+      "source": "site",
+      "userAgent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Mobile Safari/537.36",
+      "createdAt": "2026-06-02T13:52:04.755Z"
+    },
+    {
+      "visitId": "c6b60fa5-3750-41c9-8968-f89d22a3f8a7",
+      "userKey": "manfredi-ferrando",
+      "userName": "Manfredi Ferrando",
+      "visitedAt": "2026-06-02T13:52:15.397Z",
+      "visitDate": "2026-06-02",
+      "page": "/dediche/2026-06-02-comuni-immortali-achille-lauro/",
+      "source": "site",
+      "userAgent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Mobile Safari/537.36",
+      "createdAt": "2026-06-02T13:52:15.397Z"
+    },
+    {
+      "visitId": "dd2536b8-1060-414e-bc1c-e6f62e2535bd",
+      "userKey": "manfredi-ferrando",
+      "userName": "Manfredi Ferrando",
+      "visitedAt": "2026-06-02T13:52:30.429Z",
+      "visitDate": "2026-06-02",
+      "page": "/dediche/2026-06-02-comuni-immortali-achille-lauro/",
+      "source": "site",
+      "userAgent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Mobile Safari/537.36",
+      "createdAt": "2026-06-02T13:52:30.429Z"
+    },
+    {
+      "visitId": "101229e7-3777-448f-9221-85195fd29743",
+      "userKey": "manfredi-ferrando",
+      "userName": "Manfredi Ferrando",
+      "visitedAt": "2026-06-02T13:52:46.320Z",
+      "visitDate": "2026-06-02",
+      "page": "/",
+      "source": "site",
+      "userAgent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Mobile Safari/537.36",
+      "createdAt": "2026-06-02T13:52:46.320Z"
+    },
+    {
+      "visitId": "91fefc2d-deb6-419f-90cf-02fea4efcd59",
+      "userKey": "manfredi-ferrando",
+      "userName": "Manfredi Ferrando",
+      "visitedAt": "2026-06-02T14:02:40.804Z",
+      "visitDate": "2026-06-02",
+      "page": "/",
+      "source": "site",
+      "userAgent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Mobile Safari/537.36",
+      "createdAt": "2026-06-02T14:02:40.804Z"
+    },
+    {
+      "visitId": "519240ab-8acb-4e26-9728-7c5fc2a27225",
+      "userKey": "manfredi-ferrando",
+      "userName": "Manfredi Ferrando",
+      "visitedAt": "2026-06-02T14:02:45.101Z",
+      "visitDate": "2026-06-02",
+      "page": "/dediche/2026-06-02-comuni-immortali-achille-lauro/",
+      "source": "site",
+      "userAgent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Mobile Safari/537.36",
+      "createdAt": "2026-06-02T14:02:45.101Z"
+    },
+    {
+      "visitId": "e4b5a9d6-4384-4bb6-a59a-a6d6e644c90d",
+      "userKey": "manfredi-ferrando",
+      "userName": "Manfredi Ferrando",
+      "visitedAt": "2026-06-02T14:02:49.544Z",
+      "visitDate": "2026-06-02",
+      "page": "/dediche/2026-06-02-comuni-immortali-achille-lauro/",
+      "source": "site",
+      "userAgent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Mobile Safari/537.36",
+      "createdAt": "2026-06-02T14:02:49.544Z"
+    },
+    {
+      "visitId": "34b07e53-a40c-48f9-9287-adce0c46a42d",
+      "userKey": "manfredi-ferrando",
+      "userName": "Manfredi Ferrando",
+      "visitedAt": "2026-06-02T14:02:50.469Z",
+      "visitDate": "2026-06-02",
+      "page": "/dediche/2026-06-02-comuni-immortali-achille-lauro/",
+      "source": "site",
+      "userAgent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Mobile Safari/537.36",
+      "createdAt": "2026-06-02T14:02:50.469Z"
+    },
+    {
+      "visitId": "1bb3d5a2-6e6d-45a5-a594-c7deddcef059",
+      "userKey": "manfredi-ferrando",
+      "userName": "Manfredi Ferrando",
+      "visitedAt": "2026-06-02T14:02:54.168Z",
+      "visitDate": "2026-06-02",
+      "page": "/dediche/2026-06-02-comuni-immortali-achille-lauro/",
+      "source": "site",
+      "userAgent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Mobile Safari/537.36",
+      "createdAt": "2026-06-02T14:02:54.168Z"
+    },
+    {
+      "visitId": "9b66f5c9-037f-44a2-af84-a9cc8cc9500a",
+      "userKey": "manfredi-ferrando",
+      "userName": "Manfredi Ferrando",
+      "visitedAt": "2026-06-02T14:02:55.296Z",
+      "visitDate": "2026-06-02",
+      "page": "/dediche/2026-06-02-comuni-immortali-achille-lauro/",
+      "source": "site",
+      "userAgent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Mobile Safari/537.36",
+      "createdAt": "2026-06-02T14:02:55.296Z"
+    },
+    {
+      "visitId": "5e36a66e-80d8-4278-b80d-63a382c3709b",
+      "userKey": "manfredi-ferrando",
+      "userName": "Manfredi Ferrando",
+      "visitedAt": "2026-06-02T14:03:42.675Z",
+      "visitDate": "2026-06-02",
+      "page": "/",
+      "source": "site",
+      "userAgent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Mobile Safari/537.36",
+      "createdAt": "2026-06-02T14:03:42.675Z"
+    },
+    {
+      "visitId": "bed9eada-556f-4a32-9882-c78d0678a5ac",
+      "userKey": "manfredi-ferrando",
+      "userName": "Manfredi Ferrando",
+      "visitedAt": "2026-06-02T14:03:45.872Z",
+      "visitDate": "2026-06-02",
+      "page": "/dediche/2026-06-02-comuni-immortali-achille-lauro/",
+      "source": "site",
+      "userAgent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Mobile Safari/537.36",
+      "createdAt": "2026-06-02T14:03:45.872Z"
+    },
+    {
+      "visitId": "0fe746d9-c4a8-4108-84c3-7a6b5d188df7",
+      "userKey": "massimiliano-ferrando",
+      "userName": "Massimiliano Ferrando",
+      "visitedAt": "2026-06-02T14:04:20.918Z",
+      "visitDate": "2026-06-02",
+      "page": "/",
+      "source": "site",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36",
+      "createdAt": "2026-06-02T14:04:20.918Z"
+    },
+    {
+      "visitId": "f310f3c2-de3c-463a-861b-2a1c497f5a4f",
+      "userKey": "massimiliano-ferrando",
+      "userName": "Massimiliano Ferrando",
+      "visitedAt": "2026-06-02T14:04:23.689Z",
+      "visitDate": "2026-06-02",
+      "page": "/dediche/2026-06-02-comuni-immortali-achille-lauro/",
+      "source": "site",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36",
+      "createdAt": "2026-06-02T14:04:23.689Z"
+    }
+  ]
 }

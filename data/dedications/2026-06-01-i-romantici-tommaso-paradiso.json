@@ -31,7 +31,7 @@
     "description": "Dedica musicale del giorno con \"I romantici\" di Tommaso Paradiso."
   },
   "created_at": "2026-06-01T00:58:50.184118+02:00",
-  "updated_at": "2026-06-01T22:52:20.858Z",
+  "updated_at": "2026-06-01T22:58:35.735930+00:00",
   "video": {
     "type": "youtube",
     "url": "https://www.youtube.com/watch?v=Z1-ffhywg1c",
@@ -44,20 +44,11 @@
   "reactions": {
     "down": 0,
     "like": 0,
-    "heart": 1,
+    "heart": 0,
     "sun": 0
   },
   "votes": [],
   "thoughts": [],
-  "reactionEntries": [
-    {
-      "userId": "91506645-6da8-4813-80c4-0b033b41af96",
-      "userKey": "massimiliano-ferrando",
-      "userName": "Massimiliano Ferrando",
-      "value": "heart",
-      "createdAt": "2026-06-01T22:52:20.858Z",
-      "updatedAt": "2026-06-01T22:52:20.858Z"
-    }
-  ],
+  "reactionEntries": [],
   "date_it": "1 giugno 2026"
 }

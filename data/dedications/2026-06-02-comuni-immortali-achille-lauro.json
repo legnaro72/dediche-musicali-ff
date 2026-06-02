@@ -34,17 +34,10 @@
   "updated_at": "2026-06-02T14:50:15.620952+02:00",
   "video": {
     "type": "youtube",
-<<<<<<< HEAD
-    "url": "https://www.youtube.com/watch?v=Z1-ffhywg1c",
-    "poster": "/images/og-default.png?v=dediche-musicali-ff-video-poster-20260602",
-    "title": "Un cuore grande cosi",
-    "description": "Solo chi soffre impara ad amare!noi soffriamo... ti amiamo... e cpon te torneremo grandi"
-=======
     "url": "https://youtu.be/5u9b3A3EohQ?is=U-dmfoVNbhV_vVM-",
     "poster": "/images/og-default.png",
     "title": "Sfide",
     "description": "La storia immortale"
->>>>>>> 3d3b67174d9f654fe8dd30706805347d5dd3e97f
   },
   "voteAverage": null,
   "thoughtsText": "",
