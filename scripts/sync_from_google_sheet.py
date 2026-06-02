@@ -40,7 +40,7 @@ REQUIRED_COLUMNS = [
     'dedication_title', 'dedication_text', 'audio_url', 'audio_type',
 ]
 
-VIDEO_POSTER_PLACEHOLDER = '/images/og-default.png'
+VIDEO_POSTER_PLACEHOLDER = '/images/og-default.png?v=dediche-musicali-ff-video-poster-20260602'
 VALID_VIDEO_TYPES = {'youtube', 'mp4', 'external'}
 
 
