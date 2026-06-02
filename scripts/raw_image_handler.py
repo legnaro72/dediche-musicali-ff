@@ -14,7 +14,7 @@ logger = logging.getLogger('generate_image')
 
 CACHE_DIR  = Path(__file__).parent.parent / '.cache' / 'images'
 REPO_ROOT  = Path(__file__).parent.parent
-VALID_EXTS = {'.jpg', '.jpeg', '.png', '.webp'}
+VALID_EXTS = {'.jpg', '.jpeg', '.png', '.webp', '.gif'}
 
 
 # ── Fetch immagine ─────────────────────────────────────────────────────────────
@@ -36,12 +36,18 @@ def _cache_path_for_url(url: str) -> Path:
 def _download(url: str) -> 'Image':
     """Scarica immagine da URL HTTPS → PIL.Image RGB (EXIF-corretto)."""
     import requests
-    from PIL import Image, ImageOps
+    from PIL import Image, ImageFile, ImageOps
+    ImageFile.LOAD_TRUNCATED_IMAGES = True
     logger.info(f'    Downloading image...')
     r = requests.get(url, timeout=20, allow_redirects=True,
                      headers={'User-Agent': 'DDGFFSite/1.0'})
     r.raise_for_status()
     img = Image.open(io.BytesIO(r.content))
+    frame_count = getattr(img, 'n_frames', 1) or 1
+    if bool(getattr(img, 'is_animated', False) or frame_count > 1):
+        img.seek(frame_count - 1)
+        img.load()
+        img = img.copy()
     img = ImageOps.exif_transpose(img)  # corregge rotazione EXIF (foto smartphone)
     return img.convert('RGB')
 
@@ -94,8 +100,14 @@ def fetch_source_image(image_source: str) -> 'Image | None':
         logger.warning(f'    raw: path fuori dalla directory del progetto — bloccato')
         return None
     try:
-        from PIL import Image, ImageOps
+        from PIL import Image, ImageFile, ImageOps
+        ImageFile.LOAD_TRUNCATED_IMAGES = True
         img = Image.open(path)
+        frame_count = getattr(img, 'n_frames', 1) or 1
+        if bool(getattr(img, 'is_animated', False) or frame_count > 1):
+            img.seek(frame_count - 1)
+            img.load()
+            img = img.copy()
         img = ImageOps.exif_transpose(img)  # corregge rotazione EXIF
         logger.info(f'    Loaded local image: {path.name}')
         return img.convert('RGB')

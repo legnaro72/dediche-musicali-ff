@@ -136,7 +136,6 @@ const fullOgImage = ogImage
               aria-label="Disattiva musica di sottofondo"
             >
               <span class="ambient-audio-icon" aria-hidden="true">♪</span>
-              <span class="ambient-audio-label">Audio</span>
             </button>
             <p class="ambient-audio-hint" data-background-music-hint hidden>
               Tocca per attivare la musica
@@ -460,9 +459,7 @@ const fullOgImage = ogImage
       const imgs = document.querySelectorAll('.hero-image-frame img, .image-frame img');
       imgs.forEach((el) => {
         const applyLandscape = () => {
-          if (el.naturalWidth <= el.naturalHeight * 1.15) return;
-          
-          const frame = el.closest('.hero-image-frame') || el.closest('.image-frame');
+const frame = el.closest('.hero-image-frame') || el.closest('.image-frame');
           if (!frame) return;
 
           // Usiamo requestAnimationFrame per essere sicuri che il layout sia pronto
@@ -470,8 +467,9 @@ const fullOgImage = ogImage
             const fw = frame.getBoundingClientRect().width;
             if (fw > 0) {
               frame.style.setProperty('--frame-w', fw + 'px');
-              frame.classList.add('landscape-frame');
-              console.log('♪ Landscape pan activated:', el.src, 'Frame width:', fw);
+              const isWide = el.naturalWidth > el.naturalHeight * 1.15;
+              frame.classList.toggle('landscape-frame', isWide);
+              frame.classList.toggle('portrait-frame', !isWide);
             }
           });
         };

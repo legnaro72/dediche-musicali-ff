@@ -69,7 +69,7 @@ DEFAULT_SITE_SETTINGS = {
     "updated_at": "",
 }
 VALID_IMAGE_MODES = ("raw", "auto", "upload", "none")
-VALID_IMAGE_EXTS = {".jpg", ".jpeg", ".png", ".webp", ".heic", ".heif"}
+VALID_IMAGE_EXTS = {".jpg", ".jpeg", ".png", ".webp", ".gif", ".heic", ".heif"}
 VALID_STATUSES = ("draft", "scheduled", "published", "disabled")
 VALID_VIDEO_TYPES = ("", "youtube", "mp4", "external")
 UPLOAD_IMAGE_MAX_SIDE = int(os.environ.get("UPLOAD_IMAGE_MAX_SIDE", "1400"))
@@ -681,7 +681,9 @@ def remember_uploaded_image(prefix: str, uploaded_file):
 
 
 def optimize_uploaded_image(uploaded_file) -> tuple[bytes, dict]:
-    from PIL import Image, ImageOps, ImageSequence
+    from PIL import Image, ImageFile, ImageOps
+
+    ImageFile.LOAD_TRUNCATED_IMAGES = True
 
     original_bytes = uploaded_file.getvalue()
     original_name = uploaded_file.name or "immagine"
@@ -704,8 +706,9 @@ def optimize_uploaded_image(uploaded_file) -> tuple[bytes, dict]:
         frame_count = getattr(img, "n_frames", 1) or 1
         is_animated = bool(getattr(img, "is_animated", False) or frame_count > 1)
         if is_animated:
-            img.seek(0)
-            img = next(ImageSequence.Iterator(img)).copy()
+            img.seek(frame_count - 1)
+            img.load()
+            img = img.copy()
         else:
             img.load()
         img = ImageOps.exif_transpose(img)
@@ -770,7 +773,7 @@ def upload_image_to_github(uploaded_file, asset_id: str) -> str:
     original_name = uploaded_file.name or ""
     ext = Path(original_name).suffix.lower()
     if ext not in VALID_IMAGE_EXTS:
-        raise ValueError("Formato immagine non supportato. Usa JPG, JPEG, PNG, WEBP, HEIC oppure HEIF.")
+        raise ValueError("Formato immagine non supportato. Usa JPG, JPEG, PNG, WEBP, GIF, HEIC oppure HEIF.")
 
     optimized_bytes, image_info = optimize_uploaded_image(uploaded_file)
     upload_name = f"{asset_id}.webp"
@@ -1168,7 +1171,7 @@ def render_dedication_form(prefix: str, existing_image_source: str = ""):
     )
     uploaded_file = st.file_uploader(
         "Nuova immagine per raw/upload",
-        type=["jpg", "jpeg", "png", "webp", "heic", "heif"],
+        type=["jpg", "jpeg", "png", "webp", "gif", "heic", "heif"],
         disabled=image_mode not in ("raw", "upload"),
         key=f"{prefix}_uploaded_file",
     )
@@ -1187,7 +1190,13 @@ def render_dedication_form(prefix: str, existing_image_source: str = ""):
         if not preview_id and date_text and song and artist:
             preview_id = make_default_id(normalize_date(date_text), song, artist)
         with st.expander("Anteprima immagine caricata", expanded=True):
-            st.image(uploaded_bytes, use_container_width=True)
+            try:
+                st.image(uploaded_bytes, use_container_width=True)
+            except Exception as exc:
+                st.warning(
+                    "Anteprima non disponibile, ma provo comunque a convertirla al salvataggio. "
+                    f"Dettaglio: {exc}"
+                )
             st.caption(
                 "Pronta per il salvataggio: "
                 f"{preview_id or 'ID-DELLA-DEDICA'}.webp "

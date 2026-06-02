@@ -1451,11 +1451,11 @@ button.video-poster {
 }
 
 .ambient-audio-toggle {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
+  display: grid;
+  place-items: center;
+  width: 44px;
   min-height: 44px;
-  padding: 0.65rem 0.95rem;
+  padding: 0;
   border: 1px solid rgba(255, 255, 255, 0.16);
   border-radius: var(--radius-full);
   background: rgba(8, 7, 15, 0.76);
@@ -1922,7 +1922,7 @@ button.video-poster {
   }
 
   .ambient-audio-toggle {
-    padding: 0.58rem 0.75rem;
+    padding: 0;
   }
 }
 

@@ -10,6 +10,8 @@
    Porta: max-width, aspect-ratio, overflow, border-radius, box-shadow, float.
 */
 .hero-image-frame {
+  position: relative;
+  flex: 0 0 auto;
   width: 100%;
   max-width: 420px;
   aspect-ratio: 4 / 5;
@@ -22,14 +24,18 @@
 
 /* ── Immagine dentro il frame hero ──────────────────────────────────────────── */
 .hero-image-frame .hero-image {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
+  max-width: none;
   object-fit: cover;
   display: block;
 }
 
 /* ── Generic image frame (archivio, pagina dettaglio) ───────────────────────── */
 .image-frame {
+  position: relative;
   overflow: hidden;
   width: 100%;
   height: 100%;
@@ -38,8 +44,11 @@
 
 .image-frame img,
 .image-frame .ded-image {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
+  max-width: none;
   object-fit: cover;
   display: block;
 }
@@ -61,6 +70,7 @@
   height: 100% !important;
   max-width: none !important;
   object-fit: unset !important;
+  right: auto;
 }
 
 /* Animazione attiva solo se prefers-reduced-motion non è impostato */
