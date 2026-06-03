@@ -31,7 +31,7 @@
     "description": "Dedica musicale del giorno con \"Che fantastica storia è la vita\" di Antonello Venditti."
   },
   "created_at": "2026-06-03T21:09:25.818282+02:00",
-  "updated_at": "2026-06-03T21:09:26.436711+02:00",
+  "updated_at": "2026-06-03T20:58:56.441Z",
   "video": {
     "type": "youtube",
     "url": "https://youtu.be/3HiCbbXQUxc?is=wYPNoBleMIsInQId",
@@ -44,11 +44,20 @@
   "reactions": {
     "down": 0,
     "like": 0,
-    "heart": 0,
+    "heart": 1,
     "sun": 0
   },
   "votes": [],
   "thoughts": [],
-  "reactionEntries": [],
+  "reactionEntries": [
+    {
+      "userId": "493c16e4-453a-4b47-9384-c8abb31c24c6",
+      "userKey": "gabriele-ferrando",
+      "userName": "Gabriele Ferrando",
+      "value": "heart",
+      "createdAt": "2026-06-03T20:58:56.441Z",
+      "updatedAt": "2026-06-03T20:58:56.441Z"
+    }
+  ],
   "date_it": "3 giugno 2026"
 }
