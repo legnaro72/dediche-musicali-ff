@@ -538,6 +538,17 @@
       "source": "site",
       "userAgent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) SamsungBrowser/30.0 Chrome/143.0.0.0 Mobile Safari/537.36",
       "createdAt": "2026-06-03T20:58:54.613Z"
+    },
+    {
+      "visitId": "db4fd94b-9d85-40f1-9d66-4448dcc9453d",
+      "userKey": "gabriele-ferrando",
+      "userName": "Gabriele Ferrando",
+      "visitedAt": "2026-06-03T21:06:01.495Z",
+      "visitDate": "2026-06-03",
+      "page": "/archive/",
+      "source": "site",
+      "userAgent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) SamsungBrowser/30.0 Chrome/143.0.0.0 Mobile Safari/537.36",
+      "createdAt": "2026-06-03T21:06:01.495Z"
     }
   ]
 }
