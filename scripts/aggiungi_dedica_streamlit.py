@@ -46,6 +46,8 @@ SITE_SETTINGS_PATH = "public/config/site-settings.json"
 VISITS_PATH = "data/visits.json"
 DEDICATIONS_DIR = "data/dedications"
 REACTION_KEYS = ("down", "like", "heart", "sun")
+ROOT_DIR = Path(__file__).resolve().parents[1]
+DRAFT_DIR = ROOT_DIR / ".streamlit-drafts"
 WHATSAPP_NOTIFY_PAOLA_NUMBER = os.environ.get("WHATSAPP_NOTIFY_PAOLA_NUMBER", "393285422549")
 WHATSAPP_FF_GROUP_INVITE_URL = os.environ.get(
     "WHATSAPP_FF_GROUP_INVITE_URL",
@@ -675,6 +677,84 @@ def format_bytes(size: int) -> str:
     if size < 1024 * 1024:
         return f"{size / 1024:.1f} KB"
     return f"{size / (1024 * 1024):.1f} MB"
+
+
+def draft_path(prefix: str) -> Path:
+    safe_prefix = re.sub(r"[^a-zA-Z0-9_-]+", "-", prefix).strip("-") or "draft"
+    return DRAFT_DIR / f"{safe_prefix}.json"
+
+
+def has_form_data(prefix: str) -> bool:
+    return any(st.session_state.get(f"{prefix}_{col}") for col in SHEET_COLUMNS)
+
+
+def restore_form_draft(prefix: str) -> bool:
+    if has_form_data(prefix):
+        return False
+
+    path = draft_path(prefix)
+    if not path.exists():
+        return False
+
+    try:
+        draft = json.loads(path.read_text(encoding="utf-8"))
+    except Exception:
+        return False
+
+    values = draft.get("values") if isinstance(draft, dict) else {}
+    if not isinstance(values, dict):
+        return False
+
+    for col in SHEET_COLUMNS:
+        if col in values:
+            st.session_state[f"{prefix}_{col}"] = values.get(col, "")
+
+    date_value = values.get("date")
+    if date_value:
+        st.session_state[f"{prefix}_date_picker_value"] = parse_date_value(date_value)
+
+    image = draft.get("image")
+    if isinstance(image, dict) and image.get("data_b64"):
+        try:
+            st.session_state[f"{prefix}_uploaded_image_snapshot"] = UploadedImageSnapshot(
+                image.get("name") or f"{prefix}-immagine.jpg",
+                image.get("type") or "application/octet-stream",
+                base64.b64decode(image["data_b64"]),
+            )
+        except Exception:
+            pass
+
+    st.session_state[f"{prefix}_draft_restored"] = True
+    return True
+
+
+def save_form_draft(prefix: str, uploaded_snapshot=None) -> None:
+    values = collect_form_state(prefix)
+    has_values = any(str(value or "").strip() for value in values.values())
+    if not has_values and uploaded_snapshot is None:
+        return
+
+    draft = {
+        "updated_at": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+        "values": values,
+    }
+    if uploaded_snapshot is not None:
+        data = uploaded_snapshot.getvalue()
+        if data:
+            draft["image"] = {
+                "name": uploaded_snapshot.name,
+                "type": getattr(uploaded_snapshot, "type", "") or "application/octet-stream",
+                "data_b64": base64.b64encode(data).decode("ascii"),
+            }
+
+    DRAFT_DIR.mkdir(parents=True, exist_ok=True)
+    draft_path(prefix).write_text(json.dumps(draft, ensure_ascii=False), encoding="utf-8")
+
+
+def clear_form_draft(prefix: str) -> None:
+    path = draft_path(prefix)
+    if path.exists():
+        path.unlink()
 
 
 def remember_uploaded_image(prefix: str, uploaded_file):
@@ -1339,6 +1419,7 @@ def save_dedication(prefix: str, uploaded_file, mode: str, row_number: int | Non
 def save_and_optionally_publish(prefix: str, uploaded_file, mode: str, publish_now: bool,
                                 row_number: int | None = None) -> None:
     values = save_dedication(prefix, uploaded_file, mode, row_number=row_number)
+    clear_form_draft(prefix)
     action = "aggiornata" if values.get("_save_action") == "updated" else "programmata"
     st.success(f"Dedica {action} per il {values['date']}.")
     if values.get("_duplicate_count", 0) > 1:
@@ -1357,11 +1438,15 @@ def save_and_optionally_publish(prefix: str, uploaded_file, mode: str, publish_n
 
 
 def render_new_dedication() -> None:
+    restore_form_draft("new")
     init_form_state("new")
     st.title("Nuova dedica musicale")
     st.caption("Crea una nuova riga nel Google Sheet e, se vuoi, pubblicala subito.")
+    if st.session_state.pop("new_draft_restored", False):
+        st.info("Ho ripristinato la bozza locale dell'ultima dedica non salvata.")
 
     uploaded_file = render_dedication_form("new")
+    save_form_draft("new", uploaded_file)
 
     col_save, col_publish = st.columns(2)
     save_clicked = col_save.button(
