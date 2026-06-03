@@ -362,6 +362,17 @@
       "source": "site",
       "userAgent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) SamsungBrowser/30.0 Chrome/143.0.0.0 Mobile Safari/537.36",
       "createdAt": "2026-06-03T12:10:07.309Z"
+    },
+    {
+      "visitId": "3927612e-d44c-44e9-9f75-3f3d498231cb",
+      "userKey": "manfredi-ferrando",
+      "userName": "Manfredi Ferrando",
+      "visitedAt": "2026-06-03T12:10:45.877Z",
+      "visitDate": "2026-06-03",
+      "page": "/",
+      "source": "site",
+      "userAgent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) SamsungBrowser/30.0 Chrome/143.0.0.0 Mobile Safari/537.36",
+      "createdAt": "2026-06-03T12:10:45.877Z"
     }
   ]
 }
