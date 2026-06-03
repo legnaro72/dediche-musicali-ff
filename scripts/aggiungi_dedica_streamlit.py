@@ -77,7 +77,7 @@ DEFAULT_SITE_SETTINGS = {
     "updated_at": "",
 }
 VALID_IMAGE_MODES = ("raw", "auto", "upload", "none")
-VALID_IMAGE_EXTS = {".jpg", ".jpeg", ".png", ".webp", ".gif", ".heic", ".heif"}
+VALID_IMAGE_EXTS = {".jpg", ".jpeg", ".jfif", ".png", ".webp", ".gif", ".heic", ".heif", ""}
 VALID_STATUSES = ("draft", "scheduled", "published", "disabled")
 VALID_VIDEO_TYPES = ("", "youtube", "mp4", "external")
 UPLOAD_IMAGE_MAX_SIDE = int(os.environ.get("UPLOAD_IMAGE_MAX_SIDE", "1400"))
@@ -869,7 +869,10 @@ def upload_image_to_github(uploaded_file, asset_id: str) -> str:
     original_name = uploaded_file.name or ""
     ext = Path(original_name).suffix.lower()
     if ext not in VALID_IMAGE_EXTS:
-        raise ValueError("Formato immagine non supportato. Usa JPG, JPEG, PNG, WEBP, GIF, HEIC oppure HEIF.")
+        st.warning(
+            f"Estensione '{ext or 'nessuna'}' non riconosciuta: provo comunque a leggere "
+            "il file come immagine."
+        )
 
     optimized_bytes, image_info = optimize_uploaded_image(uploaded_file)
     upload_name = f"{asset_id}.webp"
@@ -1267,9 +1270,9 @@ def render_dedication_form(prefix: str, existing_image_source: str = ""):
     )
     uploaded_file = st.file_uploader(
         "Nuova immagine per raw/upload",
-        type=["jpg", "jpeg", "png", "webp", "gif", "heic", "heif"],
         disabled=image_mode not in ("raw", "upload"),
         key=f"{prefix}_uploaded_file",
+        help="Puoi caricare JPG/JPEG, PNG, WEBP, GIF o HEIC. Se il nome file e' strano provo comunque a leggerlo.",
     )
     uploaded_snapshot = remember_uploaded_image(prefix, uploaded_file)
     st.text_input("image_source", key=f"{prefix}_image_source")
