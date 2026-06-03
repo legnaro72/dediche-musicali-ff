@@ -1,61 +1,44 @@
 {
-  "id": "2026-06-02-comuni-immortali-achille-lauro",
-  "date": "2026-06-02",
-  "day_name": "martedì",
+  "id": "2026-06-01-i-romantici-tommaso-paradiso",
+  "date": "2026-06-01",
+  "day_name": "lunedì",
   "status": "published",
-  "song_title": "Comuni Immortali",
-  "artist": "Achille Lauro",
+  "song_title": "I romantici",
+  "artist": "Tommaso Paradiso",
   "dedication_title": "La dedica del giorno",
-  "dedication_text": "Immortale, come l'amore per questi due colori💙",
+  "dedication_text": "La canzone preferita di Manfredi perché in fondo in fondo è un romantico. Credo che possa piacere anche Gabriele. Conoscendo i gusti❤️💙",
   "audio": {
-    "url": "https://open.spotify.com/track/1VsUaDLGDWdaITdEB8BZmY?si=gQybtdW6Q96ClOXLk-A-yw",
+    "url": "https://open.spotify.com/track/3X6VETSe1orqobaME0KTzQ?si=fJtBRxbHRsy1kIHsxBcgXQ",
     "type": "spotify"
   },
   "vote": {
     "url": "https://docs.google.com/forms/d/17VuesL0BOupyw5M5MNCLs1gq_uqZioVKVkGC8oFfn38/viewform"
   },
   "image": {
-    "path": "/images/dedications/2026-06-02-comuni-immortali-achille-lauro.webp",
-    "alt": "Dedica musicale Comuni Immortali di Achille Lauro",
+    "path": "/images/dedications/2026-06-01-i-romantici-tommaso-paradiso.webp",
+    "alt": "Dedica musicale I romantici di Tommaso Paradiso",
     "mode": "raw",
-    "source": "public/images/upload/2026-06-02-comuni-immortali-achille-lauro.webp"
+    "source": "public/images/upload/2026-06-01-i-romantici-tommaso-paradiso.webp"
   },
-  "short_phrase": "Un cuore grande così🎵",
+  "short_phrase": "Romantici rossoblù🎵",
   "tags": [
     "musica",
     "emozioni",
     "dedica"
   ],
   "seo": {
-    "title": "Comuni Immortali - Achille Lauro | DDGFFSite",
-    "description": "Dedica musicale del giorno con \"Comuni Immortali\" di Achille Lauro."
+    "title": "I romantici - Tommaso Paradiso | DDG FF Site",
+    "description": "Dedica musicale del giorno con \"I romantici\" di Tommaso Paradiso."
   },
-  "created_at": "2026-06-02T14:50:15.128413+02:00",
-  "updated_at": "2026-06-02T14:50:15.620952+02:00",
-  "video": {
-    "type": "youtube",
-<<<<<<< HEAD
-    "url": "https://www.youtube.com/watch?v=Z1-ffhywg1c",
-    "poster": "/images/og-default.png?v=dediche-musicali-ff-video-poster-20260602",
-    "title": "Un cuore grande cosi",
-    "description": "Solo chi soffre impara ad amare!noi soffriamo... ti amiamo... e cpon te torneremo grandi"
-=======
-    "url": "https://youtu.be/5u9b3A3EohQ?is=U-dmfoVNbhV_vVM-",
-    "poster": "/images/og-default.png",
-    "title": "Sfide",
-    "description": "La storia immortale"
->>>>>>> 3d3b67174d9f654fe8dd30706805347d5dd3e97f
-  },
-  "voteAverage": null,
-  "thoughtsText": "",
+  "created_at": "2026-06-01T00:58:50.184118+02:00",
+  "updated_at": "2026-06-01T12:45:18.721364+02:00",
+  "votoPilly": 9,
+  "pensieroPilly": "9",
   "reactions": {
     "down": 0,
     "like": 0,
     "heart": 0,
-    "sun": 0
+    "sun": 1
   },
-  "votes": [],
-  "thoughts": [],
-  "reactionEntries": [],
-  "date_it": "2 giugno 2026"
+  "date_it": "1 giugno 2026"
 }

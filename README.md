@@ -1,6 +1,6 @@
 # ♪ DDG FF
 
-> Sito di dediche musicali giornaliere DDG FF.
+> Sito di dediche musicali giornaliere — clone indipendente di DDG FF Site.
 
 **Stack:** Astro · GitHub Pages · GitHub Actions · Python · Google Sheet
 
@@ -34,7 +34,7 @@
 ## 📖 Descrizione
 
 **DDG FF** pubblica automaticamente una nuova dedica musicale ogni giorno.
-È un sito autonomo e indipendente con:
+È un clone autonomo e indipendente di DDG FF Site con:
 
 - Repository GitHub separato (`dediche-musicali-ff`)
 - Google Sheet dedicato (Sheet FF)
@@ -160,7 +160,7 @@ Il Google Sheet FF è già creato: `Dediche Musicali FF` (stesso Google Drive).
 
 1. Apri il Google Sheet FF
 2. Clicca "Condividi"
-3. Aggiungi l'email del service account autorizzato per il Google Sheet FF
+3. Aggiungi l'email del service account (la stessa usata per DDG FF Site)
 4. Imposta permesso: **Lettore** (o Editor)
 
 ---
