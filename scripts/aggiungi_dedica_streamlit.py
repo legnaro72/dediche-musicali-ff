@@ -46,10 +46,16 @@ SITE_SETTINGS_PATH = "public/config/site-settings.json"
 VISITS_PATH = "data/visits.json"
 DEDICATIONS_DIR = "data/dedications"
 REACTION_KEYS = ("down", "like", "heart", "sun")
-WHATSAPP_NOTIFY_NUMBER = os.environ.get("WHATSAPP_NOTIFY_NUMBER", "393403813481")
+WHATSAPP_NOTIFY_PAOLA_NUMBER = os.environ.get("WHATSAPP_NOTIFY_PAOLA_NUMBER", "393285422549")
+WHATSAPP_FF_GROUP_INVITE_URL = os.environ.get(
+    "WHATSAPP_FF_GROUP_INVITE_URL",
+    "https://chat.whatsapp.com/KbeTRjTEPLv70kMQJWVDrG",
+)
 WHATSAPP_NOTIFY_MESSAGE = os.environ.get(
     "WHATSAPP_NOTIFY_MESSAGE",
-    "Ciao Ferrandi , la DDG \u00e8 online.",
+    "Ferrandi la DDG \u00e8 online!! Gloria al Doria e ai Ferrandi !!!\n\n"
+    "Clicca sul seguente Link per accedere al Sito !!!\n"
+    "https://legnaro72.github.io/dediche-musicali-ff/",
 )
 DEFAULT_SITE_SETTINGS = {
     "buttons": {
@@ -401,15 +407,25 @@ def get_secret_or_env(name: str, default: str = "") -> str:
     return str(value or os.environ.get(name, default) or "").strip()
 
 
-def whatsapp_notify_url() -> str:
-    number = re.sub(r"\D+", "", WHATSAPP_NOTIFY_NUMBER)
+def whatsapp_group_notify_url() -> str:
+    return f"https://api.whatsapp.com/send?text={quote(WHATSAPP_NOTIFY_MESSAGE)}"
+
+
+def whatsapp_paola_notify_url() -> str:
+    number = re.sub(r"\D+", "", WHATSAPP_NOTIFY_PAOLA_NUMBER)
     return f"https://wa.me/{number}?text={quote(WHATSAPP_NOTIFY_MESSAGE)}"
 
 
 def render_whatsapp_notification_button() -> None:
     st.link_button(
-        "Invia notifica WhatsApp",
-        whatsapp_notify_url(),
+        "Invia notifica WhatsApp al gruppo FF",
+        whatsapp_group_notify_url(),
+        use_container_width=True,
+        help=f"Testo pronto per WhatsApp. Seleziona il gruppo FF ({WHATSAPP_FF_GROUP_INVITE_URL}).",
+    )
+    st.link_button(
+        "Invia notifica WhatsApp a Paola Ferrando",
+        whatsapp_paola_notify_url(),
         use_container_width=True,
     )
 
