@@ -81,6 +81,15 @@ def _cell(row: dict, key: str, default: str = '') -> str:
     return str(row.get(key, default)).strip()
 
 
+def default_dedication_text(song_title: str, artist: str) -> str:
+    return (
+        "Ci sono canzoni che arrivano senza fare rumore, "
+        "ma restano dentro piu' di tante parole.\n"
+        f"Oggi ti dedico \"{song_title}\" di {artist}, "
+        "perche' certe emozioni meritano di essere ascoltate fino in fondo."
+    )
+
+
 def normalize_video(row: dict) -> dict | None:
     video_type = _cell(row, 'video_type').lower()
     video_url = _cell(row, 'video_url')
@@ -115,6 +124,9 @@ def sheet_row_to_dict(row: dict, default_vote_url: str) -> dict:
     seo_title = _cell(row, 'seo_title')
     seo_desc = _cell(row, 'seo_description')
     image_alt = _cell(row, 'image_alt')
+    song_title = _cell(row, 'song_title')
+    artist = _cell(row, 'artist')
+    dedication_text = _cell(row, 'dedication_text') or default_dedication_text(song_title, artist)
 
     now_str = get_rome_now().isoformat()
 
@@ -123,10 +135,10 @@ def sheet_row_to_dict(row: dict, default_vote_url: str) -> dict:
         'date': date_str,
         'day_name': get_italian_day_name(date_str),
         'status': _cell(row, 'status', 'draft'),
-        'song_title': _cell(row, 'song_title'),
-        'artist': _cell(row, 'artist'),
+        'song_title': song_title,
+        'artist': artist,
         'dedication_title': _cell(row, 'dedication_title'),
-        'dedication_text': _cell(row, 'dedication_text'),
+        'dedication_text': dedication_text,
         'audio': {
             'url': _cell(row, 'audio_url'),
             'type': _cell(row, 'audio_type', 'other'),
@@ -148,12 +160,12 @@ def sheet_row_to_dict(row: dict, default_vote_url: str) -> dict:
         'tags': tags,
         'seo': {
             'title': seo_title or auto_seo_title({
-                'song_title': _cell(row, 'song_title'),
-                'artist': _cell(row, 'artist'),
+                'song_title': song_title,
+                'artist': artist,
                 'date': date_str,
             }),
             'description': seo_desc or auto_seo_description({
-                'dedication_text': _cell(row, 'dedication_text'),
+                'dedication_text': dedication_text,
             }),
         },
         'created_at': now_str,
