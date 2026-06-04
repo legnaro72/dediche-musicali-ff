@@ -232,7 +232,7 @@ https://legnaro72.github.io/dediche-musicali-ff/
 
 ## ⏰ Pubblicazione automatica
 
-Il workflow `daily-publish.yml` si esegue automaticamente ogni giorno alle **08:15 ora italiana**.
+Il workflow `daily-publish.yml` si esegue automaticamente ogni giorno alle **07:28 ora italiana**.
 
 Flusso automatico:
 1. Legge il Google Sheet FF

@@ -2,8 +2,8 @@ name: 🎵 Pubblicazione Giornaliera DDG FF
 
 on:
   schedule:
-    - cron: '15 6 * 4-10 *'        # 08:15 Europe/Rome circa, periodo ora legale
-    - cron: '15 7 * 11,12,1,2,3 *' # 08:15 Europe/Rome circa, periodo ora solare
+    - cron: '28 5 * 4-10 *'        # 07:28 Europe/Rome circa, periodo ora legale
+    - cron: '28 6 * 11,12,1,2,3 *' # 07:28 Europe/Rome circa, periodo ora solare
   workflow_dispatch:
     inputs:
       date:
