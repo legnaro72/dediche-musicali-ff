@@ -1,4 +1,4 @@
-name: 🎵 Pubblicazione Giornaliera DDG FF
+name: Pubblicazione Giornaliera DDG FF
 
 on:
   schedule:
@@ -91,6 +91,7 @@ jobs:
           DEFAULT_VOTE_URL: ${{ secrets.DEFAULT_VOTE_URL }}
 
       - name: Pubblica dedica del giorno
+        id: publish_daily
         run: |
           TARGET_DATE="${{ inputs.date }}"
           [ -z "$TARGET_DATE" ] && TARGET_DATE="$(TZ=Europe/Rome date +%F)"
@@ -110,45 +111,45 @@ jobs:
           IMAGE_PROVIDER: ${{ secrets.IMAGE_PROVIDER }}
 
       - name: Setup Node.js
-        if: ${{ inputs.dry_run != 'true' }}
+        if: ${{ inputs.dry_run != 'true' && steps.publish_daily.outputs.published == 'true' }}
         uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: 'npm'
 
       - name: Installa dipendenze Node
-        if: ${{ inputs.dry_run != 'true' }}
+        if: ${{ inputs.dry_run != 'true' && steps.publish_daily.outputs.published == 'true' }}
         run: npm ci
 
       - name: Build Astro
-        if: ${{ inputs.dry_run != 'true' }}
+        if: ${{ inputs.dry_run != 'true' && steps.publish_daily.outputs.published == 'true' }}
         run: npm run build
         env:
           SITE_NAME: ${{ secrets.SITE_NAME }}
           SITE_URL: ${{ secrets.SITE_URL }}
 
       - name: Commit modifiche
-        if: ${{ inputs.dry_run != 'true' }}
+        if: ${{ inputs.dry_run != 'true' && steps.publish_daily.outputs.published == 'true' }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add data/ public/images/dedications/ || true
-          git diff --cached --quiet || git commit -m "🎵 DDG FF - Dedica del giorno - $(date +'%Y-%m-%d') [skip actions]"
+          git diff --cached --quiet || git commit -m "DDG FF - Dedica del giorno - $(date +'%Y-%m-%d') [skip actions]"
           git push || true
 
       - name: Upload artifact Pages
-        if: ${{ inputs.dry_run != 'true' }}
+        if: ${{ inputs.dry_run != 'true' && steps.publish_daily.outputs.published == 'true' }}
         uses: actions/upload-pages-artifact@v5
         with:
           path: ./dist
 
       - name: Deploy su GitHub Pages
-        if: ${{ inputs.dry_run != 'true' }}
+        if: ${{ inputs.dry_run != 'true' && steps.publish_daily.outputs.published == 'true' }}
         id: deployment
         uses: actions/deploy-pages@v5
 
       - name: Invia email notifica DDG FF online
-        if: ${{ success() && inputs.dry_run != 'true' }}
+        if: ${{ success() && inputs.dry_run != 'true' && steps.publish_daily.outputs.published == 'true' }}
         run: |
           if [ -z "$SMTP_HOST" ] || [ -z "$SMTP_USERNAME" ] || [ -z "$SMTP_PASSWORD" ]; then
             echo "SMTP non configurato: email notifica saltata."

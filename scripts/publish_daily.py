@@ -25,6 +25,15 @@ from scripts.utils import (
 logger = setup_logging('publish')
 
 
+def set_github_output(name: str, value: str) -> None:
+    """Scrive un output GitHub Actions quando lo script gira in workflow."""
+    output_path = os.environ.get('GITHUB_OUTPUT')
+    if not output_path:
+        return
+    with open(output_path, 'a', encoding='utf-8') as output_file:
+        output_file.write(f"{name}={value}\n")
+
+
 def find_todays_dedications(date_str: str, target_id: str = None):
     """Cerca tutte le dediche per la data indicata."""
     dedications = load_dedications_for_date(date_str, statuses=('scheduled', 'published'))
@@ -101,6 +110,7 @@ def write_today_json(ded: dict, dry_run: bool = False) -> bool:
 
 def publish(date_str: str, force_republish: bool = False, dry_run: bool = False,
             target_id: str = None) -> bool:
+    set_github_output('published', 'false')
     logger.info(f"Data target: {date_str} (Europe/Rome)")
     if target_id:
         logger.info(f"ID target: {target_id}")
@@ -117,6 +127,7 @@ def publish(date_str: str, force_republish: bool = False, dry_run: bool = False,
     fonts = ensure_fonts()
 
     published = []
+    changed = False
     for ded in dedications:
         ded_id = ded.get('id', '?')
         logger.info(f"Trovata: {ded_id} [{ded.get('status')}]")
@@ -144,12 +155,19 @@ def publish(date_str: str, force_republish: bool = False, dry_run: bool = False,
             logger.error(f"Impossibile aggiornare stato dedica {ded_id}")
             return False
         published.append(ded)
+        changed = True
+
+    if not changed:
+        logger.info("Nessuna nuova dedica pubblicata: build, deploy ed email non necessari.")
+        log_untouched_archive(date_str)
+        return True
 
     primary = sorted(published, key=lambda d: (str(d.get('daily_order', '')), d.get('id', '')))[0]
     if not write_today_json(primary, dry_run):
         logger.error("Impossibile scrivere today.json")
         return False
 
+    set_github_output('published', 'true')
     log_untouched_archive(date_str)
     logger.info(f"Pubblicate/aggiornate {len(published)} dediche per {date_str}")
     return True
