@@ -890,6 +890,17 @@
       "source": "site",
       "userAgent": "Mozilla/5.0 (iPhone; CPU iPhone OS 17_6_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/148.0.7778.166 Mobile/15E148 Safari/604.1",
       "createdAt": "2026-06-08T19:53:42.664Z"
+    },
+    {
+      "visitId": "935c20ce-c549-4516-ba7e-ae9f6d9600a6",
+      "userKey": "paola-ferrando",
+      "userName": "Paola Ferrando",
+      "visitedAt": "2026-06-08T19:53:57.601Z",
+      "visitDate": "2026-06-08",
+      "page": "/",
+      "source": "site",
+      "userAgent": "Mozilla/5.0 (iPhone; CPU iPhone OS 17_6_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/148.0.7778.166 Mobile/15E148 Safari/604.1",
+      "createdAt": "2026-06-08T19:53:57.601Z"
     }
   ]
 }
