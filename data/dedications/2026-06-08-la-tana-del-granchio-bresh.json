@@ -31,7 +31,7 @@
     "description": "Dedica musicale del giorno con \"La tana del granchio\" di Bresh."
   },
   "created_at": "2026-06-08T20:01:18.794695+02:00",
-  "updated_at": "2026-06-08T19:54:34.332Z",
+  "updated_at": "2026-06-08T19:54:46.114Z",
   "video": {
     "type": "youtube",
     "url": "https://youtu.be/7Uwkg8Is_m4?is=Tsgu2hqf3Sx5DD0v",
@@ -44,8 +44,8 @@
   "reactions": {
     "down": 0,
     "like": 0,
-    "heart": 0,
-    "sun": 2
+    "heart": 1,
+    "sun": 1
   },
   "votes": [],
   "thoughts": [],
@@ -62,9 +62,9 @@
       "userId": "7eaa6f1a-a328-48e3-8a74-b918cf0fc0c5",
       "userKey": "paola-ferrando",
       "userName": "Paola Ferrando",
-      "value": "sun",
+      "value": "heart",
       "createdAt": "2026-06-08T19:54:34.332Z",
-      "updatedAt": "2026-06-08T19:54:34.332Z"
+      "updatedAt": "2026-06-08T19:54:46.114Z"
     }
   ],
   "date_it": "8 giugno 2026"
