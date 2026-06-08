@@ -410,15 +410,24 @@ const fullOgImage = ogImage
 
     if (!window.__DDGFF_NAV_READY) {
       window.__DDGFF_NAV_READY = true;
+      const toggleMobileMenu = (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        const navMenu = document.getElementById('primary-navigation');
+        setMobileMenuOpen(!navMenu?.classList.contains('is-open'));
+      };
+
+      document.querySelectorAll('[data-nav-toggle]').forEach((toggle) => {
+        toggle.addEventListener('click', toggleMobileMenu);
+        toggle.addEventListener('touchend', toggleMobileMenu, { passive: false });
+      });
+
       document.addEventListener('click', (event) => {
         const target = event.target;
         if (!(target instanceof Element)) return;
 
-        const toggle = target.closest('[data-nav-toggle]');
-        if (toggle) {
-          event.preventDefault();
-          const navMenu = document.getElementById('primary-navigation');
-          setMobileMenuOpen(!navMenu?.classList.contains('is-open'));
+        if (target.closest('[data-nav-toggle]')) {
+          toggleMobileMenu(event);
           return;
         }
 

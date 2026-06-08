@@ -120,7 +120,7 @@ section {
   top: 0;
   left: 0;
   right: 0;
-  z-index: 100;
+  z-index: 300;
   padding: 1rem 0;
   transition: var(--transition);
 }
@@ -132,7 +132,7 @@ section {
   padding: 0.75rem 0;
 }
 
-.navbar-inner { display:flex; align-items:center; justify-content:space-between; gap:1.5rem; }
+.navbar-inner { display:flex; align-items:center; justify-content:space-between; gap:1.5rem; isolation:isolate; }
 .navbar-brand { flex-shrink:0; }
 
 .navbar-actions {
@@ -155,7 +155,8 @@ section {
 .navbar-menu-toggle {
   display: none;
   position: relative;
-  z-index: 170;
+  z-index: 360;
+  flex: 0 0 auto;
   min-height: 38px;
   padding: 0 0.9rem;
   border: 1px solid var(--border);
@@ -166,6 +167,8 @@ section {
   font: 700 0.78rem var(--font-sans);
   letter-spacing: 0.08em;
   text-transform: uppercase;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .navbar-nav { display:flex; gap:2rem; list-style:none; }
@@ -1448,6 +1451,7 @@ button.video-poster {
   gap:0.45rem;
   z-index:140;
   position:relative;
+  pointer-events:none;
 }
 
 .ambient-audio-toggle {
@@ -1466,6 +1470,9 @@ button.video-poster {
   font: 700 0.82rem var(--font-sans);
   letter-spacing: 0.02em;
   transition: var(--transition);
+  pointer-events:auto;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .ambient-audio-toggle:hover,
@@ -1525,6 +1532,7 @@ button.video-poster {
   line-height:1.35;
   text-align:right;
   backdrop-filter:blur(14px);
+  pointer-events:none;
 }
 
 /* Useful links */
