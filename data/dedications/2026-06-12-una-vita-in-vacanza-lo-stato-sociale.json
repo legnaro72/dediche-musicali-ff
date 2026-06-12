@@ -31,7 +31,7 @@
     "description": "Dedica musicale del giorno con \"Una Vita In Vacanza\" di Lo Stato Sociale."
   },
   "created_at": "2026-06-12T14:51:13.420745+02:00",
-  "updated_at": "2026-06-12T13:08:21.996Z",
+  "updated_at": "2026-06-12T14:22:10.348Z",
   "video": {
     "type": "youtube",
     "url": "https://youtu.be/RC32oshyJh8?is=evwxG0HqWmyRyjW-",
@@ -42,7 +42,7 @@
   "voteAverage": 10,
   "thoughtsText": "[Paola Ferrando] Genova e Genoa nel ❤️❤️❤️❤️",
   "reactions": {
-    "down": 0,
+    "down": 1,
     "like": 0,
     "heart": 0,
     "sun": 0
@@ -67,6 +67,15 @@
       "updatedAt": "2026-06-12T13:08:21.996Z"
     }
   ],
-  "reactionEntries": [],
+  "reactionEntries": [
+    {
+      "userId": "493c16e4-453a-4b47-9384-c8abb31c24c6",
+      "userKey": "gabriele-ferrando",
+      "userName": "Gabriele Ferrando",
+      "value": "down",
+      "createdAt": "2026-06-12T14:22:10.348Z",
+      "updatedAt": "2026-06-12T14:22:10.348Z"
+    }
+  ],
   "date_it": "12 giugno 2026"
 }
