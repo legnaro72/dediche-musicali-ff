@@ -31,7 +31,7 @@
     "description": "Dedica musicale del giorno con \"Menomale che c'è il mare\" di Olly, Juli."
   },
   "created_at": "2026-06-09T07:38:14.527416+02:00",
-  "updated_at": "2026-06-12T13:09:31.507Z",
+  "updated_at": "2026-06-12T13:09:36.158Z",
   "video": {
     "type": "youtube",
     "url": "https://youtu.be/FsDfPjAWLFM?is=26HYzwk7X4ukKoZa",
@@ -43,8 +43,8 @@
   "thoughtsText": "",
   "reactions": {
     "down": 0,
-    "like": 1,
-    "heart": 0,
+    "like": 0,
+    "heart": 1,
     "sun": 1
   },
   "votes": [],
@@ -62,9 +62,9 @@
       "userId": "7eaa6f1a-a328-48e3-8a74-b918cf0fc0c5",
       "userKey": "paola-ferrando",
       "userName": "Paola Ferrando",
-      "value": "like",
+      "value": "heart",
       "createdAt": "2026-06-12T13:09:31.507Z",
-      "updatedAt": "2026-06-12T13:09:31.507Z"
+      "updatedAt": "2026-06-12T13:09:36.158Z"
     }
   ],
   "date_it": "9 giugno 2026"
