@@ -4,10 +4,8 @@
     "plusVote": true
   },
   "feedbackApiUrl": "https://ddgff-feedback.massimiliano-ferrando.workers.dev",
-  "siteEffect": "none",
-  "effectIntensity": "medium",
   "fakeError": {
-    "enabled": true,
+    "enabled": false,
     "title": "ERROR 404",
     "message": "Il server non e' al momento raggiungibile.",
     "buttonText": "Ritenta",
@@ -15,5 +13,5 @@
     "imageMessage": "Sistema momentaneamente offline.",
     "adminMessage": "Per il ripristino del servizio contattare l'amministratore del sito."
   },
-  "updated_at": "2026-06-06T08:13:16.959664+00:00"
+  "updated_at": "2026-06-08T17:35:06.899195+00:00"
 }

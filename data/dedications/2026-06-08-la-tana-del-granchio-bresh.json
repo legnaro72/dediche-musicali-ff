@@ -1,0 +1,89 @@
+{
+  "id": "2026-06-08-la-tana-del-granchio-bresh",
+  "date": "2026-06-08",
+  "day_name": "lunedì",
+  "status": "published",
+  "song_title": "La tana del granchio",
+  "artist": "Bresh",
+  "dedication_title": "La dedica del giorno",
+  "dedication_text": "La tana del Granchio... la spiaggia della Galea... il rifugio, l'abbraccio... la grotta di Peter Pan...❤️💙",
+  "audio": {
+    "url": "https://open.spotify.com/track/4RTMLSmkfK9kqKlmTPGRzo?si=aizNXnBKSqS_dE5vJoP-3w",
+    "type": "spotify"
+  },
+  "vote": {
+    "url": "https://docs.google.com/forms/d/17VuesL0BOupyw5M5MNCLs1gq_uqZioVKVkGC8oFfn38/viewform"
+  },
+  "image": {
+    "path": "/images/dedications/2026-06-08-la-tana-del-granchio-bresh.webp",
+    "alt": "Dedica musicale La tana del granchio di Bresh",
+    "mode": "raw",
+    "source": "public/images/upload/2026-06-08-la-tana-del-granchio-bresh.webp"
+  },
+  "short_phrase": "La tana del Granchio✨🎵",
+  "tags": [
+    "musica",
+    "emozioni",
+    "dedica"
+  ],
+  "seo": {
+    "title": "La tana del granchio - Bresh | DDGFFSite",
+    "description": "Dedica musicale del giorno con \"La tana del granchio\" di Bresh."
+  },
+  "created_at": "2026-06-08T20:01:18.794695+02:00",
+  "updated_at": "2026-06-08T20:48:19.010Z",
+  "video": {
+    "type": "youtube",
+    "url": "https://youtu.be/7Uwkg8Is_m4?is=Tsgu2hqf3Sx5DD0v",
+    "poster": "/images/og-default.png?v=dediche-musicali-ff-video-poster-20260602",
+    "title": "Momenti indimenticabili",
+    "description": "Gioie effimere, una flebile speranza che ha acceso un rogo pazzesco... anche nei momenti piu bui bisogna sempre sapere che ci sarà un domani, bello e pazzesco."
+  },
+  "voteAverage": 10,
+  "thoughtsText": "[Paola Ferrando] Emozioni",
+  "reactions": {
+    "down": 0,
+    "like": 0,
+    "heart": 1,
+    "sun": 1
+  },
+  "votes": [
+    {
+      "userId": "7eaa6f1a-a328-48e3-8a74-b918cf0fc0c5",
+      "userKey": "paola-ferrando",
+      "userName": "Paola Ferrando",
+      "value": 10,
+      "createdAt": "2026-06-08T20:48:19.010Z",
+      "updatedAt": "2026-06-08T20:48:19.010Z"
+    }
+  ],
+  "thoughts": [
+    {
+      "userId": "7eaa6f1a-a328-48e3-8a74-b918cf0fc0c5",
+      "userKey": "paola-ferrando",
+      "userName": "Paola Ferrando",
+      "text": "Emozioni",
+      "createdAt": "2026-06-08T20:48:19.010Z",
+      "updatedAt": "2026-06-08T20:48:19.010Z"
+    }
+  ],
+  "reactionEntries": [
+    {
+      "userId": "493c16e4-453a-4b47-9384-c8abb31c24c6",
+      "userKey": "gabriele-ferrando",
+      "userName": "Gabriele Ferrando",
+      "value": "sun",
+      "createdAt": "2026-06-08T18:54:30.460Z",
+      "updatedAt": "2026-06-08T18:54:30.460Z"
+    },
+    {
+      "userId": "7eaa6f1a-a328-48e3-8a74-b918cf0fc0c5",
+      "userKey": "paola-ferrando",
+      "userName": "Paola Ferrando",
+      "value": "heart",
+      "createdAt": "2026-06-08T19:55:43.782Z",
+      "updatedAt": "2026-06-08T19:55:53.779Z"
+    }
+  ],
+  "date_it": "8 giugno 2026"
+}
