@@ -4,6 +4,8 @@
     "plusVote": true
   },
   "feedbackApiUrl": "https://ddgff-feedback.massimiliano-ferrando.workers.dev",
+  "siteEffect": "none",
+  "effectIntensity": "medium",
   "fakeError": {
     "enabled": true,
     "title": "ERROR 404",

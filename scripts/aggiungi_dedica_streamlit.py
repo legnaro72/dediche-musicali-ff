@@ -65,6 +65,8 @@ DEFAULT_SITE_SETTINGS = {
         "plusVote": True,
     },
     "feedbackApiUrl": "",
+    "siteEffect": "none",
+    "effectIntensity": "medium",
     "fakeError": {
         "enabled": False,
         "title": "ERROR 404",
@@ -75,6 +77,22 @@ DEFAULT_SITE_SETTINGS = {
         "adminMessage": "Per il ripristino del servizio contattare l'amministratore del sito.",
     },
     "updated_at": "",
+}
+SITE_EFFECT_OPTIONS = {
+    "Automatico": "auto",
+    "Nessun effetto": "none",
+    "Brillio": "sparkles",
+    "Neve": "snow",
+    "Cuori": "hearts",
+    "Palloncini": "balloons",
+    "Coriandoli": "confetti",
+    "Fuochi d'artificio": "fireworks",
+    "Stelle": "stars",
+}
+EFFECT_INTENSITY_OPTIONS = {
+    "Bassa": "low",
+    "Media": "medium",
+    "Alta": "high",
 }
 VALID_IMAGE_MODES = ("raw", "auto", "upload", "none")
 VALID_IMAGE_EXTS = {".jpg", ".jpeg", ".jfif", ".png", ".webp", ".gif", ".heic", ".heif", ""}
@@ -541,12 +559,20 @@ def normalize_site_settings(settings: dict) -> dict:
     if not isinstance(fake_error, dict):
         fake_error = {}
     default_fake = DEFAULT_SITE_SETTINGS["fakeError"]
+    site_effect = str(settings.get("siteEffect", DEFAULT_SITE_SETTINGS["siteEffect"]) if isinstance(settings, dict) else "").strip()
+    if site_effect not in SITE_EFFECT_OPTIONS.values():
+        site_effect = DEFAULT_SITE_SETTINGS["siteEffect"]
+    effect_intensity = str(settings.get("effectIntensity", DEFAULT_SITE_SETTINGS["effectIntensity"]) if isinstance(settings, dict) else "").strip()
+    if effect_intensity not in EFFECT_INTENSITY_OPTIONS.values():
+        effect_intensity = DEFAULT_SITE_SETTINGS["effectIntensity"]
     return {
         "buttons": {
             "googleVote": buttons.get("googleVote", True) is not False,
             "plusVote": buttons.get("plusVote", True) is not False,
         },
         "feedbackApiUrl": str(settings.get("feedbackApiUrl", "") if isinstance(settings, dict) else "").strip(),
+        "siteEffect": site_effect,
+        "effectIntensity": effect_intensity,
         "fakeError": {
             "enabled": fake_error.get("enabled", False) is True,
             "title": str(fake_error.get("title") or default_fake["title"]),
@@ -2049,6 +2075,8 @@ def render_site_configuration() -> None:
     fake_error = settings["fakeError"]
     config_version = settings.get("updated_at") or "default"
     if st.session_state.get("config_loaded_version") != config_version:
+        st.session_state["config_site_effect"] = settings.get("siteEffect", DEFAULT_SITE_SETTINGS["siteEffect"])
+        st.session_state["config_effect_intensity"] = settings.get("effectIntensity", DEFAULT_SITE_SETTINGS["effectIntensity"])
         st.session_state["config_google_vote_visible"] = buttons["googleVote"]
         st.session_state["config_plus_vote_visible"] = buttons["plusVote"]
         st.session_state["config_feedback_api_url"] = settings.get("feedbackApiUrl", "")
@@ -2071,6 +2099,25 @@ def render_site_configuration() -> None:
         except Exception as exc:
             st.session_state["config_toggle_status"] = str(exc)
 
+    st.subheader("Effetti Speciali")
+    effect_label_by_value = {value: label for label, value in SITE_EFFECT_OPTIONS.items()}
+    intensity_label_by_value = {value: label for label, value in EFFECT_INTENSITY_OPTIONS.items()}
+    site_effect = st.selectbox(
+        "Effetto speciale del sito",
+        options=list(SITE_EFFECT_OPTIONS.values()),
+        format_func=lambda value: effect_label_by_value.get(value, value),
+        key="config_site_effect",
+    )
+    effect_intensity = st.selectbox(
+        "Intensita' effetto",
+        options=list(EFFECT_INTENSITY_OPTIONS.values()),
+        format_func=lambda value: intensity_label_by_value.get(value, value),
+        key="config_effect_intensity",
+    )
+    if site_effect == "auto":
+        st.info("Automatico e' pronto per regole future: in questa versione equivale a Nessun effetto.")
+
+    st.divider()
     st.subheader("Pulsanti")
     google_vote_visible = st.checkbox(
         "Mostra pulsante Votami (Google Form)",
@@ -2194,6 +2241,8 @@ def render_site_configuration() -> None:
                 "plusVote": bool(plus_vote_visible),
             },
             "feedbackApiUrl": feedback_api_url.strip(),
+            "siteEffect": site_effect,
+            "effectIntensity": effect_intensity,
             "fakeError": {
                 "enabled": False if restore_site_clicked else bool(fake_error_enabled),
                 "title": fake_error_title.strip() or DEFAULT_SITE_SETTINGS["fakeError"]["title"],

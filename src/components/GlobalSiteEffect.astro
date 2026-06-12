@@ -1,0 +1,187 @@
+<div class="global-site-effect" id="global-site-effect" aria-hidden="true"></div>
+
+<script>
+  import { tsParticles } from '@tsparticles/engine';
+  import { loadSlim } from '@tsparticles/slim';
+
+  const effectRootId = 'global-site-effect';
+  const validEffects = new Set(['auto', 'none', 'sparkles', 'snow', 'hearts', 'balloons', 'confetti', 'fireworks', 'stars']);
+  const validIntensities = new Set(['low', 'medium', 'high']);
+  const intensityMap = {
+    low: { count: 18, speed: 0.55, rate: 0.65 },
+    medium: { count: 34, speed: 0.9, rate: 1 },
+    high: { count: 58, speed: 1.25, rate: 1.45 },
+  };
+
+  let engineReady = false;
+  let activeContainer = null;
+  let activeKey = '';
+
+  const reducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  const normalizeEffect = (value) => {
+    const effect = String(value || 'none').trim();
+    if (!validEffects.has(effect)) return 'none';
+    return effect === 'auto' ? 'none' : effect;
+  };
+
+  const normalizeIntensity = (value) => {
+    const intensity = String(value || 'medium').trim();
+    return validIntensities.has(intensity) ? intensity : 'medium';
+  };
+
+  const baseOptions = (effect, intensity) => ({
+    key: `${effect}:${intensity}`,
+    options: {
+      fullScreen: { enable: false },
+      detectRetina: true,
+      fpsLimit: intensity === 'high' ? 50 : 42,
+      background: { color: { value: 'transparent' } },
+      interactivity: { events: { resize: true } },
+      particles: {
+        number: { value: intensityMap[intensity].count, density: { enable: true, width: 1100, height: 900 } },
+        collisions: { enable: false },
+        opacity: { value: { min: 0.25, max: 0.85 } },
+        size: { value: { min: 2, max: 5 } },
+        move: {
+          enable: true,
+          speed: intensityMap[intensity].speed,
+          outModes: { default: 'out' },
+        },
+      },
+    },
+  });
+
+  const buildOptions = (effect, intensity) => {
+    const built = baseOptions(effect, intensity);
+    const particles = built.options.particles;
+
+    if (effect === 'snow') {
+      particles.color = { value: ['#ffffff', '#dbeafe', '#bae6fd'] };
+      particles.shape = { type: 'circle' };
+      particles.number.value = Math.round(intensityMap[intensity].count * 1.25);
+      particles.opacity = { value: { min: 0.22, max: 0.72 } };
+      particles.size = { value: { min: 1.5, max: intensity === 'high' ? 5.5 : 4.5 } };
+      particles.move = { enable: true, direction: 'bottom', speed: intensityMap[intensity].speed, straight: false, random: true, outModes: { default: 'out' } };
+      return built;
+    }
+
+    if (effect === 'sparkles') {
+      particles.color = { value: ['#fff7ad', '#f0abfc', '#93c5fd', '#ffffff'] };
+      particles.shape = { type: 'star' };
+      particles.opacity = { value: { min: 0.16, max: 0.95 }, animation: { enable: true, speed: 1.4 * intensityMap[intensity].rate, sync: false } };
+      particles.size = { value: { min: 1, max: intensity === 'high' ? 4.5 : 3.5 }, animation: { enable: true, speed: 2, sync: false } };
+      particles.move = { enable: true, speed: 0.22 * intensityMap[intensity].rate, random: true, outModes: { default: 'out' } };
+      return built;
+    }
+
+    if (effect === 'stars') {
+      particles.color = { value: ['#fef3c7', '#dbeafe', '#f5d0fe'] };
+      particles.shape = { type: 'star' };
+      particles.opacity = { value: { min: 0.2, max: 0.9 }, animation: { enable: true, speed: 0.9 * intensityMap[intensity].rate, sync: false } };
+      particles.size = { value: { min: 1.2, max: intensity === 'high' ? 5 : 4 } };
+      particles.move = { enable: true, speed: 0.16 * intensityMap[intensity].rate, random: true, outModes: { default: 'bounce' } };
+      return built;
+    }
+
+    if (effect === 'hearts') {
+      particles.shape = { type: 'emoji', options: { emoji: { value: ['\u2764\uFE0F', '\uD83D\uDC95', '\uD83D\uDC96'] } } };
+      particles.opacity = { value: { min: 0.45, max: 0.9 } };
+      particles.size = { value: { min: 12, max: intensity === 'high' ? 24 : 20 } };
+      particles.move = { enable: true, direction: 'top', speed: 0.7 * intensityMap[intensity].rate, straight: false, random: true, outModes: { default: 'out' } };
+      return built;
+    }
+
+    if (effect === 'balloons') {
+      particles.shape = { type: 'emoji', options: { emoji: { value: ['\uD83C\uDF88'] } } };
+      particles.number.value = Math.max(8, Math.round(intensityMap[intensity].count * 0.45));
+      particles.opacity = { value: { min: 0.55, max: 0.9 } };
+      particles.size = { value: { min: 18, max: intensity === 'high' ? 34 : 28 } };
+      particles.move = { enable: true, direction: 'top', speed: 0.55 * intensityMap[intensity].rate, straight: false, random: true, outModes: { default: 'out' } };
+      return built;
+    }
+
+    if (effect === 'confetti') {
+      particles.color = { value: ['#ff0033', '#0057b8', '#fde047', '#22c55e', '#f97316', '#f0abfc'] };
+      particles.shape = { type: ['square', 'polygon'], options: { polygon: { sides: 5 } } };
+      particles.opacity = { value: { min: 0.45, max: 0.9 } };
+      particles.size = { value: { min: 3, max: intensity === 'high' ? 8 : 6 } };
+      particles.move = { enable: true, direction: 'bottom', speed: 1.05 * intensityMap[intensity].rate, straight: false, random: true, outModes: { default: 'out' } };
+      particles.rotate = { value: { min: 0, max: 360 }, animation: { enable: true, speed: 12 * intensityMap[intensity].rate } };
+      return built;
+    }
+
+    if (effect === 'fireworks') {
+      particles.color = { value: ['#fef08a', '#fca5a5', '#93c5fd', '#c4b5fd', '#ffffff'] };
+      particles.shape = { type: 'circle' };
+      particles.number.value = Math.round(intensityMap[intensity].count * 0.75);
+      particles.opacity = { value: { min: 0.15, max: 0.9 }, animation: { enable: true, speed: 1.8 * intensityMap[intensity].rate, sync: false } };
+      particles.size = { value: { min: 1, max: intensity === 'high' ? 4 : 3 } };
+      particles.move = { enable: true, speed: 1.35 * intensityMap[intensity].rate, random: true, outModes: { default: 'out' } };
+      particles.life = { duration: { value: { min: 1.1, max: 2.2 } }, count: 0 };
+      return built;
+    }
+
+    return built;
+  };
+
+  const clearEffect = async () => {
+    activeKey = '';
+    if (activeContainer) {
+      activeContainer.destroy();
+      activeContainer = null;
+    }
+  };
+
+  const applyGlobalSiteEffect = async (settings) => {
+    const effect = normalizeEffect(settings?.siteEffect);
+    const intensity = normalizeIntensity(settings?.effectIntensity);
+    const root = document.getElementById(effectRootId);
+    if (!root || reducedMotion() || effect === 'none') {
+      await clearEffect();
+      return;
+    }
+
+    if (!engineReady) {
+      await loadSlim(tsParticles);
+      engineReady = true;
+    }
+
+    const built = buildOptions(effect, intensity);
+    if (activeKey === built.key) return;
+    await clearEffect();
+    activeKey = built.key;
+    activeContainer = await tsParticles.load({ id: effectRootId, options: built.options });
+  };
+
+  if (!window.__DDGFF_GLOBAL_SITE_EFFECT_READY) {
+    window.__DDGFF_GLOBAL_SITE_EFFECT_READY = true;
+    window.__DDGFF_APPLY_GLOBAL_SITE_EFFECT = applyGlobalSiteEffect;
+    window.addEventListener('ddgff:site-settings-updated', (event) => {
+      applyGlobalSiteEffect(event.detail || window.__DDGFF_SITE_SETTINGS || {});
+    });
+    window.matchMedia('(prefers-reduced-motion: reduce)').addEventListener('change', () => {
+      applyGlobalSiteEffect(window.__DDGFF_SITE_SETTINGS || {});
+    });
+    applyGlobalSiteEffect(window.__DDGFF_SITE_SETTINGS || {});
+  }
+</script>
+
+<style>
+  .global-site-effect {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    overflow: hidden;
+  }
+
+  .global-site-effect canvas {
+    pointer-events: none !important;
+  }
+
+  :global(body > :not(.global-site-effect)) {
+    position: relative;
+    z-index: 1;
+  }
+</style>

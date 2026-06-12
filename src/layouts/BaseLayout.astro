@@ -2,6 +2,7 @@
 // src/layouts/BaseLayout.astro
 import '../styles/global.css';
 import '../styles/landscape-pan.css';
+import GlobalSiteEffect from '../components/GlobalSiteEffect.astro';
 import UserIdentityModal from '../components/UserIdentityModal.astro';
 import { ViewTransitions } from 'astro:transitions';
 export interface Props {
@@ -90,6 +91,8 @@ const fullOgImage = ogImage
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 </head>
 <body>
+  <GlobalSiteEffect />
+
   <section class="site-lock" data-site-lock hidden aria-live="polite">
     <div class="site-lock-shell" data-site-lock-phase="initial">
       <div class="site-lock-panel" data-site-lock-initial>
@@ -279,6 +282,7 @@ const fullOgImage = ogImage
     };
 
     const applySiteSettings = (settings) => {
+      window.__DDGFF_SITE_SETTINGS = settings || {};
       applyFeedbackApiUrl(settings);
       const buttons = settings?.buttons || {};
       const visibility = {
@@ -293,7 +297,8 @@ const fullOgImage = ogImage
       }
 
       applyFakeErrorMode(settings?.fakeError || {});
-      window.dispatchEvent(new CustomEvent('ddgff:site-settings-updated'));
+      window.__DDGFF_APPLY_GLOBAL_SITE_EFFECT?.(settings || {});
+      window.dispatchEvent(new CustomEvent('ddgff:site-settings-updated', { detail: settings || {} }));
     };
 
     const loadSiteSettings = async () => {
