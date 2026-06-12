@@ -127,6 +127,11 @@
 
   const clearEffect = async () => {
     activeKey = '';
+    const root = document.getElementById(effectRootId);
+    if (root) {
+      delete root.dataset.effect;
+      delete root.dataset.intensity;
+    }
     if (activeContainer) {
       activeContainer.destroy();
       activeContainer = null;
@@ -142,16 +147,26 @@
       return;
     }
 
-    if (!engineReady) {
-      await loadSlim(tsParticles);
-      engineReady = true;
-    }
+    root.dataset.effect = effect;
+    root.dataset.intensity = intensity;
 
-    const built = buildOptions(effect, intensity);
-    if (activeKey === built.key) return;
-    await clearEffect();
-    activeKey = built.key;
-    activeContainer = await tsParticles.load({ id: effectRootId, options: built.options });
+    try {
+      if (!engineReady) {
+        await loadSlim(tsParticles);
+        engineReady = true;
+      }
+
+      const built = buildOptions(effect, intensity);
+      if (activeKey === built.key) return;
+      if (activeContainer) {
+        activeContainer.destroy();
+        activeContainer = null;
+      }
+      activeKey = built.key;
+      activeContainer = await tsParticles.load({ id: effectRootId, element: root, options: built.options });
+    } catch (error) {
+      console.warn('Effetto speciale non avviato con tsParticles:', error);
+    }
   };
 
   if (!window.__DDGFF_GLOBAL_SITE_EFFECT_READY) {
@@ -174,11 +189,82 @@
     z-index: 250;
     pointer-events: none;
     overflow: hidden;
-    opacity: 0.78;
+    opacity: 0.9;
     mix-blend-mode: screen;
   }
 
   .global-site-effect canvas {
     pointer-events: none !important;
+  }
+
+  .global-site-effect[data-effect="sparkles"]::before,
+  .global-site-effect[data-effect="sparkles"]::after {
+    content: "";
+    position: absolute;
+    inset: -12%;
+    pointer-events: none;
+    background-image:
+      radial-gradient(circle, rgba(255, 255, 255, 1) 0 1.8px, transparent 3.2px),
+      radial-gradient(circle, rgba(255, 247, 173, 0.95) 0 1.6px, transparent 3px),
+      radial-gradient(circle, rgba(240, 171, 252, 0.86) 0 1.7px, transparent 3px),
+      radial-gradient(circle, rgba(147, 197, 253, 0.82) 0 1.5px, transparent 2.8px);
+    background-size: 76px 76px, 118px 118px, 154px 154px, 204px 204px;
+    background-position: 8px 18px, 44px 66px, 92px 24px, 120px 132px;
+    animation: ddgff-sparkles-drift 7s linear infinite, ddgff-sparkles-pulse 1.9s ease-in-out infinite;
+  }
+
+  .global-site-effect[data-effect="sparkles"]::after {
+    inset: -18%;
+    opacity: 0.62;
+    filter: blur(0.5px);
+    transform: rotate(12deg);
+    animation-duration: 13s, 3.2s;
+    animation-direction: reverse, alternate;
+  }
+
+  .global-site-effect[data-effect="sparkles"][data-intensity="low"] {
+    opacity: 0.62;
+  }
+
+  .global-site-effect[data-effect="sparkles"][data-intensity="high"] {
+    opacity: 1;
+  }
+
+  .global-site-effect[data-effect="sparkles"][data-intensity="high"]::before,
+  .global-site-effect[data-effect="sparkles"][data-intensity="high"]::after {
+    background-size: 68px 68px, 104px 104px, 140px 140px, 188px 188px;
+    animation-duration: 7s, 1.8s;
+  }
+
+  .global-site-effect[data-effect="sparkles"][data-intensity="low"]::before,
+  .global-site-effect[data-effect="sparkles"][data-intensity="low"]::after {
+    background-size: 140px 140px, 190px 190px, 260px 260px, 320px 320px;
+    animation-duration: 14s, 3.6s;
+  }
+
+  @keyframes ddgff-sparkles-drift {
+    from {
+      transform: translate3d(0, 0, 0);
+    }
+    to {
+      transform: translate3d(56px, 72px, 0);
+    }
+  }
+
+  @keyframes ddgff-sparkles-pulse {
+    0%, 100% {
+      opacity: 0.48;
+    }
+    50% {
+      opacity: 1;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .global-site-effect::before,
+    .global-site-effect::after {
+      display: none !important;
+      animation: none !important;
+    }
   }
 </style>
