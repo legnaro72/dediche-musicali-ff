@@ -171,17 +171,14 @@
   .global-site-effect {
     position: fixed;
     inset: 0;
-    z-index: 0;
+    z-index: 250;
     pointer-events: none;
     overflow: hidden;
+    opacity: 0.78;
+    mix-blend-mode: screen;
   }
 
   .global-site-effect canvas {
     pointer-events: none !important;
-  }
-
-  :global(body > :not(.global-site-effect)) {
-    position: relative;
-    z-index: 1;
   }
 </style>
