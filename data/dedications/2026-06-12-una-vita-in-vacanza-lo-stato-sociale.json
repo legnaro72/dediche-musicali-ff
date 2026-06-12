@@ -31,7 +31,7 @@
     "description": "Dedica musicale del giorno con \"Una Vita In Vacanza\" di Lo Stato Sociale."
   },
   "created_at": "2026-06-12T14:51:13.420745+02:00",
-  "updated_at": "2026-06-12T14:51:13.980824+02:00",
+  "updated_at": "2026-06-12T13:08:21.996Z",
   "video": {
     "type": "youtube",
     "url": "https://youtu.be/RC32oshyJh8?is=evwxG0HqWmyRyjW-",
@@ -39,16 +39,34 @@
     "title": "Il posto del cuore",
     "description": "Parte 1"
   },
-  "voteAverage": null,
-  "thoughtsText": "",
+  "voteAverage": 10,
+  "thoughtsText": "[Paola Ferrando] Genova e Genoa nel ❤️❤️❤️❤️",
   "reactions": {
     "down": 0,
     "like": 0,
     "heart": 0,
     "sun": 0
   },
-  "votes": [],
-  "thoughts": [],
+  "votes": [
+    {
+      "userId": "7eaa6f1a-a328-48e3-8a74-b918cf0fc0c5",
+      "userKey": "paola-ferrando",
+      "userName": "Paola Ferrando",
+      "value": 10,
+      "createdAt": "2026-06-12T13:08:21.996Z",
+      "updatedAt": "2026-06-12T13:08:21.996Z"
+    }
+  ],
+  "thoughts": [
+    {
+      "userId": "7eaa6f1a-a328-48e3-8a74-b918cf0fc0c5",
+      "userKey": "paola-ferrando",
+      "userName": "Paola Ferrando",
+      "text": "Genova e Genoa nel ❤️❤️❤️❤️",
+      "createdAt": "2026-06-12T13:08:21.996Z",
+      "updatedAt": "2026-06-12T13:08:21.996Z"
+    }
+  ],
   "reactionEntries": [],
   "date_it": "12 giugno 2026"
 }
