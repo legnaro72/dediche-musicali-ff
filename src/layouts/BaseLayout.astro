@@ -281,6 +281,21 @@ const fullOgImage = ogImage
       }
     };
 
+    const applyGlobalSiteEffectFallback = (settings) => {
+      const root = document.getElementById('global-site-effect');
+      if (!(root instanceof HTMLElement)) return;
+      const validEffects = new Set(['sparkles', 'snow', 'hearts', 'balloons', 'confetti', 'fireworks', 'stars']);
+      const validIntensities = new Set(['low', 'medium', 'high']);
+      const effect = String(settings?.siteEffect || 'none').trim();
+      if (!validEffects.has(effect)) {
+        delete root.dataset.effect;
+        delete root.dataset.intensity;
+        return;
+      }
+      const intensity = String(settings?.effectIntensity || 'medium').trim();
+      root.dataset.effect = effect;
+      root.dataset.intensity = validIntensities.has(intensity) ? intensity : 'medium';
+    };
     const applySiteSettings = (settings) => {
       window.__DDGFF_SITE_SETTINGS = settings || {};
       applyFeedbackApiUrl(settings);
@@ -297,6 +312,7 @@ const fullOgImage = ogImage
       }
 
       applyFakeErrorMode(settings?.fakeError || {});
+      applyGlobalSiteEffectFallback(settings || {});
       window.__DDGFF_APPLY_GLOBAL_SITE_EFFECT?.(settings || {});
       window.dispatchEvent(new CustomEvent('ddgff:site-settings-updated', { detail: settings || {} }));
     };
