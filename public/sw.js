@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'dediche-musicali-ff-pwa-v6';
+const CACHE_VERSION = 'dediche-musicali-ff-pwa-v7';
 const CACHE_PREFIX = 'dediche-musicali-ff-pwa-';
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const RUNTIME_CACHE = `${CACHE_VERSION}-runtime`;
@@ -7,8 +7,6 @@ const APP_BASE = APP_SCOPE.pathname.replace(/\/$/, '');
 
 const basePath = (path) => `${APP_BASE}${path}`;
 const CORE_ASSETS = [
-  basePath('/'),
-  basePath('/archive/'),
   basePath('/manifest.json'),
   basePath('/favicon/favicon.svg'),
   basePath('/icons/icon-192.png'),
@@ -62,13 +60,8 @@ self.addEventListener('fetch', (event) => {
 
   if (request.mode === 'navigate') {
     event.respondWith(
-      fetch(request)
-        .then((response) => {
-          const copy = response.clone();
-          caches.open(RUNTIME_CACHE).then((cache) => cache.put(request, copy));
-          return response;
-        })
-        .catch(() => caches.match(request).then((cached) => cached || caches.match(basePath('/'))))
+      fetch(request, { cache: 'no-store' })
+        .catch(() => caches.match(basePath('/manifest.json')).then(() => Response.error()))
     );
     return;
   }
