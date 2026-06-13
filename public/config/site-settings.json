@@ -4,7 +4,7 @@
     "plusVote": true
   },
   "feedbackApiUrl": "https://ddgff-feedback.massimiliano-ferrando.workers.dev",
-  "siteEffect": "fireworks",
+  "siteEffect": "balloons",
   "effectIntensity": "medium",
   "fakeError": {
     "enabled": false,
@@ -15,5 +15,5 @@
     "imageMessage": "Sistema momentaneamente offline.",
     "adminMessage": "Per il ripristino del servizio contattare l'amministratore del sito."
   },
-  "updated_at": "2026-06-13T08:33:41.792234+00:00"
+  "updated_at": "2026-06-13T08:34:10.587048+00:00"
 }
