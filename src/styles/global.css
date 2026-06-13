@@ -589,7 +589,7 @@ body.site-is-locked > :not(.site-lock) {
 }
 
 .hero-artist::before {
-  content: '— ';
+  content: '- ';
 }
 
 .hero-ded-label {

@@ -19,7 +19,7 @@ if (existsSync(dataDir)) {
 
 const today = new Date().toLocaleDateString('sv-SE', { timeZone: 'Europe/Rome' });
 
-// La dedica più recente con date <= oggi e status published/scheduled
+// La dedica piu recente con date <= oggi e status published/scheduled
 const published = all
   .filter(d => d.status === 'published' && d.date <= today)
   .sort((a, b) => {
@@ -78,15 +78,15 @@ function splitDedicationLabel(label = 'Dedica del giorno') {
 ---
 
 <BaseLayout
-  title="DDG FF — Dediche Musicali"
+  title="DDG FF - Dediche Musicali"
   description="Una nuova dedica musicale ogni giorno. Ascolta, senti, condividi."
-  ogTitle="DDG FF — Dediche Musicali"
+  ogTitle="DDG FF - Dediche Musicali"
   ogDescription="Una nuova dedica musicale ogni giorno. Ascolta, senti, condividi."
   ogImage="/images/og-default.png?v=ddgff-og-20260604"
   enableBackgroundMusic={true}
 >
 
-  <!-- ═══ HERO ═══ -->
+  <!-- HERO -->
   <section class="hero">
     <div class="hero-bg"></div>
     <!-- Ambient orbs -->
@@ -141,7 +141,7 @@ function splitDedicationLabel(label = 'Dedica del giorno') {
                 rel="noopener noreferrer"
                 class="btn btn-primary btn-lg"
               >
-                ▶ Ascolta
+                &#9654; Ascolta
               </a>
               <a
                 href={dedication.vote?.url}
@@ -150,11 +150,11 @@ function splitDedicationLabel(label = 'Dedica del giorno') {
                 class="btn btn-secondary btn-lg"
                 data-site-config-target="googleVote"
               >
-                ⭐ Votami
+                &#9733; Votami
               </a>
               <DedicationPlus dedication={dedication} mode="button" />
               <a href={`${base}dediche/${dedication.id}/`} class="btn btn-secondary btn-lg">
-                Leggi tutto →
+                Leggi tutto &rarr;
               </a>
               <a href={`${base}link-utili/`} class="btn btn-secondary btn-lg">
                 Link utili
@@ -186,7 +186,7 @@ function splitDedicationLabel(label = 'Dedica del giorno') {
           </>
         ) : (
           <div>
-            <h1 class="hero-song anim-1" style="font-family:var(--font-serif)">Nessuna dedica oggi 🎵</h1>
+            <h1 class="hero-song anim-1" style="font-family:var(--font-serif)">Nessuna dedica oggi &#9834;</h1>
             <p class="hero-text anim-2">Torna domani per la prossima dedica musicale!</p>
             <a href={`${base}archive/`} class="btn btn-primary btn-lg anim-3">Vedi archivio</a>
           </div>
@@ -195,7 +195,7 @@ function splitDedicationLabel(label = 'Dedica del giorno') {
     </div>
   </section>
 
-  <!-- ═══ AUDIO EMBED ═══ -->
+  <!-- AUDIO EMBED -->
   {dedication && (
     <section style="padding:2rem 0;background:var(--bg-surface);">
       <div class="container-narrow reveal">
@@ -218,7 +218,7 @@ function splitDedicationLabel(label = 'Dedica del giorno') {
     </section>
   )}
 
-  <!-- ═══ RECENT DEDICHE ═══ -->
+  <!-- RECENT DEDICHE -->
   {recent.length > 0 && (
     <section style="padding:5rem 0;">
       <div class="container">
@@ -244,7 +244,7 @@ function splitDedicationLabel(label = 'Dedica del giorno') {
         </div>
         <div style="text-align:center;margin-top:3rem;" class="reveal">
           <a href={`${base}archive/`} class="btn btn-secondary">
-            Vedi tutto l'archivio →
+            Vedi tutto l'archivio &rarr;
           </a>
         </div>
       </div>

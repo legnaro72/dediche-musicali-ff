@@ -17,7 +17,7 @@ export interface Props {
 
 const {
   title,
-  description = 'Dediche musicali giornaliere — ascolta, senti, condividi.',
+  description = 'Dediche musicali giornaliere - ascolta, senti, condividi.',
   ogTitle,
   ogDescription,
   ogImage,
@@ -170,13 +170,13 @@ const fullOgImage = ogImage
     </div>
     <div class="app-install-actions">
       <button class="app-install-btn" type="button" data-app-install-btn>Installa</button>
-      <button class="app-install-close" type="button" aria-label="Nascondi invito installazione" data-app-install-close>×</button>
+      <button class="app-install-close" type="button" aria-label="Nascondi invito installazione" data-app-install-close>&times;</button>
     </div>
   </div>
 
   <div class="app-install-modal" data-app-install-modal hidden>
     <div class="app-install-dialog" role="dialog" aria-modal="true" aria-labelledby="install-title">
-      <button class="app-install-dialog-close" type="button" aria-label="Chiudi" data-app-install-modal-close>×</button>
+      <button class="app-install-dialog-close" type="button" aria-label="Chiudi" data-app-install-modal-close>&times;</button>
       <h2 id="install-title">Aggiungi alla Home</h2>
       <p data-app-install-modal-text>
         Apri il menu del browser e scegli "Aggiungi a schermata Home".
@@ -207,16 +207,16 @@ const fullOgImage = ogImage
   <footer class="footer">
     <div class="container">
       <p>
-        &#9834; <strong>DDG FF</strong> — Dediche musicali giornaliere
-        &nbsp;·&nbsp;
+        &#9834; <strong>DDG FF</strong> - Dediche musicali giornaliere
+        &nbsp;&middot;&nbsp;
         <a href={`${base}archive/`}>Archivio</a>
-        &nbsp;·&nbsp;
+        &nbsp;&middot;&nbsp;
         <a href={`${base}statistiche/`}>Statistiche</a>
-        &nbsp;·&nbsp;
-        <button data-uid-edit class="uid-footer-edit-btn" aria-label="Modifica nome e cognome">✏️</button>
+        &nbsp;&middot;&nbsp;
+        <button data-uid-edit class="uid-footer-edit-btn" aria-label="Modifica nome e cognome">&#9999;&#65039;</button>
       </p>
       <p style="margin-top:0.5rem; font-size:0.75rem; opacity:0.5;">
-        Pubblicato su GitHub Pages · Gratuito, open source, fatto con amore 🎵
+        Pubblicato su GitHub Pages &middot; Gratuito, open source, fatto con amore &#9834;
       </p>
     </div>
   </footer>

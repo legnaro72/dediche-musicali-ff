@@ -54,7 +54,7 @@ function formatDetailTitle(title = '') {
 ---
 
 <BaseLayout
-  title={dedication.seo?.title ?? `${dedication.song_title} — ${dedication.artist} | DDG FF`}
+  title={dedication.seo?.title ?? `${dedication.song_title} - ${dedication.artist} | DDG FF`}
   description={dedication.seo?.description ?? dedication.dedication_text?.slice(0, 155)}
   ogTitle={dedication.seo?.title}
   ogDescription={dedication.seo?.description}
@@ -71,7 +71,7 @@ function formatDetailTitle(title = '') {
     <!-- Back link -->
     <a href={`${base}archive/`} style="display:inline-flex;align-items:center;gap:0.5rem;color:var(--text-muted);font-size:0.875rem;margin-bottom:2rem;transition:var(--transition);"
        onmouseenter="this.style.color='var(--accent)'" onmouseleave="this.style.color='var(--text-muted)'">
-      ← Archivio
+      &larr; Archivio
     </a>
 
     <!-- Date / day -->
@@ -142,10 +142,10 @@ function formatDetailTitle(title = '') {
     <!-- CTA buttons -->
     <div style="display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:2.5rem;" class="anim-4">
       <a href={dedication.audio.url} target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-lg">
-        ▶ Ascolta
+        &#9654; Ascolta
       </a>
       <a href={dedication.vote.url} target="_blank" rel="noopener noreferrer" class="btn btn-secondary btn-lg" data-site-config-target="googleVote">
-        ⭐ Votami
+        &#9733; Votami
       </a>
       <DedicationPlus dedication={dedication} mode="button" />
     </div>
@@ -161,7 +161,7 @@ function formatDetailTitle(title = '') {
     <nav class="ded-nav" aria-label="Navigazione dediche">
       {prev ? (
         <a href={`${base}dediche/${prev.id}/`} class="ded-nav-link">
-          <div class="ded-nav-label">← Precedente</div>
+          <div class="ded-nav-label">&larr; Precedente</div>
           <div class="ded-nav-song">{prev.song_title}</div>
           <div style="font-size:0.8rem;color:var(--text-secondary);margin-top:0.2rem;">{prev.artist}</div>
         </a>
@@ -169,7 +169,7 @@ function formatDetailTitle(title = '') {
 
       {next ? (
         <a href={`${base}dediche/${next.id}/`} class="ded-nav-link next">
-          <div class="ded-nav-label">Successiva →</div>
+          <div class="ded-nav-label">Successiva &rarr;</div>
           <div class="ded-nav-song">{next.song_title}</div>
           <div style="font-size:0.8rem;color:var(--text-secondary);margin-top:0.2rem;">{next.artist}</div>
         </a>

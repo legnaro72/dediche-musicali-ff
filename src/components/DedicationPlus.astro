@@ -33,12 +33,12 @@ const data = {
 {mode === 'button' ? (
   <div class="plus-vote" data-plus-vote={JSON.stringify(data)} data-site-config-target="plusVote">
     <button class="btn btn-secondary btn-lg plus-vote-open" type="button" data-plus-vote-open>
-      ⭐ Votami Plus
+      &#9733; Votami Plus
     </button>
 
     <div class="plus-vote-modal" data-plus-vote-modal hidden>
       <div class="plus-vote-dialog" role="dialog" aria-modal="true" aria-labelledby={`plus-vote-title-${dedication.id}`}>
-        <button class="plus-vote-close" type="button" aria-label="Chiudi" data-plus-vote-close>×</button>
+        <button class="plus-vote-close" type="button" aria-label="Chiudi" data-plus-vote-close>&times;</button>
         <p class="plus-vote-kicker">Pensiero FF</p>
         <h2 id={`plus-vote-title-${dedication.id}`}>{dedication.song_title}</h2>
         <p class="plus-vote-artist">{dedication.artist}</p>
