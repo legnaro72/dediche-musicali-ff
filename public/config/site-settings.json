@@ -4,7 +4,7 @@
     "plusVote": true
   },
   "feedbackApiUrl": "https://ddgff-feedback.massimiliano-ferrando.workers.dev",
-  "siteEffect": "diamond_pilli",
+  "siteEffect": "hearts_red_blue",
   "effectIntensity": "medium",
   "fakeError": {
     "enabled": false,
@@ -15,5 +15,5 @@
     "imageMessage": "Sistema momentaneamente offline.",
     "adminMessage": "Per il ripristino del servizio contattare l'amministratore del sito."
   },
-  "updated_at": "2026-06-13T23:02:33.546555+00:00"
+  "updated_at": "2026-06-13T23:17:32.970961+00:00"
 }
