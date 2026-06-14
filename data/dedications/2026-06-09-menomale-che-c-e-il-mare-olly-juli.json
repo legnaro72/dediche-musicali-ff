@@ -1,7 +1,7 @@
 {
   "id": "2026-06-09-menomale-che-c-e-il-mare-olly-juli",
-  "date": "2026-06-09",
-  "day_name": "martedì",
+  "date": "2026-06-14",
+  "day_name": "domenica",
   "status": "published",
   "song_title": "Menomale che c'è il mare",
   "artist": "Olly, Juli",
@@ -31,15 +31,15 @@
     "description": "Dedica musicale del giorno con \"Menomale che c'è il mare\" di Olly, Juli."
   },
   "created_at": "2026-06-09T07:38:14.527416+02:00",
-  "updated_at": "2026-06-12T13:11:14.129Z",
+  "updated_at": "2026-06-14T08:15:50.210059+02:00",
   "video": {
     "type": "youtube",
     "url": "https://youtu.be/FsDfPjAWLFM?is=26HYzwk7X4ukKoZa",
-    "poster": "La risalita",
+    "poster": "/images/og-default.png?v=dediche-musicali-ff-video-poster-20260602",
     "title": "",
     "description": ""
   },
-  "voteAverage": 10,
+  "voteAverage": 10.0,
   "thoughtsText": "",
   "reactions": {
     "down": 0,
@@ -76,5 +76,5 @@
       "updatedAt": "2026-06-12T13:09:36.158Z"
     }
   ],
-  "date_it": "9 giugno 2026"
+  "date_it": "14 giugno 2026"
 }

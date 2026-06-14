@@ -1,0 +1,54 @@
+{
+  "id": "2026-06-14-padremadre-cesare-cremonini",
+  "date": "2026-06-14",
+  "day_name": "domenica",
+  "status": "published",
+  "song_title": "Padremadre",
+  "artist": "Cesare Cremonini",
+  "dedication_title": "La dedica del giorno",
+  "dedication_text": "Anche i papà sbagliano... vi voglio bene!!❤️💙",
+  "audio": {
+    "url": "https://open.spotify.com/intl-it/track/56MTa07zKoVyw7ryhsbDHh?si=ba331c52ba904046",
+    "type": "spotify"
+  },
+  "vote": {
+    "url": "https://docs.google.com/forms/d/17VuesL0BOupyw5M5MNCLs1gq_uqZioVKVkGC8oFfn38/viewform"
+  },
+  "image": {
+    "path": "/images/dedications/2026-06-14-padremadre-cesare-cremonini.webp",
+    "alt": "Dedica musicale  Padremadre di Cesare Cremonini",
+    "mode": "raw",
+    "source": "public/images/upload/2026-06-14-padremadre-cesare-cremonini.webp"
+  },
+  "short_phrase": "Il papà è i. re della casa sempre!! anche in errore!!!👑💫",
+  "tags": [
+    "musica",
+    "emozioni",
+    "dedica"
+  ],
+  "seo": {
+    "title": "Padremadre - Cesare Cremonini | DDGFFSite",
+    "description": "Dedica musicale del giorno con \"Padremadre\" di Cesare Cremonini."
+  },
+  "created_at": "2026-06-14T01:18:45.153568+02:00",
+  "updated_at": "2026-06-14T08:14:41.418456+02:00",
+  "video": {
+    "type": "youtube",
+    "url": "https://youtu.be/df4X6VZZmgE?si=h0bf_ccXdX9iFx_z",
+    "poster": "/images/og-default.png?v=dediche-musicali-ff-video-poster-20260602",
+    "title": "nonnino",
+    "description": "alla fine siamo tutti un po Ughetto siamo Ferrandi!!!"
+  },
+  "voteAverage": null,
+  "thoughtsText": "",
+  "reactions": {
+    "down": 0,
+    "like": 0,
+    "heart": 0,
+    "sun": 0
+  },
+  "votes": [],
+  "thoughts": [],
+  "reactionEntries": [],
+  "date_it": "14 giugno 2026"
+}

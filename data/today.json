@@ -1,54 +1,80 @@
 {
-  "id": "2026-06-13-serenamente-juli-bresh",
-  "date": "2026-06-13",
-  "day_name": "sabato",
+  "id": "2026-06-09-menomale-che-c-e-il-mare-olly-juli",
+  "date": "2026-06-14",
+  "day_name": "domenica",
   "status": "published",
-  "song_title": "Serenamente",
-  "artist": "Juli, Bresh",
+  "song_title": "Menomale che c'è il mare",
+  "artist": "Olly, Juli",
   "dedication_title": "La dedica del giorno",
-  "dedication_text": "Va tutto affrontato.... mai lasciare indietro.... e tutto va accettato!!!! SERENAMENTE!🌟⭐️💫🌞",
+  "dedication_text": "Buongiorno Ferrandi!❤️💙",
   "audio": {
-    "url": "https://open.spotify.com/track/5ZliWdrEfiHceXVGnGzlxA?si=Cs4iySZFRkW_Ot5avj9wtQ",
+    "url": "https://open.spotify.com/track/5pYy054Wcuj9CFdDIxZSVU?si=XY3JO-zLT8qwy727WMatIw",
     "type": "spotify"
   },
   "vote": {
     "url": "https://docs.google.com/forms/d/17VuesL0BOupyw5M5MNCLs1gq_uqZioVKVkGC8oFfn38/viewform"
   },
   "image": {
-    "path": "/images/dedications/2026-06-13-serenamente-juli-bresh.webp",
-    "alt": "Dedica musicale Serenamente di Juli, Bresh",
+    "path": "/images/dedications/2026-06-09-menomale-che-c-e-il-mare-olly-juli.webp",
+    "alt": "Dedica musicale Menomale che c'è il mare di Olly, Juli",
     "mode": "raw",
-    "source": "public/images/upload/2026-06-13-serenamente-juli-bresh.webp"
+    "source": "public/images/upload/2026-06-09-menomale-che-c-e-il-mare-olly-juli.webp"
   },
-  "short_phrase": "Serenamente🌞",
+  "short_phrase": "Tutto tornA!! ⬆️",
   "tags": [
     "musica",
     "emozioni",
     "dedica"
   ],
   "seo": {
-    "title": "Serenamente - Juli, Bresh | DDGFFSite",
-    "description": "Dedica musicale del giorno con \"Serenamente\" di Juli, Bresh."
+    "title": "Menomale che c'è il mare - Olly, Juli | DDGFFSite",
+    "description": "Dedica musicale del giorno con \"Menomale che c'è il mare\" di Olly, Juli."
   },
-  "created_at": "2026-06-13T09:13:49.985171+02:00",
-  "updated_at": "2026-06-13T11:21:04.388595+02:00",
+  "created_at": "2026-06-09T07:38:14.527416+02:00",
+  "updated_at": "2026-06-14T08:15:50.210059+02:00",
   "video": {
     "type": "youtube",
-    "url": "https://youtu.be/OR2l-ws8TWA?is=wImo98LNcWBuqZff",
+    "url": "https://youtu.be/FsDfPjAWLFM?is=26HYzwk7X4ukKoZa",
     "poster": "/images/og-default.png?v=dediche-musicali-ff-video-poster-20260602",
-    "title": "Il posto del cuore 2",
-    "description": "Levanto Vs Hawai"
+    "title": "",
+    "description": ""
   },
-  "voteAverage": null,
+  "voteAverage": 10.0,
   "thoughtsText": "",
   "reactions": {
     "down": 0,
     "like": 0,
-    "heart": 0,
-    "sun": 0
+    "heart": 1,
+    "sun": 1
   },
-  "votes": [],
+  "votes": [
+    {
+      "userId": "7eaa6f1a-a328-48e3-8a74-b918cf0fc0c5",
+      "userKey": "paola-ferrando",
+      "userName": "Paola Ferrando",
+      "value": 10,
+      "createdAt": "2026-06-12T13:11:14.129Z",
+      "updatedAt": "2026-06-12T13:11:14.129Z"
+    }
+  ],
   "thoughts": [],
-  "reactionEntries": [],
-  "date_it": "13 giugno 2026"
+  "reactionEntries": [
+    {
+      "userId": "493c16e4-453a-4b47-9384-c8abb31c24c6",
+      "userKey": "gabriele-ferrando",
+      "userName": "Gabriele Ferrando",
+      "value": "sun",
+      "createdAt": "2026-06-11T13:26:38.707Z",
+      "updatedAt": "2026-06-11T13:26:38.707Z"
+    },
+    {
+      "userId": "7eaa6f1a-a328-48e3-8a74-b918cf0fc0c5",
+      "userKey": "paola-ferrando",
+      "userName": "Paola Ferrando",
+      "value": "heart",
+      "createdAt": "2026-06-12T13:09:31.507Z",
+      "updatedAt": "2026-06-12T13:09:36.158Z"
+    }
+  ],
+  "date_it": "14 giugno 2026"
 }
