@@ -6,9 +6,6 @@
   "feedbackApiUrl": "https://ddgff-feedback.massimiliano-ferrando.workers.dev",
   "siteEffect": "hearts_red_blue",
   "effectIntensity": "medium",
-  "effectBackdropIntensity": "medium",
-  "effectFloatingIntensity": "medium",
-  "effectBackdropTextIntensity": "medium",
   "effectBackdrop": true,
   "effectFloatingItems": true,
   "effectBackdropText": false,
@@ -21,5 +18,5 @@
     "imageMessage": "Sistema momentaneamente offline.",
     "adminMessage": "Per il ripristino del servizio contattare l'amministratore del sito."
   },
-  "updated_at": "2026-06-14T22:18:27.999009+00:00"
+  "updated_at": "2026-06-15T03:31:27.745485+00:00"
 }
