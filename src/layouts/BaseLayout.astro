@@ -313,12 +313,22 @@ const fullOgImage = ogImage
       if (!validEffects.has(effect)) {
         delete root.dataset.effect;
         delete root.dataset.intensity;
+        delete root.dataset.backdropIntensity;
+        delete root.dataset.floatingIntensity;
+        delete root.dataset.backdropTextIntensity;
         delete root.dataset.backdrop;
         delete root.dataset.items;
         delete root.dataset.backdropText;
         return;
       }
-      const intensity = String(settings?.effectIntensity || 'medium').trim();
+      const normalizeIntensity = (value, fallback = 'medium') => {
+        const intensity = String(value || fallback).trim();
+        return validIntensities.has(intensity) ? intensity : fallback;
+      };
+      const legacyIntensity = normalizeIntensity(settings?.effectIntensity);
+      const backdropIntensity = normalizeIntensity(settings?.effectBackdropIntensity, legacyIntensity);
+      const floatingIntensity = normalizeIntensity(settings?.effectFloatingIntensity, legacyIntensity);
+      const backdropTextIntensity = normalizeIntensity(settings?.effectBackdropTextIntensity, legacyIntensity);
       const backdropValue = settings?.effectBackdrop;
       const backdrop = backdropValue === undefined
         || backdropValue === null
@@ -341,7 +351,10 @@ const fullOgImage = ogImage
         || backdropTextValue === 1
         || ['true', '1', 'on', 'yes'].includes(String(backdropTextValue || '').trim().toLowerCase());
       root.dataset.effect = effect;
-      root.dataset.intensity = validIntensities.has(intensity) ? intensity : 'medium';
+      root.dataset.intensity = floatingIntensity;
+      root.dataset.backdropIntensity = backdropIntensity;
+      root.dataset.floatingIntensity = floatingIntensity;
+      root.dataset.backdropTextIntensity = backdropTextIntensity;
       root.dataset.backdrop = backdrop ? 'on' : 'off';
       root.dataset.items = floatingItems ? 'on' : 'off';
       root.dataset.backdropText = backdropText ? 'on' : 'off';

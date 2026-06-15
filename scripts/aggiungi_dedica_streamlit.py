@@ -67,6 +67,9 @@ DEFAULT_SITE_SETTINGS = {
     "feedbackApiUrl": "",
     "siteEffect": "none",
     "effectIntensity": "medium",
+    "effectBackdropIntensity": "medium",
+    "effectFloatingIntensity": "medium",
+    "effectBackdropTextIntensity": "medium",
     "effectBackdrop": True,
     "effectFloatingItems": True,
     "effectBackdropText": True,
@@ -107,6 +110,13 @@ EFFECT_INTENSITY_OPTIONS = {
     "Media": "medium",
     "Alta": "high",
 }
+
+
+def normalize_effect_intensity(value: str, fallback: str = "medium") -> str:
+    fallback_value = fallback if fallback in EFFECT_INTENSITY_OPTIONS.values() else DEFAULT_SITE_SETTINGS["effectIntensity"]
+    normalized = str(value or fallback_value).strip()
+    return normalized if normalized in EFFECT_INTENSITY_OPTIONS.values() else fallback_value
+
 VALID_IMAGE_MODES = ("raw", "auto", "upload", "none")
 VALID_IMAGE_EXTS = {".jpg", ".jpeg", ".jfif", ".png", ".webp", ".gif", ".heic", ".heif", ""}
 VALID_STATUSES = ("draft", "scheduled", "published", "disabled")
@@ -575,9 +585,10 @@ def normalize_site_settings(settings: dict) -> dict:
     site_effect = str(settings.get("siteEffect", DEFAULT_SITE_SETTINGS["siteEffect"]) if isinstance(settings, dict) else "").strip()
     if site_effect not in SITE_EFFECT_OPTIONS.values():
         site_effect = DEFAULT_SITE_SETTINGS["siteEffect"]
-    effect_intensity = str(settings.get("effectIntensity", DEFAULT_SITE_SETTINGS["effectIntensity"]) if isinstance(settings, dict) else "").strip()
-    if effect_intensity not in EFFECT_INTENSITY_OPTIONS.values():
-        effect_intensity = DEFAULT_SITE_SETTINGS["effectIntensity"]
+    effect_intensity = normalize_effect_intensity(settings.get("effectIntensity", DEFAULT_SITE_SETTINGS["effectIntensity"]) if isinstance(settings, dict) else DEFAULT_SITE_SETTINGS["effectIntensity"])
+    effect_backdrop_intensity = normalize_effect_intensity(settings.get("effectBackdropIntensity", effect_intensity) if isinstance(settings, dict) else effect_intensity, effect_intensity)
+    effect_floating_intensity = normalize_effect_intensity(settings.get("effectFloatingIntensity", effect_intensity) if isinstance(settings, dict) else effect_intensity, effect_intensity)
+    effect_backdrop_text_intensity = normalize_effect_intensity(settings.get("effectBackdropTextIntensity", effect_intensity) if isinstance(settings, dict) else effect_intensity, effect_intensity)
     raw_effect_backdrop = settings.get("effectBackdrop", DEFAULT_SITE_SETTINGS["effectBackdrop"]) if isinstance(settings, dict) else DEFAULT_SITE_SETTINGS["effectBackdrop"]
     effect_backdrop = raw_effect_backdrop is True or raw_effect_backdrop == 1 or str(raw_effect_backdrop).strip().lower() in {"true", "1", "on", "yes"}
     raw_effect_items = settings.get("effectFloatingItems", DEFAULT_SITE_SETTINGS["effectFloatingItems"]) if isinstance(settings, dict) else DEFAULT_SITE_SETTINGS["effectFloatingItems"]
@@ -2100,7 +2111,11 @@ def render_site_configuration() -> None:
     config_first_load = "config_loaded_version" not in st.session_state
     if config_first_load or (st.session_state.get("config_loaded_version") != config_version and not config_dirty):
         st.session_state["config_site_effect"] = settings.get("siteEffect", DEFAULT_SITE_SETTINGS["siteEffect"])
-        st.session_state["config_effect_intensity"] = settings.get("effectIntensity", DEFAULT_SITE_SETTINGS["effectIntensity"])
+        legacy_effect_intensity = settings.get("effectIntensity", DEFAULT_SITE_SETTINGS["effectIntensity"])
+        st.session_state["config_effect_intensity"] = legacy_effect_intensity
+        st.session_state["config_effect_backdrop_intensity"] = settings.get("effectBackdropIntensity", legacy_effect_intensity)
+        st.session_state["config_effect_floating_intensity"] = settings.get("effectFloatingIntensity", legacy_effect_intensity)
+        st.session_state["config_effect_backdrop_text_intensity"] = settings.get("effectBackdropTextIntensity", legacy_effect_intensity)
         st.session_state["config_effect_backdrop"] = settings.get("effectBackdrop", DEFAULT_SITE_SETTINGS["effectBackdrop"])
         st.session_state["config_effect_floating_items"] = settings.get("effectFloatingItems", DEFAULT_SITE_SETTINGS["effectFloatingItems"])
         st.session_state["config_effect_backdrop_text"] = settings.get("effectBackdropText", DEFAULT_SITE_SETTINGS["effectBackdropText"])
@@ -2140,13 +2155,28 @@ def render_site_configuration() -> None:
         key="config_site_effect",
         on_change=mark_site_config_dirty,
     )
-    effect_intensity = st.selectbox(
-        "Intensita' effetto",
+    effect_backdrop_intensity = st.selectbox(
+        "Intensita' sfondo / scintillio",
         options=list(EFFECT_INTENSITY_OPTIONS.values()),
         format_func=lambda value: intensity_label_by_value.get(value, value),
-        key="config_effect_intensity",
+        key="config_effect_backdrop_intensity",
         on_change=mark_site_config_dirty,
     )
+    effect_floating_intensity = st.selectbox(
+        "Intensita' scritte / icone fluttuanti",
+        options=list(EFFECT_INTENSITY_OPTIONS.values()),
+        format_func=lambda value: intensity_label_by_value.get(value, value),
+        key="config_effect_floating_intensity",
+        on_change=mark_site_config_dirty,
+    )
+    effect_backdrop_text_intensity = st.selectbox(
+        "Intensita' oggetti fissi nello sfondo",
+        options=list(EFFECT_INTENSITY_OPTIONS.values()),
+        format_func=lambda value: intensity_label_by_value.get(value, value),
+        key="config_effect_backdrop_text_intensity",
+        on_change=mark_site_config_dirty,
+    )
+    effect_intensity = effect_floating_intensity
     effect_backdrop = st.toggle(
         "Sfondo brillante / scintillio",
         key="config_effect_backdrop",

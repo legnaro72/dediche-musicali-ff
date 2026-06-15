@@ -54,6 +54,11 @@
     return validIntensities.has(intensity) ? intensity : 'medium';
   };
 
+  const normalizeFeatureIntensity = (value, fallback) => {
+    const intensity = String(value || fallback || 'medium').trim();
+    return validIntensities.has(intensity) ? intensity : normalizeIntensity(fallback);
+  };
+
   const normalizeBackdrop = (value) => {
     if (value === undefined || value === null || value === '') return true;
     if (value === true || value === 1) return true;
@@ -277,6 +282,9 @@
     if (root) {
       delete root.dataset.effect;
       delete root.dataset.intensity;
+      delete root.dataset.backdropIntensity;
+      delete root.dataset.floatingIntensity;
+      delete root.dataset.backdropTextIntensity;
       delete root.dataset.backdrop;
       delete root.dataset.items;
       delete root.dataset.backdropText;
@@ -290,7 +298,10 @@
 
   const applyGlobalSiteEffect = async (settings) => {
     const effect = normalizeEffect(settings?.siteEffect);
-    const intensity = normalizeIntensity(settings?.effectIntensity);
+    const legacyIntensity = normalizeIntensity(settings?.effectIntensity);
+    const backdropIntensity = normalizeFeatureIntensity(settings?.effectBackdropIntensity, legacyIntensity);
+    const floatingIntensity = normalizeFeatureIntensity(settings?.effectFloatingIntensity, legacyIntensity);
+    const backdropTextIntensity = normalizeFeatureIntensity(settings?.effectBackdropTextIntensity, legacyIntensity);
     const backdrop = normalizeBackdrop(settings?.effectBackdrop);
     const floatingItems = normalizeFloatingItems(settings?.effectFloatingItems);
     const backdropText = normalizeBackdropText(settings?.effectBackdropText);
@@ -301,7 +312,10 @@
     }
 
     root.dataset.effect = effect;
-    root.dataset.intensity = intensity;
+    root.dataset.intensity = floatingIntensity;
+    root.dataset.backdropIntensity = backdropIntensity;
+    root.dataset.floatingIntensity = floatingIntensity;
+    root.dataset.backdropTextIntensity = backdropTextIntensity;
     root.dataset.backdrop = backdrop ? 'on' : 'off';
     root.dataset.items = floatingItems ? 'on' : 'off';
     root.dataset.backdropText = backdropText ? 'on' : 'off';
@@ -311,11 +325,11 @@
         activeContainer.destroy();
         activeContainer = null;
       }
-      const key = `${effect}:${intensity}:${floatingItems ? 'items-on' : 'items-off'}`;
+      const key = `${effect}:${floatingIntensity}:${floatingItems ? 'items-on' : 'items-off'}`;
       if (activeKey === key) return;
       activeKey = key;
       clearCustomEffect();
-      if (floatingItems) applyCustomEffect(root, effect, intensity);
+      if (floatingItems) applyCustomEffect(root, effect, floatingIntensity);
       return;
     }
 
@@ -325,7 +339,7 @@
         engineReady = true;
       }
 
-      const built = buildOptions(effect, intensity);
+      const built = buildOptions(effect, backdropIntensity);
       if (activeKey === built.key) return;
       if (activeContainer) {
         activeContainer.destroy();
@@ -435,11 +449,7 @@
     animation-delay: -0.7s;
   }
 
-  .global-site-effect[data-effect="diamond_pilli"][data-intensity="low"] {
-    opacity: 0.68;
-  }
-
-  .global-site-effect[data-effect="diamond_pilli"][data-intensity="low"] .global-site-effect-item {
+  .global-site-effect[data-effect="diamond_pilli"][data-floating-intensity="low"] .global-site-effect-item {
     opacity: 0.5;
     text-shadow:
       0 0 4px rgba(255, 255, 255, 0.44),
@@ -451,12 +461,12 @@
       ddgff-custom-pulse calc((var(--dur) * 1.1) / var(--effect-rate, 1)) ease-in-out infinite;
   }
 
-  .global-site-effect[data-effect="diamond_pilli"][data-intensity="low"] .global-site-effect-item::before {
+  .global-site-effect[data-effect="diamond_pilli"][data-floating-intensity="low"] .global-site-effect-item::before {
     opacity: 0.24;
     animation-duration: 5.8s;
   }
 
-  .global-site-effect[data-effect="diamond_pilli"][data-intensity="low"] .global-site-effect-item::after {
+  .global-site-effect[data-effect="diamond_pilli"][data-floating-intensity="low"] .global-site-effect-item::after {
     opacity: 0.12;
     filter: blur(6px);
     animation-duration: 8.2s;
@@ -560,11 +570,11 @@
     filter: blur(0.4px);
   }
 
-  .global-site-effect[data-intensity="low"] .global-site-effect-item {
+  .global-site-effect[data-floating-intensity="low"] .global-site-effect-item {
     opacity: 0.68;
   }
 
-  .global-site-effect[data-intensity="high"] .global-site-effect-item {
+  .global-site-effect[data-floating-intensity="high"] .global-site-effect-item {
     opacity: 0.96;
   }
 
@@ -626,8 +636,8 @@
     animation-delay: -5s, -0.8s;
   }
 
-  .global-site-effect[data-effect="diamond_pilli"][data-intensity="low"]::before,
-  .global-site-effect[data-effect="diamond_pilli"][data-intensity="low"]::after {
+  .global-site-effect[data-effect="diamond_pilli"][data-backdrop-text-intensity="low"]::before,
+  .global-site-effect[data-effect="diamond_pilli"][data-backdrop-text-intensity="low"]::after {
     color: rgba(255, 255, 255, 0.34);
     text-shadow:
       0 0 4px rgba(255, 255, 255, 0.28),
@@ -638,7 +648,7 @@
     animation-duration: 22s, 7.5s;
   }
 
-  .global-site-effect[data-effect="diamond_pilli"][data-intensity="low"]::after {
+  .global-site-effect[data-effect="diamond_pilli"][data-backdrop-text-intensity="low"]::after {
     opacity: 0.12;
     animation-duration: 30s, 10s;
   }
@@ -827,22 +837,22 @@
     animation-delay: -6s;
   }
 
-  .global-site-effect[data-effect="sparkles"][data-intensity="low"] {
+  .global-site-effect[data-effect="sparkles"][data-backdrop-intensity="low"] {
     opacity: 0.62;
   }
 
-  .global-site-effect[data-effect="sparkles"][data-intensity="high"] {
+  .global-site-effect[data-effect="sparkles"][data-backdrop-intensity="high"] {
     opacity: 1;
   }
 
-  .global-site-effect[data-effect="sparkles"][data-intensity="high"]::before,
-  .global-site-effect[data-effect="sparkles"][data-intensity="high"]::after {
+  .global-site-effect[data-effect="sparkles"][data-backdrop-intensity="high"]::before,
+  .global-site-effect[data-effect="sparkles"][data-backdrop-intensity="high"]::after {
     background-size: 68px 68px, 104px 104px, 140px 140px, 188px 188px;
     animation-duration: 7s, 1.8s;
   }
 
-  .global-site-effect[data-effect="sparkles"][data-intensity="low"]::before,
-  .global-site-effect[data-effect="sparkles"][data-intensity="low"]::after {
+  .global-site-effect[data-effect="sparkles"][data-backdrop-intensity="low"]::before,
+  .global-site-effect[data-effect="sparkles"][data-backdrop-intensity="low"]::after {
     background-size: 140px 140px, 190px 190px, 260px 260px, 320px 320px;
     animation-duration: 14s, 3.6s;
   }
