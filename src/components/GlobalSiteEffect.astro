@@ -250,9 +250,10 @@
 
   const applyCustomEffect = (root, effect, intensity) => {
     clearCustomEffect();
-    const count = intensityMap[intensity].customCount;
-    root.style.setProperty('--effect-rate', String(intensityMap[intensity].rate));
-    root.style.setProperty('--effect-glow', String(intensityMap[intensity].glow));
+    const quietPilli = effect === 'diamond_pilli' && intensity === 'low';
+    const count = quietPilli ? 8 : intensityMap[intensity].customCount;
+    root.style.setProperty('--effect-rate', String(quietPilli ? 0.34 : intensityMap[intensity].rate));
+    root.style.setProperty('--effect-glow', String(quietPilli ? 0.36 : intensityMap[intensity].glow));
 
     for (let index = 0; index < count; index += 1) {
       const item = document.createElement('span');
@@ -434,6 +435,33 @@
     animation-delay: -0.7s;
   }
 
+  .global-site-effect[data-effect="diamond_pilli"][data-intensity="low"] {
+    opacity: 0.68;
+  }
+
+  .global-site-effect[data-effect="diamond_pilli"][data-intensity="low"] .global-site-effect-item {
+    opacity: 0.5;
+    text-shadow:
+      0 0 4px rgba(255, 255, 255, 0.44),
+      0 0 10px rgba(240, 171, 252, 0.24),
+      0 0 16px rgba(147, 197, 253, 0.2);
+    filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.28));
+    animation:
+      ddgff-custom-float calc((var(--dur) * 1.8) / var(--effect-rate, 1)) ease-in-out infinite,
+      ddgff-custom-pulse calc((var(--dur) * 1.1) / var(--effect-rate, 1)) ease-in-out infinite;
+  }
+
+  .global-site-effect[data-effect="diamond_pilli"][data-intensity="low"] .global-site-effect-item::before {
+    opacity: 0.24;
+    animation-duration: 5.8s;
+  }
+
+  .global-site-effect[data-effect="diamond_pilli"][data-intensity="low"] .global-site-effect-item::after {
+    opacity: 0.12;
+    filter: blur(6px);
+    animation-duration: 8.2s;
+  }
+
   .global-site-effect[data-effect="glitter_butterflies"] .global-site-effect-item {
     width: calc(1.65rem * var(--size));
     height: calc(1.1rem * var(--size));
@@ -596,6 +624,23 @@
     transform: rotate(9deg);
     animation-duration: 14s, 2.3s;
     animation-delay: -5s, -0.8s;
+  }
+
+  .global-site-effect[data-effect="diamond_pilli"][data-intensity="low"]::before,
+  .global-site-effect[data-effect="diamond_pilli"][data-intensity="low"]::after {
+    color: rgba(255, 255, 255, 0.34);
+    text-shadow:
+      0 0 4px rgba(255, 255, 255, 0.28),
+      0 0 10px rgba(240, 171, 252, 0.16),
+      0 0 16px rgba(147, 197, 253, 0.14);
+    filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.18));
+    opacity: 0.2;
+    animation-duration: 22s, 7.5s;
+  }
+
+  .global-site-effect[data-effect="diamond_pilli"][data-intensity="low"]::after {
+    opacity: 0.12;
+    animation-duration: 30s, 10s;
   }
 
   .global-site-effect[data-effect="hearts_red_blue"]::before,
