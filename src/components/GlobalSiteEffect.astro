@@ -267,7 +267,7 @@
       leftLower: 'M49 54 C29 58 16 76 29 90 C43 101 52 75 51 57 Z',
       rightUpper: 'M50 45 C61 18 83 9 91 25 C99 43 80 61 51 51 Z',
       rightLower: 'M51 54 C71 58 84 76 71 90 C57 101 48 75 49 57 Z',
-      body: 'M50 35 C46 45 46 66 50 84 C54 66 54 45 50 35 Z',
+      body: 'M50 36 C46 45 46 64 50 73 C54 64 54 45 50 36 Z',
       antenna: 'M49 38 C43 28 36 22 29 20 M51 38 C57 28 64 22 71 20',
     },
     {
@@ -275,7 +275,7 @@
       leftLower: 'M49 55 C31 56 20 70 30 83 C42 97 52 75 51 58 Z',
       rightUpper: 'M50 47 C58 19 77 14 84 29 C91 46 73 58 51 52 Z',
       rightLower: 'M51 55 C69 56 80 70 70 83 C58 97 48 75 49 58 Z',
-      body: 'M50 34 C45 48 47 68 50 83 C53 68 55 48 50 34 Z',
+      body: 'M50 35 C46 47 47 64 50 72 C53 64 54 47 50 35 Z',
       antenna: 'M49 38 C42 27 36 20 31 17 M51 38 C58 27 64 20 69 17',
     },
     {
@@ -283,7 +283,7 @@
       leftLower: 'M49 54 C28 62 19 83 35 91 C48 98 53 73 51 57 Z',
       rightUpper: 'M50 43 C65 22 86 18 92 34 C98 50 75 59 51 51 Z',
       rightLower: 'M51 54 C72 62 81 83 65 91 C52 98 47 73 49 57 Z',
-      body: 'M50 36 C46 46 46 63 50 80 C54 63 54 46 50 36 Z',
+      body: 'M50 37 C46 46 46 62 50 71 C54 62 54 46 50 37 Z',
       antenna: 'M49 39 C41 31 34 27 27 27 M51 39 C59 31 66 27 73 27',
     },
     {
@@ -291,7 +291,7 @@
       leftLower: 'M49 55 C35 62 26 82 39 92 C51 101 53 73 51 58 Z',
       rightUpper: 'M50 45 C57 14 75 7 83 23 C91 39 73 58 51 51 Z',
       rightLower: 'M51 55 C65 62 74 82 61 92 C49 101 47 73 49 58 Z',
-      body: 'M50 33 C47 45 47 66 50 86 C53 66 53 45 50 33 Z',
+      body: 'M50 35 C47 45 47 64 50 73 C53 64 53 45 50 35 Z',
       antenna: 'M49 38 C44 28 38 21 32 16 M51 38 C56 28 62 21 68 16',
     },
   ];
@@ -313,8 +313,6 @@
       <circle class="butterfly-glitter glitter-a" cx="${24 + (index % 7)}" cy="${31 + (index % 5)}" r="1.8" />
       <circle class="butterfly-glitter glitter-b" cx="${74 - (index % 8)}" cy="${35 + (index % 4)}" r="1.5" />
       <circle class="butterfly-glitter glitter-c" cx="${37 + (index % 5)}" cy="${72 - (index % 6)}" r="1.4" />
-      <path class="butterfly-spark spark-a" d="M22 46 l2.2 4.6 l4.6 2.2 l-4.6 2.2 l-2.2 4.6 l-2.2 -4.6 l-4.6 -2.2 l4.6 -2.2 Z" />
-      <path class="butterfly-spark spark-b" d="M78 56 l1.8 3.8 l3.8 1.8 l-3.8 1.8 l-1.8 3.8 l-1.8 -3.8 l-3.8 -1.8 l3.8 -1.8 Z" />
     </svg>
   `;
   };
@@ -640,15 +638,13 @@
     vector-effect: non-scaling-stroke;
   }
 
-  .global-site-effect[data-effect="glitter_butterflies"] .butterfly-glitter,
-  .global-site-effect[data-effect="glitter_butterflies"] .butterfly-spark {
+  .global-site-effect[data-effect="glitter_butterflies"] .butterfly-glitter {
     fill: rgba(255, 255, 255, 0.96);
     filter: drop-shadow(0 0 4px var(--butterfly-glow));
     animation: ddgff-glitter 1.35s ease-in-out infinite;
   }
 
-  .global-site-effect[data-effect="glitter_butterflies"] .glitter-b,
-  .global-site-effect[data-effect="glitter_butterflies"] .spark-b {
+  .global-site-effect[data-effect="glitter_butterflies"] .glitter-b {
     animation-delay: -0.55s;
   }
 
