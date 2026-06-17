@@ -261,21 +261,55 @@
     { accent: '#ffffff', fill: 'rgba(255, 255, 255, 0.42)', glow: 'rgba(255, 255, 255, 0.56)' },
   ];
 
-  const butterflySvg = (index) => `
-    <svg class="butterfly-svg" viewBox="0 0 100 100" role="presentation" focusable="false" aria-hidden="true">
+  const butterflyShapes = [
+    {
+      leftUpper: 'M50 45 C39 18 17 9 9 25 C1 43 20 61 49 51 Z',
+      leftLower: 'M49 54 C29 58 16 76 29 90 C43 101 52 75 51 57 Z',
+      rightUpper: 'M50 45 C61 18 83 9 91 25 C99 43 80 61 51 51 Z',
+      rightLower: 'M51 54 C71 58 84 76 71 90 C57 101 48 75 49 57 Z',
+      body: 'M50 35 C46 45 46 66 50 84 C54 66 54 45 50 35 Z',
+      antenna: 'M49 38 C43 28 36 22 29 20 M51 38 C57 28 64 22 71 20',
+    },
+    {
+      leftUpper: 'M50 47 C42 19 23 14 16 29 C9 46 27 58 49 52 Z',
+      leftLower: 'M49 55 C31 56 20 70 30 83 C42 97 52 75 51 58 Z',
+      rightUpper: 'M50 47 C58 19 77 14 84 29 C91 46 73 58 51 52 Z',
+      rightLower: 'M51 55 C69 56 80 70 70 83 C58 97 48 75 49 58 Z',
+      body: 'M50 34 C45 48 47 68 50 83 C53 68 55 48 50 34 Z',
+      antenna: 'M49 38 C42 27 36 20 31 17 M51 38 C58 27 64 20 69 17',
+    },
+    {
+      leftUpper: 'M50 43 C35 22 14 18 8 34 C2 50 25 59 49 51 Z',
+      leftLower: 'M49 54 C28 62 19 83 35 91 C48 98 53 73 51 57 Z',
+      rightUpper: 'M50 43 C65 22 86 18 92 34 C98 50 75 59 51 51 Z',
+      rightLower: 'M51 54 C72 62 81 83 65 91 C52 98 47 73 49 57 Z',
+      body: 'M50 36 C46 46 46 63 50 80 C54 63 54 46 50 36 Z',
+      antenna: 'M49 39 C41 31 34 27 27 27 M51 39 C59 31 66 27 73 27',
+    },
+    {
+      leftUpper: 'M50 45 C43 14 25 7 17 23 C9 39 27 58 49 51 Z',
+      leftLower: 'M49 55 C35 62 26 82 39 92 C51 101 53 73 51 58 Z',
+      rightUpper: 'M50 45 C57 14 75 7 83 23 C91 39 73 58 51 51 Z',
+      rightLower: 'M51 55 C65 62 74 82 61 92 C49 101 47 73 49 58 Z',
+      body: 'M50 33 C47 45 47 66 50 86 C53 66 53 45 50 33 Z',
+      antenna: 'M49 38 C44 28 38 21 32 16 M51 38 C56 28 62 21 68 16',
+    },
+  ];
+
+  const butterflySvg = (index) => {
+    const shape = butterflyShapes[index % butterflyShapes.length];
+    return `
+    <svg class="butterfly-svg butterfly-shape-${index % butterflyShapes.length}" viewBox="0 0 100 100" role="presentation" focusable="false" aria-hidden="true">
       <g class="butterfly-wing butterfly-wing-left">
-        <path class="butterfly-wing-upper" d="M50 44 C37 16 15 8 8 25 C0 45 18 64 49 51 Z" />
-        <path class="butterfly-wing-lower" d="M49 54 C27 59 13 78 28 91 C42 103 52 76 51 57 Z" />
+        <path class="butterfly-wing-upper" d="${shape.leftUpper}" />
+        <path class="butterfly-wing-lower" d="${shape.leftLower}" />
       </g>
       <g class="butterfly-wing butterfly-wing-right">
-        <path class="butterfly-wing-upper" d="M50 44 C63 16 85 8 92 25 C100 45 82 64 51 51 Z" />
-        <path class="butterfly-wing-lower" d="M51 54 C73 59 87 78 72 91 C58 103 48 76 49 57 Z" />
+        <path class="butterfly-wing-upper" d="${shape.rightUpper}" />
+        <path class="butterfly-wing-lower" d="${shape.rightLower}" />
       </g>
-      <path class="butterfly-vein" d="M50 49 C36 35 24 27 12 25 M50 51 C34 51 21 60 28 88 M50 49 C64 35 76 27 88 25 M50 51 C66 51 79 60 72 88" />
-      <path class="butterfly-body" d="M50 34 C45 44 45 65 50 84 C55 65 55 44 50 34 Z" />
-      <path class="butterfly-antenna" d="M49 37 C42 25 35 20 27 17 M51 37 C58 25 65 20 73 17" />
-      <circle class="butterfly-antenna-dot" cx="27" cy="17" r="1.7" />
-      <circle class="butterfly-antenna-dot" cx="73" cy="17" r="1.7" />
+      <path class="butterfly-body" d="${shape.body}" />
+      <path class="butterfly-antenna" d="${shape.antenna}" />
       <circle class="butterfly-glitter glitter-a" cx="${24 + (index % 7)}" cy="${31 + (index % 5)}" r="1.8" />
       <circle class="butterfly-glitter glitter-b" cx="${74 - (index % 8)}" cy="${35 + (index % 4)}" r="1.5" />
       <circle class="butterfly-glitter glitter-c" cx="${37 + (index % 5)}" cy="${72 - (index % 6)}" r="1.4" />
@@ -283,6 +317,7 @@
       <path class="butterfly-spark spark-b" d="M78 56 l1.8 3.8 l3.8 1.8 l-3.8 1.8 l-1.8 3.8 l-1.8 -3.8 l-3.8 -1.8 l3.8 -1.8 Z" />
     </svg>
   `;
+  };
 
   const applyCustomEffect = (root, effect, intensity) => {
     clearCustomEffect();
@@ -574,6 +609,9 @@
     stroke-width: 2.6;
     stroke-linejoin: round;
     vector-effect: non-scaling-stroke;
+    filter:
+      drop-shadow(0 0 2px rgba(255, 255, 255, 0.86))
+      drop-shadow(0 0 5px var(--butterfly-glow));
   }
 
   .global-site-effect[data-effect="glitter_butterflies"] [data-butterfly-variant="outline"] .butterfly-wing-upper,
@@ -586,12 +624,12 @@
     fill: var(--butterfly-fill);
   }
 
-  .global-site-effect[data-effect="glitter_butterflies"] .butterfly-vein,
   .global-site-effect[data-effect="glitter_butterflies"] .butterfly-antenna {
     fill: none;
-    stroke: rgba(255, 255, 255, 0.92);
-    stroke-width: 1.25;
+    stroke: var(--butterfly-accent);
+    stroke-width: 1.45;
     stroke-linecap: round;
+    opacity: 0.72;
     vector-effect: non-scaling-stroke;
   }
 
@@ -602,7 +640,6 @@
     vector-effect: non-scaling-stroke;
   }
 
-  .global-site-effect[data-effect="glitter_butterflies"] .butterfly-antenna-dot,
   .global-site-effect[data-effect="glitter_butterflies"] .butterfly-glitter,
   .global-site-effect[data-effect="glitter_butterflies"] .butterfly-spark {
     fill: rgba(255, 255, 255, 0.96);
@@ -1105,7 +1142,7 @@
       transform: translateX(0) scaleX(1) rotate(0deg);
     }
     48% {
-      transform: translateX(7px) scaleX(0.42) rotate(8deg);
+      transform: translateX(4px) scaleX(0.72) rotate(7deg);
     }
   }
 
@@ -1114,7 +1151,7 @@
       transform: translateX(0) scaleX(1) rotate(0deg);
     }
     48% {
-      transform: translateX(-7px) scaleX(0.42) rotate(-8deg);
+      transform: translateX(-4px) scaleX(0.72) rotate(-7deg);
     }
   }
 
