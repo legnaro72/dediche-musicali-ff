@@ -31,7 +31,7 @@
     "description": "Dedica musicale del giorno con \"Agave\" di Bresh."
   },
   "created_at": "2026-06-23T00:54:51.587086+02:00",
-  "updated_at": "2026-06-23T00:54:52.192579+02:00",
+  "updated_at": "2026-08-22T21:03:07.020Z",
   "video": {
     "type": "youtube",
     "url": "https://www.youtube.com/watch?v=yv_x7Bz21Ig",
@@ -42,13 +42,22 @@
   "voteAverage": null,
   "thoughtsText": "",
   "reactions": {
-    "down": 0,
+    "down": 1,
     "like": 0,
     "heart": 0,
     "sun": 0
   },
   "votes": [],
   "thoughts": [],
-  "reactionEntries": [],
+  "reactionEntries": [
+    {
+      "userId": "6de8a1b4-73f4-41dc-8955-9627d3f9a7e7",
+      "userKey": "massimiliano-ferrando",
+      "userName": "Massimiliano Ferrando",
+      "value": "down",
+      "createdAt": "2026-08-22T21:03:07.020Z",
+      "updatedAt": "2026-08-22T21:03:07.020Z"
+    }
+  ],
   "date_it": "23 giugno 2026"
 }
