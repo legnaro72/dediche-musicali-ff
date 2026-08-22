@@ -31,7 +31,7 @@
     "description": "Dedica musicale del giorno con \"Rolls Royce\" di Achille Lauro, Boss Doms, Frenetik&Orang3."
   },
   "created_at": "2026-06-19T11:58:25.299130+02:00",
-  "updated_at": "2026-08-22T21:00:40.272Z",
+  "updated_at": "2026-08-22T21:00:54.416Z",
   "video": {
     "type": "youtube",
     "url": "https://youtu.be/4rxsM6Ef7Q0?is=P32Ej8cPEKQDFs6f",
@@ -42,9 +42,9 @@
   "voteAverage": null,
   "thoughtsText": "",
   "reactions": {
-    "down": 1,
+    "down": 0,
     "like": 0,
-    "heart": 0,
+    "heart": 1,
     "sun": 0
   },
   "votes": [],
@@ -54,9 +54,9 @@
       "userId": "6de8a1b4-73f4-41dc-8955-9627d3f9a7e7",
       "userKey": "massimiliano-ferrando",
       "userName": "Massimiliano Ferrando",
-      "value": "down",
+      "value": "heart",
       "createdAt": "2026-08-22T21:00:40.272Z",
-      "updatedAt": "2026-08-22T21:00:40.272Z"
+      "updatedAt": "2026-08-22T21:00:54.416Z"
     }
   ],
   "date_it": "19 giugno 2026"
