@@ -1,0 +1,63 @@
+{
+  "id": "2026-06-19-rolls-royce-achille-lauro-boss-doms-frenetik-orang3",
+  "date": "2026-06-19",
+  "day_name": "venerdì",
+  "status": "published",
+  "song_title": "Rolls Royce",
+  "artist": "Achille Lauro, Boss Doms, Frenetik&Orang3",
+  "dedication_title": "La dedica del giorno",
+  "dedication_text": "Ci sono canzoni che arrivano senza fare rumore, ma restano dentro piu' di tante parole.\nOggi ti dedico \"Rolls Royce\" di Achille Lauro, Boss Doms, Frenetik&Orang3, perche' certe emozioni meritano di essere ascoltate fino in fondo.",
+  "audio": {
+    "url": "https://open.spotify.com/track/57GxXvSDEWQ9ZLZUCGLx8S?si=x8bdQVeDQ-aZrHWaiEJU2g",
+    "type": "spotify"
+  },
+  "vote": {
+    "url": "https://docs.google.com/forms/d/17VuesL0BOupyw5M5MNCLs1gq_uqZioVKVkGC8oFfn38/viewform"
+  },
+  "image": {
+    "path": "/images/dedications/2026-06-19-rolls-royce-achille-lauro-boss-doms-frenetik-orang3.webp",
+    "alt": "Dedica musicale Rolls Royce di Achille Lauro, Boss Doms, Frenetik&Orang3",
+    "mode": "raw",
+    "source": "public/images/upload/2026-06-19-rolls-royce-achille-lauro-boss-doms-frenetik-orang3.webp"
+  },
+  "short_phrase": "",
+  "tags": [
+    "musica",
+    "emozioni",
+    "dedica"
+  ],
+  "seo": {
+    "title": "Rolls Royce - Achille Lauro, Boss Doms, Frenetik&Orang3 | DDGFFSite",
+    "description": "Dedica musicale del giorno con \"Rolls Royce\" di Achille Lauro, Boss Doms, Frenetik&Orang3."
+  },
+  "created_at": "2026-06-19T11:58:25.299130+02:00",
+  "updated_at": "2026-08-22T21:00:54.416Z",
+  "video": {
+    "type": "youtube",
+    "url": "https://youtu.be/4rxsM6Ef7Q0?is=P32Ej8cPEKQDFs6f",
+    "poster": "/images/og-default.png?v=dediche-musicali-ff-video-poster-20260602",
+    "title": "Dantee",
+    "description": "LOPEZ"
+  },
+  "voteAverage": null,
+  "thoughtsText": "",
+  "reactions": {
+    "down": 0,
+    "like": 0,
+    "heart": 1,
+    "sun": 0
+  },
+  "votes": [],
+  "thoughts": [],
+  "reactionEntries": [
+    {
+      "userId": "6de8a1b4-73f4-41dc-8955-9627d3f9a7e7",
+      "userKey": "massimiliano-ferrando",
+      "userName": "Massimiliano Ferrando",
+      "value": "heart",
+      "createdAt": "2026-08-22T21:00:40.272Z",
+      "updatedAt": "2026-08-22T21:00:54.416Z"
+    }
+  ],
+  "date_it": "19 giugno 2026"
+}
