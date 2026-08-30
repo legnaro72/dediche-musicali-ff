@@ -513,7 +513,10 @@ def upload_selected_audio(prefix: str, uploaded_file) -> None:
         return
     data = uploaded_file.getvalue()
     fingerprint = hashlib.sha256(data).hexdigest()
-    if st.session_state.get(f"{prefix}_audio_upload_fingerprint") == fingerprint:
+    if (
+        st.session_state.get(f"{prefix}_audio_upload_fingerprint") == fingerprint
+        and st.session_state.get(f"{prefix}_audio_url")
+    ):
         return
     result = upload_audio_to_github(data, uploaded_file.name or "audio", uploaded_file.type or "")
     extracted = extract_uploaded_audio_metadata(data, uploaded_file.name or "")
@@ -1188,6 +1191,8 @@ def prepare_values(values: dict) -> dict:
     if source_type not in VALID_AUDIO_SOURCE_TYPES:
         raise ValueError("Tipo sorgente audio non valido.")
     cleaned["source_type"] = source_type
+    if source_type == "uploaded_audio" and not cleaned["audio_url"]:
+        raise ValueError("Carica prima il file audio su GitHub: selezionalo e premi «Carica file su GitHub».")
     cleaned["audio_url"] = validate_https_url(cleaned["audio_url"], "audio_url")
     if source_type == "spotify":
         normalized_spotify = spotify_track_url(cleaned["audio_url"])
@@ -1195,7 +1200,7 @@ def prepare_values(values: dict) -> dict:
             raise ValueError("Inserisci un URL di un brano Spotify valido.")
         cleaned["audio_url"] = normalized_spotify
     elif source_type == "uploaded_audio" and not cleaned["mime_type"].startswith("audio/"):
-        raise ValueError("Per un file caricato manca il MIME type audio restituito da GitHub.")
+        raise ValueError("Upload audio incompleto: manca il MIME type restituito da GitHub.")
     # dedication_text e short_phrase sono facoltativi: si possono lasciare vuoti e compilare dopo
     if cleaned["status"] not in VALID_STATUSES:
         raise ValueError(f"Status non valido. Usa uno tra: {', '.join(VALID_STATUSES)}")
@@ -1468,10 +1473,17 @@ def render_dedication_form(prefix: str, existing_image_source: str = ""):
             help=f"Massimo {format_bytes(MAX_AUDIO_UPLOAD_BYTES)}. Il file viene salvato in GitHub, non nel filesystem Streamlit.",
         )
         if uploaded_audio is not None:
-            try:
-                upload_selected_audio(prefix, uploaded_audio)
-            except Exception as exc:
-                st.error(str(exc))
+            st.caption(
+                f"Selezionato: {uploaded_audio.name} · {format_bytes(uploaded_audio.size)}. "
+                "Premi il pulsante qui sotto per inviarlo al repository."
+            )
+            if st.button("Carica file su GitHub", use_container_width=True, key=f"{prefix}_upload_audio"):
+                try:
+                    with st.spinner("Caricamento file audio su GitHub..."):
+                        upload_selected_audio(prefix, uploaded_audio)
+                except Exception as exc:
+                    st.session_state[f"{prefix}_audio_upload_status"] = ""
+                    st.error(f"Caricamento non riuscito: {exc}")
         upload_status = st.session_state.get(f"{prefix}_audio_upload_status", "")
         if upload_status:
             st.success(upload_status)
