@@ -103,7 +103,7 @@ function formatDetailTitle(title = '') {
 
     <!-- Audio embed -->
     <div class="anim-3" style="margin-bottom:2rem;">
-      <AudioEmbed url={dedication.audio.url} type={dedication.audio.type} />
+      <AudioEmbed url={dedication.audio.url} type={dedication.audio.type} sourceType={dedication.audio.source_type} mimeType={dedication.audio.mime_type} originalFilename={dedication.audio.original_filename} />
     </div>
 
     {dedication.video && (

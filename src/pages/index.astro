@@ -199,7 +199,7 @@ function splitDedicationLabel(label = 'Dedica del giorno') {
   {dedication && (
     <section style="padding:2rem 0;background:var(--bg-surface);">
       <div class="container-narrow reveal">
-        <AudioEmbed url={dedication.audio.url} type={dedication.audio.type} />
+        <AudioEmbed url={dedication.audio.url} type={dedication.audio.type} sourceType={dedication.audio.source_type} mimeType={dedication.audio.mime_type} originalFilename={dedication.audio.original_filename} />
       </div>
     </section>
   )}

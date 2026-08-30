@@ -90,6 +90,23 @@ def default_dedication_text(song_title: str, artist: str) -> str:
     )
 
 
+def normalize_audio(row: dict) -> dict:
+    """Normalizza il nuovo modello senza richiedere una migrazione delle vecchie righe Spotify."""
+    legacy_type = _cell(row, 'audio_type', 'other').lower() or 'other'
+    source_type = _cell(row, 'source_type').lower()
+    if not source_type:
+        source_type = 'spotify' if legacy_type == 'spotify' else 'external_url'
+    if source_type not in {'spotify', 'external_url', 'uploaded_audio'}:
+        raise ValueError(f"source_type non valido: '{source_type}'")
+    return {
+        'url': _cell(row, 'audio_url'),
+        'type': legacy_type,
+        'source_type': source_type,
+        'original_filename': _cell(row, 'original_filename'),
+        'mime_type': _cell(row, 'mime_type'),
+    }
+
+
 def normalize_video(row: dict) -> dict | None:
     video_type = _cell(row, 'video_type').lower()
     video_url = _cell(row, 'video_url')
@@ -139,10 +156,7 @@ def sheet_row_to_dict(row: dict, default_vote_url: str) -> dict:
         'artist': artist,
         'dedication_title': _cell(row, 'dedication_title'),
         'dedication_text': dedication_text,
-        'audio': {
-            'url': _cell(row, 'audio_url'),
-            'type': _cell(row, 'audio_type', 'other'),
-        },
+        'audio': normalize_audio(row),
         'vote': {
             'url': vote_url,
         },

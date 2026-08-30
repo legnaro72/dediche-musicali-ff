@@ -361,3 +361,7 @@ DDG FF include un modal "una tantum" che appare al primo accesso e chiede nome e
 ---
 
 *DDG FF — fatto con ♪ Python e ❤️*
+
+## Audio multi-sorgente
+
+L'admin supporta Spotify, URL audio esterni e upload locali. Gli upload vengono salvati nel repository GitHub in public/audio/ tramite il GITHUB_PAT esistente; il limite predefinito è 25 MB per file (MAX_AUDIO_UPLOAD_BYTES). Il Google Sheet riceve automaticamente le colonne source_type, original_filename e mime_type, senza alterare le righe storiche.

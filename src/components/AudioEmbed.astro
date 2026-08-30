@@ -2,10 +2,14 @@
 // src/components/AudioEmbed.astro
 export interface Props {
   url: string;
-  type: string; // spotify | youtube | soundcloud | mp3 | cloud | other
+  type?: string; // campo storico: spotify | youtube | soundcloud | mp3 | cloud | other
+  sourceType?: string; // spotify | external_url | uploaded_audio
+  mimeType?: string;
+  originalFilename?: string;
 }
 
-const { url, type } = Astro.props;
+const { url, type = 'other', sourceType, mimeType = '', originalFilename = '' } = Astro.props;
+const normalizedSourceType = sourceType || (type === 'spotify' ? 'spotify' : 'external_url');
 
 function getSpotifyEmbedUrl(url: string): string | null {
   const m = url.match(/spotify\.com\/(track|album|playlist|episode)\/([a-zA-Z0-9]+)/);
@@ -21,7 +25,7 @@ function getYoutubeEmbedUrl(url: string): string | null {
 
 function getSoundcloudEmbedUrl(url: string): string | null {
   if (!url.includes('soundcloud.com')) return null;
-  return `https://w.soundcloud.com/player/?url=${encodeURIComponent(url)}&color=%23ff0033&auto_play=false&hide_related=true&show_comments=false&show_user=true&show_reposts=false&visual=true`;
+  return `https://w.soundcloud.com/player/?url=${encodeURIComponent(url)}&color=%237c3aed&auto_play=false&hide_related=true&show_comments=false&show_user=true&show_reposts=false&visual=true`;
 }
 
 let embedUrl: string | null = null;
@@ -37,6 +41,14 @@ if (type === 'spotify') {
   embedUrl = getSoundcloudEmbedUrl(url);
   embedHeight = 300;
 }
+
+const extension = url.split('?')[0].toLowerCase().match(/\.([a-z0-9]+)$/)?.[1] ?? '';
+const audioMime = mimeType.toLowerCase();
+const directAudio = normalizedSourceType === 'uploaded_audio'
+  || audioMime.startsWith('audio/')
+  || ['mp3', 'm4a', 'aac', 'ogg', 'opus', 'wav', 'webm'].includes(extension)
+  || type === 'mp3';
+const fallbackMime = audioMime || ({ mp3: 'audio/mpeg', m4a: 'audio/mp4', aac: 'audio/aac', ogg: 'audio/ogg', opus: 'audio/ogg', wav: 'audio/wav', webm: 'audio/webm' }[extension] ?? 'audio/mpeg');
 ---
 
 <div class="audio-section">
@@ -52,12 +64,21 @@ if (type === 'spotify') {
     </div>
   ) : null}
 
-  {type === 'mp3' ? (
+  {directAudio && !embedUrl ? (
     <div class="audio-embed" style="padding:1rem; background:var(--bg-card);">
-      <audio controls style="width:100%; accent-color:var(--accent);">
-        <source src={url} type="audio/mpeg" />
+      <audio controls style="width:100%; accent-color:var(--purple-1);">
+        <source src={url} type={fallbackMime} />
         Il tuo browser non supporta l'audio HTML5.
       </audio>
+    </div>
+  ) : null}
+
+  {!embedUrl && !directAudio ? (
+    <div class="audio-embed" style="padding:1rem; background:var(--bg-card);">
+      <p style="margin:0 0 .75rem; color:var(--text-dim);">Questa sorgente non è riproducibile direttamente nel browser.</p>
+      <a href={url} target="_blank" rel="noopener noreferrer" class="btn btn-secondary">
+        Apri la sorgente{originalFilename ? `: ${originalFilename}` : ''}
+      </a>
     </div>
   ) : null}
 </div>
