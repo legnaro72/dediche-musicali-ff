@@ -81,6 +81,27 @@ def _cell(row: dict, key: str, default: str = '') -> str:
     return str(row.get(key, default)).strip()
 
 
+def read_sheet_records(worksheet) -> list[dict]:
+    """Legge il foglio senza fallire se la riga delle intestazioni contiene duplicati."""
+    values = worksheet.get_all_values()
+    if not values:
+        return []
+
+    header_positions: dict[str, int] = {}
+    for index, value in enumerate(values[0]):
+        header = str(value or '').strip()
+        if header and header not in header_positions:
+            header_positions[header] = index
+
+    return [
+        {
+            column: str(row[position] if position < len(row) else '')
+            for column, position in header_positions.items()
+        }
+        for row in values[1:]
+    ]
+
+
 def default_dedication_text(song_title: str, artist: str) -> str:
     return (
         "Ci sono canzoni che arrivano senza fare rumore, "
@@ -306,7 +327,7 @@ def sync(dry_run: bool = False, target_date: str = None, target_id: str = None,
     sh = gc.open_by_key(sheet_id)
     ws = sh.get_worksheet(0)
 
-    rows = ws.get_all_records()
+    rows = read_sheet_records(ws)
     logger.info(f"Trovate {len(rows)} righe nel Google Sheet")
     if target_date:
         logger.info(f"Data target sync: {target_date}")
