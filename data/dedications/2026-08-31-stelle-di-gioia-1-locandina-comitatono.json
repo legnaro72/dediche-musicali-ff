@@ -34,17 +34,26 @@
     "description": "Dedica musicale del giorno con \"Stelle di gioia(1)\" di Locandina Comitatono."
   },
   "created_at": "2026-08-31T10:00:03.450351+02:00",
-  "updated_at": "2026-08-31T10:00:04.225381+02:00",
+  "updated_at": "2026-08-31T18:38:15.932Z",
   "voteAverage": null,
   "thoughtsText": "",
   "reactions": {
     "down": 0,
     "like": 0,
-    "heart": 0,
+    "heart": 1,
     "sun": 0
   },
   "votes": [],
   "thoughts": [],
-  "reactionEntries": [],
+  "reactionEntries": [
+    {
+      "userId": "493c16e4-453a-4b47-9384-c8abb31c24c6",
+      "userKey": "gabriele-ferrando",
+      "userName": "Gabriele Ferrando",
+      "value": "heart",
+      "createdAt": "2026-08-31T18:38:15.932Z",
+      "updatedAt": "2026-08-31T18:38:15.932Z"
+    }
+  ],
   "date_it": "31 agosto 2026"
 }
