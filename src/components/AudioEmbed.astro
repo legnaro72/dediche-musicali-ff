@@ -99,7 +99,6 @@ const fallbackMime = audioMime || ({ mp3: 'audio/mpeg', m4a: 'audio/mp4', aac: '
         if (!(player instanceof HTMLAudioElement)) return;
 
         event.preventDefault();
-        player.scrollIntoView({ behavior: 'smooth', block: 'center' });
         const playback = player.play();
         if (playback) {
           playback.catch((error) => console.warn('Riproduzione audio non avviata:', error));
