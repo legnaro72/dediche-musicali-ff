@@ -822,11 +822,32 @@ def ensure_sheet_headers(sheet) -> None:
     sheet.update(f"A1:{end_col}1", [updated_headers], value_input_option="USER_ENTERED")
 
 
+def read_sheet_records(sheet) -> list[tuple[int, dict[str, str]]]:
+    """Legge il foglio senza fallire se la riga delle intestazioni contiene duplicati."""
+    rows = sheet.get_all_values()
+    if not rows:
+        return []
+
+    header_positions: dict[str, int] = {}
+    for index, value in enumerate(rows[0]):
+        header = str(value or "").strip()
+        if header and header not in header_positions:
+            header_positions[header] = index
+
+    records = []
+    for row_number, values in enumerate(rows[1:], start=2):
+        record = {
+            column: str(values[position] if position < len(values) else "")
+            for column, position in header_positions.items()
+        }
+        records.append((row_number, record))
+    return records
+
+
 def load_sheet_records() -> list[dict]:
     sheet = get_sheet()
-    rows = sheet.get_all_records()
     records = []
-    for idx, row in enumerate(rows, start=2):
+    for idx, row in read_sheet_records(sheet):
         record = {col: str(row.get(col, "") or "") for col in SHEET_COLUMNS}
         record["_row_number"] = idx
         records.append(record)
@@ -1271,9 +1292,8 @@ def find_sheet_rows_by_id(dedication_id: str) -> list[int]:
         return []
 
     sheet = get_sheet()
-    rows = sheet.get_all_records()
     matches = []
-    for idx, row in enumerate(rows, start=2):
+    for idx, row in read_sheet_records(sheet):
         if str(row.get("id", "") or "").strip() == dedication_id:
             matches.append(idx)
     return matches
