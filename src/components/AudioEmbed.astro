@@ -66,7 +66,12 @@ const fallbackMime = audioMime || ({ mp3: 'audio/mpeg', m4a: 'audio/mp4', aac: '
 
   {directAudio && !embedUrl ? (
     <div class="audio-embed" style="padding:1rem; background:var(--bg-card);">
-      <audio controls style="width:100%; accent-color:var(--purple-1);">
+      <audio
+        controls
+        preload="metadata"
+        data-dedication-audio
+        style="width:100%; accent-color:var(--purple-1);"
+      >
         <source src={url} type={fallbackMime} />
         Il tuo browser non supporta l'audio HTML5.
       </audio>
@@ -82,3 +87,27 @@ const fallbackMime = audioMime || ({ mp3: 'audio/mpeg', m4a: 'audio/mp4', aac: '
     </div>
   ) : null}
 </div>
+
+<script>
+  function bindAudioPlayButtons() {
+    document.querySelectorAll('[data-audio-play]').forEach((button) => {
+      if (!(button instanceof HTMLAnchorElement) || button.dataset.audioPlayBound === 'true') return;
+
+      button.dataset.audioPlayBound = 'true';
+      button.addEventListener('click', (event) => {
+        const player = document.querySelector('[data-dedication-audio]');
+        if (!(player instanceof HTMLAudioElement)) return;
+
+        event.preventDefault();
+        player.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        const playback = player.play();
+        if (playback) {
+          playback.catch((error) => console.warn('Riproduzione audio non avviata:', error));
+        }
+      });
+    });
+  }
+
+  bindAudioPlayButtons();
+  document.addEventListener('astro:page-load', bindAudioPlayButtons);
+</script>
