@@ -997,11 +997,12 @@ def optimize_uploaded_image(uploaded_file) -> tuple[bytes, dict]:
     original_name = uploaded_file.name or "immagine"
     original_ext = Path(original_name).suffix.lower()
 
-    if original_ext in {".heic", ".heif"}:
-        try:
-            import pillow_heif
-            pillow_heif.register_heif_opener()
-        except Exception as exc:
+    # Phone galleries can send HEIF content with a JPEG name or no extension.
+    try:
+        import pillow_heif
+        pillow_heif.register_heif_opener()
+    except ImportError as exc:
+        if original_ext in {".heic", ".heif"}:
             raise ValueError(
                 "Questa sembra una foto HEIC/Live Photo da telefono, ma manca il "
                 "supporto HEIC. Installa/aggiorna le dipendenze con pillow-heif "
@@ -1013,12 +1014,18 @@ def optimize_uploaded_image(uploaded_file) -> tuple[bytes, dict]:
         original_format = img.format or original_ext.replace(".", "").upper() or "UNKNOWN"
         frame_count = getattr(img, "n_frames", 1) or 1
         is_animated = bool(getattr(img, "is_animated", False) or frame_count > 1)
-        if is_animated:
+        if original_format == "GIF" and is_animated:
             img.seek(frame_count - 1)
             img.load()
             img = img.copy()
         else:
             img.load()
+        original_size = img.size
+        orientation = img.getexif().get(274, 1)
+        if orientation in (5, 6, 7, 8):
+            original_size = original_size[::-1]
+        # Shrink before RGB/alpha conversion to limit memory for large phone photos.
+        img.thumbnail((UPLOAD_IMAGE_MAX_SIDE, UPLOAD_IMAGE_MAX_SIDE), Image.LANCZOS)
         img = ImageOps.exif_transpose(img)
     except Exception as exc:
         file_type = getattr(uploaded_file, "type", "") or "tipo non dichiarato"
@@ -1030,7 +1037,6 @@ def optimize_uploaded_image(uploaded_file) -> tuple[bytes, dict]:
             f"peso={format_bytes(len(original_bytes))}, errore={exc}"
         ) from exc
 
-    original_size = img.size
     if img.mode in ("RGBA", "LA") or (img.mode == "P" and "transparency" in img.info):
         background = Image.new("RGB", img.size, (255, 255, 255))
         alpha = img.convert("RGBA").getchannel("A")
@@ -1581,7 +1587,8 @@ def render_dedication_form(prefix: str, existing_image_source: str = ""):
             preview_id = make_default_id(normalize_date(date_text), song, artist)
         with st.expander("Anteprima immagine caricata", expanded=True):
             try:
-                st.image(uploaded_bytes, use_container_width=True)
+                preview_bytes, _ = optimize_uploaded_image(uploaded_snapshot)
+                st.image(preview_bytes, use_container_width=True)
             except Exception as exc:
                 st.warning(
                     "Anteprima non disponibile, ma provo comunque a convertirla al salvataggio. "
