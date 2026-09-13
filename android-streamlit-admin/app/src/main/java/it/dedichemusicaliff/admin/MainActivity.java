@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Message;
 import android.webkit.ValueCallback;
 import android.webkit.CookieManager;
 import android.webkit.WebChromeClient;
@@ -35,6 +36,7 @@ public class MainActivity extends Activity {
         WebSettings settings = webView.getSettings();
         settings.setJavaScriptEnabled(true);
         settings.setDomStorageEnabled(true);
+        settings.setSupportMultipleWindows(true);
         settings.setDatabaseEnabled(true);
         settings.setLoadWithOverviewMode(true);
         settings.setUseWideViewPort(true);
@@ -55,6 +57,50 @@ public class MainActivity extends Activity {
             }
         });
         webView.setWebChromeClient(new WebChromeClient() {
+            @Override
+            public boolean onCreateWindow(WebView view, boolean isDialog,
+                    boolean isUserGesture, Message resultMsg) {
+                if (!isUserGesture) {
+                    return false;
+                }
+                WebView popup = new WebView(MainActivity.this);
+                popup.setWebViewClient(new WebViewClient() {
+                    private boolean route(Uri uri) {
+                        if ("about".equalsIgnoreCase(uri.getScheme())) {
+                            return false;
+                        }
+                        if (!openWhatsApp(uri)
+                                && ("https".equalsIgnoreCase(uri.getScheme())
+                                || "http".equalsIgnoreCase(uri.getScheme()))) {
+                            try {
+                                startActivity(new Intent(Intent.ACTION_VIEW, uri)
+                                        .addCategory(Intent.CATEGORY_BROWSABLE));
+                            } catch (ActivityNotFoundException error) {
+                                Toast.makeText(MainActivity.this,
+                                        "Nessuna app disponibile per aprire il link.",
+                                        Toast.LENGTH_LONG).show();
+                            }
+                        }
+                        popup.post(popup::destroy);
+                        return true;
+                    }
+
+                    @Override
+                    public boolean shouldOverrideUrlLoading(WebView child, WebResourceRequest request) {
+                        return route(request.getUrl());
+                    }
+
+                    @Override
+                    public boolean shouldOverrideUrlLoading(WebView child, String url) {
+                        return route(Uri.parse(url));
+                    }
+                });
+                WebView.WebViewTransport transport = (WebView.WebViewTransport) resultMsg.obj;
+                transport.setWebView(popup);
+                resultMsg.sendToTarget();
+                return true;
+            }
+
             @Override
             public boolean onShowFileChooser(
                     WebView webView,
@@ -89,6 +135,17 @@ public class MainActivity extends Activity {
                 || "web.whatsapp.com".equalsIgnoreCase(host));
         if (!whatsappScheme && !whatsappLink) {
             return false;
+        }
+
+        // Explicit packages avoid relying on Android's verified-link defaults.
+        for (String packageName : new String[]{"com.whatsapp", "com.whatsapp.w4b"}) {
+            try {
+                startActivity(new Intent(Intent.ACTION_VIEW, uri)
+                        .setPackage(packageName).addCategory(Intent.CATEGORY_BROWSABLE));
+                return true;
+            } catch (ActivityNotFoundException error) {
+                // Try the other WhatsApp variant, then the system handler.
+            }
         }
 
         try {
