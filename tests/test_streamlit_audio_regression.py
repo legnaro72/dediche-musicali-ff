@@ -47,6 +47,25 @@ class StreamlitAudioRegressionTest(unittest.TestCase):
         self.assertEqual(cleaned["mime_type"], "")
         self.assertEqual(cleaned["original_filename"], "")
 
+    def test_manual_id_is_safe_for_github_upload_path(self):
+        values = default_form_values()
+        values.update(
+            {
+                "id": "2026/09/14 Dedica Speciale",
+                "date": "2026-09-14",
+                "song_title": "Test Song",
+                "artist": "Test Artist",
+                "audio_url": "https://open.spotify.com/track/0xYlLcTvwe9Odc2R7Ftdkk",
+                "image_mode": "raw",
+                "image_source": "public/images/upload/existing.webp",
+            }
+        )
+
+        cleaned = prepare_values(values)
+
+        self.assertEqual(cleaned["id"], "2026-09-14-dedica-speciale")
+
 
 if __name__ == "__main__":
     unittest.main()
+

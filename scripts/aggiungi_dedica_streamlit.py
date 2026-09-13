@@ -1195,6 +1195,10 @@ def make_default_id(date_value: str, song_title: str, artist: str) -> str:
     return f"{date_value}-{slugify(song_title)}-{slugify(artist)}"
 
 
+def normalize_dedication_id(value: str) -> str:
+    return slugify(value)
+
+
 def default_form_values() -> dict:
     return {
         "id": "",
@@ -1277,6 +1281,10 @@ def prepare_values(values: dict) -> dict:
 
     if not cleaned["id"]:
         cleaned["id"] = make_default_id(cleaned["date"], cleaned["song_title"], cleaned["artist"])
+    else:
+        cleaned["id"] = normalize_dedication_id(cleaned["id"])
+        if not cleaned["id"]:
+            cleaned["id"] = make_default_id(cleaned["date"], cleaned["song_title"], cleaned["artist"])
     if not cleaned["dedication_title"]:
         cleaned["dedication_title"] = "La dedica del giorno"
     cleaned["audio_type"] = audio_type_for_source(
@@ -2638,3 +2646,4 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+
