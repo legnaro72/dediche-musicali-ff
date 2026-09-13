@@ -451,6 +451,35 @@ def audio_type_for_source(source_type: str, url: str = "", mime_type: str = "") 
     return "other"
 
 
+def normalize_audio_form_values(values: dict) -> dict:
+    """Isola i dati dei tre modi audio prima di validare e salvare la dedica."""
+    cleaned = dict(values)
+    audio_url = str(cleaned.get("audio_url", "") or "").strip()
+    source_type = str(cleaned.get("source_type", "") or "").strip() or "spotify"
+    spotify_url = spotify_track_url(audio_url)
+
+    if spotify_url:
+        source_type = "spotify"
+
+    cleaned["source_type"] = source_type
+    if source_type == "spotify":
+        cleaned["audio_url"] = spotify_url or audio_url
+        cleaned["audio_type"] = "spotify"
+        cleaned["mime_type"] = ""
+        cleaned["original_filename"] = ""
+    elif source_type == "external_url":
+        cleaned["original_filename"] = ""
+        cleaned["audio_type"] = audio_type_for_source(
+            source_type,
+            audio_url,
+            str(cleaned.get("mime_type", "") or "").strip(),
+        )
+    elif source_type == "uploaded_audio":
+        cleaned["audio_type"] = "mp3"
+
+    return cleaned
+
+
 def validate_https_url(value: str, field_name: str) -> str:
     url = str(value or "").strip()
     parsed = urlparse(url)
@@ -1202,6 +1231,7 @@ def build_row_from_values(values: dict) -> list[str]:
 
 def prepare_values(values: dict) -> dict:
     cleaned = {col: str(values.get(col, "") or "").strip() for col in SHEET_COLUMNS}
+    cleaned = normalize_audio_form_values(cleaned)
     cleaned["date"] = normalize_date(cleaned["date"])
 
     if not cleaned["song_title"]:
