@@ -11,6 +11,12 @@ __pycache__/
 .env
 .env.local
 
+# Android
+**/.gradle/
+**/build/
+**/local.properties
+*.apk
+
 # Backup zips (non tracciare nel repo)
 backups/*.zip
 
