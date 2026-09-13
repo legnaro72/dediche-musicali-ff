@@ -376,14 +376,14 @@ def fetch_spotify_open_graph(url: str) -> tuple[str, str]:
     description = html.unescape(description_match.group(1).strip()) if description_match else ""
     artist = ""
 
-    description_parts = [part.strip() for part in description.split("·") if part.strip()]
+    description_parts = [part.strip() for part in description.split("\u00b7") if part.strip()]
     if len(description_parts) >= 3 and description_parts[-2].lower() in {"brano", "song"}:
         artist = description_parts[0]
     else:
         patterns = [
-            r"Listen to .+? on Spotify\.\s*Song\s*·\s*(.+?)\s*·\s*\d{4}",
-            r"Song\s*·\s*(.+?)\s*·\s*\d{4}",
-            r"Brano\s*·\s*(.+?)\s*·\s*\d{4}",
+            r"Listen to .+? on Spotify\.\s*Song\s*\u00b7\s*(.+?)\s*\u00b7\s*\d{4}",
+            r"Song\s*\u00b7\s*(.+?)\s*\u00b7\s*\d{4}",
+            r"Brano\s*\u00b7\s*(.+?)\s*\u00b7\s*\d{4}",
         ]
         for pattern in patterns:
             match = re.search(pattern, description, flags=re.IGNORECASE)
