@@ -1035,7 +1035,7 @@ def decode_mobile_photo(payload: dict, scope: str):
 
 def render_mobile_photo(prefix: str, disabled: bool):
     component = components.declare_component(
-        "mobile_photo", path=str(Path(__file__).parent / "mobile_photo")
+        "mobile_photo_v2", path=str(Path(__file__).parent / "mobile_photo")
     )
     scope = prefix if prefix == "new" else f"{prefix}:{st.session_state.get('historical_loaded_key', '')}"
     ack_key = f"{scope}_mobile_photo_ack"
