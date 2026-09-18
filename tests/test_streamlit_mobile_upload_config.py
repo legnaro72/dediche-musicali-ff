@@ -11,7 +11,7 @@ class StreamlitMobileUploadConfigTest(unittest.TestCase):
         with (ROOT_DIR / ".streamlit" / "config.toml").open("rb") as config_file:
             config = tomllib.load(config_file)
 
-        self.assertGreaterEqual(config["server"]["disconnectedSessionTTL"], 60)
+        self.assertGreaterEqual(config["server"]["disconnectedSessionTTL"], 5 * 60)
 
 
 if __name__ == "__main__":

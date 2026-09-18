@@ -3,6 +3,7 @@ const assert = require('node:assert/strict');
 const vm = require('node:vm');
 const fs = require('node:fs');
 const source = fs.readFileSync('scripts/mobile_photo/upload.js', 'utf8');
+const markup = fs.readFileSync('scripts/mobile_photo/index.html', 'utf8');
 
 function harness(saved = new Map()) {
   const events = {}, messages = [], timers = [];
@@ -80,4 +81,9 @@ test('stale local data from an older uploader is discarded', async () => {
   const h = harness(saved); await h.render({});
   assert.equal(h.elements.send.disabled, true);
   assert.equal(saved.has('new'), false);
+});
+
+test('the upload action is rendered before the potentially tall preview', () => {
+  assert.ok(markup.indexOf('id="send"') < markup.indexOf('id="preview"'));
+  assert.match(source, /Math\.max\(document\.body\.scrollHeight \+ 32, 380\)/);
 });

@@ -21,7 +21,11 @@ function newId() {
 function post(type, data) {
   window.parent.postMessage({isStreamlitMessage:true, type, ...data}, '*');
 }
-function resize() { post('streamlit:setFrameHeight', {height:document.body.scrollHeight + 24}); }
+function resize() {
+  // Image dimensions arrive after the object URL loads. The minimum keeps the
+  // action buttons visible even before Streamlit applies the next resize.
+  post('streamlit:setFrameHeight', {height:Math.max(document.body.scrollHeight + 32, 380)});
+}
 function message(text, percent = progress.value) {
   status.textContent = text; progress.value = percent; resize();
 }
@@ -69,6 +73,7 @@ function hidePreview() {
   if (previewUrl) URL.revokeObjectURL(previewUrl);
   previewUrl = ''; preview.removeAttribute('src'); preview.style.display = 'none';
 }
+preview.addEventListener('load', resize);
 
 picker.addEventListener('change', async () => {
   const file = picker.files[0];
@@ -157,4 +162,4 @@ window.addEventListener('message', async event => {
 });
 
 post('streamlit:componentReady', {apiVersion:1});
-post('streamlit:setFrameHeight', {height:310});
+post('streamlit:setFrameHeight', {height:380});
