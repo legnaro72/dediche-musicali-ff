@@ -988,6 +988,19 @@ def remember_uploaded_image(prefix: str, uploaded_file):
     return snapshot
 
 
+def stage_uploaded_image(prefix: str) -> None:
+    """Salva la foto appena il browser ha terminato il trasferimento."""
+    uploaded_file = st.session_state.get(f"{prefix}_uploaded_file")
+    snapshot = remember_uploaded_image(prefix, uploaded_file)
+    if snapshot is None:
+        return
+
+    # Il callback scatta soltanto quando file_uploader ha ricevuto il file
+    # completo. Scriverlo subito nella bozza protegge anche dai rerun e dalle
+    # riconnessioni tipiche quando si torna dalla galleria del telefono.
+    save_form_draft(prefix, snapshot)
+
+
 def optimize_uploaded_image(uploaded_file) -> tuple[bytes, dict]:
     from PIL import Image, ImageFile, ImageOps
 
@@ -1565,11 +1578,20 @@ def render_dedication_form(prefix: str, existing_image_source: str = ""):
         if st.session_state.get(f"{prefix}_image_mode", "raw") in VALID_IMAGE_MODES else 0,
         key=f"{prefix}_image_mode",
     )
+    st.caption(
+        "Premi Browse e scegli la foto con calma. Dopo Fatto, resta in questa "
+        "pagina finche compare la conferma verde: solo allora salva o pubblica la dedica."
+    )
     uploaded_file = st.file_uploader(
-        "Nuova immagine per raw/upload",
+        "Foto del giorno per raw/upload",
         disabled=image_mode not in ("raw", "upload"),
+        help=(
+            "Puoi restare nella galleria fino a 15 minuti. Sono supportati "
+            "JPG/JPEG, PNG, WEBP, GIF e HEIC."
+        ),
         key=f"{prefix}_uploaded_file",
-        help="Puoi caricare JPG/JPEG, PNG, WEBP, GIF o HEIC. Se il nome file e' strano provo comunque a leggerlo.",
+        on_change=stage_uploaded_image,
+        args=(prefix,),
     )
     uploaded_snapshot = remember_uploaded_image(prefix, uploaded_file)
     st.text_input("image_source", key=f"{prefix}_image_source")
@@ -1579,6 +1601,9 @@ def render_dedication_form(prefix: str, existing_image_source: str = ""):
         uploaded_bytes = uploaded_snapshot.getvalue()
         uploaded_size = len(uploaded_bytes)
         uploaded_type = getattr(uploaded_snapshot, "type", "") or "tipo non dichiarato"
+        st.success(
+            f"Foto caricata completamente e messa al sicuro ({format_bytes(uploaded_size)})."
+        )
         date_text = st.session_state.get(f"{prefix}_date", "")
         song = st.session_state.get(f"{prefix}_song_title", "")
         artist = st.session_state.get(f"{prefix}_artist", "")

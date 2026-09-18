@@ -1,5 +1,6 @@
 import io
 import unittest
+from unittest.mock import patch
 
 from test_streamlit_audio_regression import install_streamlit_stub
 
@@ -13,7 +14,9 @@ from scripts.aggiungi_dedica_streamlit import (
     UPLOAD_IMAGE_MAX_SIDE,
     UPLOAD_IMAGE_HARD_MAX_BYTES,
     optimize_uploaded_image,
+    stage_uploaded_image,
 )
+from scripts import aggiungi_dedica_streamlit as streamlit_app
 
 
 class StreamlitImageRegressionTest(unittest.TestCase):
@@ -60,6 +63,23 @@ class StreamlitImageRegressionTest(unittest.TestCase):
         self.assertEqual(info["original_size"], (3000, 4000))
         self.assertLessEqual(max(image.size), UPLOAD_IMAGE_MAX_SIDE)
         self.assertLess(image.width, image.height)
+
+    def test_completed_mobile_upload_is_saved_immediately(self):
+        uploaded = UploadedImageSnapshot("telefono.jpg", "image/jpeg", b"foto")
+        original_session_state = getattr(streamlit_app.st, "session_state", None)
+        streamlit_app.st.session_state = {"new_uploaded_file": uploaded}
+        try:
+            with patch.object(streamlit_app, "save_form_draft") as save_draft:
+                stage_uploaded_image("new")
+
+            snapshot = streamlit_app.st.session_state["new_uploaded_image_snapshot"]
+            self.assertEqual(snapshot.getvalue(), b"foto")
+            save_draft.assert_called_once_with("new", snapshot)
+        finally:
+            if original_session_state is None:
+                del streamlit_app.st.session_state
+            else:
+                streamlit_app.st.session_state = original_session_state
 
 
 if __name__ == "__main__":

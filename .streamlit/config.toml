@@ -1,5 +1,8 @@
 [server]
 enableStaticServing = true
+# Su mobile la galleria sospende spesso il browser/WebView. Mantieni la
+# sessione (e quindi la bozza) per 15 minuti mentre si sceglie una foto.
+disconnectedSessionTTL = 900
 
 [browser]
 gatherUsageStats = false
