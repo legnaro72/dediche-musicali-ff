@@ -135,6 +135,10 @@ UPLOAD_IMAGE_MAX_SIDE = int(os.environ.get("UPLOAD_IMAGE_MAX_SIDE", "1400"))
 UPLOAD_IMAGE_WEBP_QUALITY = int(os.environ.get("UPLOAD_IMAGE_WEBP_QUALITY", "78"))
 UPLOAD_IMAGE_TARGET_BYTES = int(os.environ.get("UPLOAD_IMAGE_TARGET_BYTES", str(450 * 1024)))
 UPLOAD_IMAGE_HARD_MAX_BYTES = int(os.environ.get("UPLOAD_IMAGE_HARD_MAX_BYTES", str(700 * 1024)))
+MOBILE_PHOTO_MAX_BYTES = 10 * 1024 * 1024
+MOBILE_PHOTO_ALLOWED_MIME = {
+    "image/jpeg", "image/png", "image/webp", "image/gif", "image/heic", "image/heif",
+}
 STREAMLIT_ICON_PATH = Path(__file__).resolve().parents[1] / "public" / "favicon" / "favicon.png"
 
 
@@ -1001,6 +1005,70 @@ def stage_uploaded_image(prefix: str) -> None:
     save_form_draft(prefix, snapshot)
 
 
+def decode_mobile_photo(payload: dict, scope: str):
+    """Validate an explicit phone upload before replacing the saved snapshot."""
+    if not isinstance(payload, dict) or payload.get("scope") != scope:
+        raise ValueError("Selezione non valida per questa dedica. Scegli nuovamente la foto.")
+    request_id = str(payload.get("request_id") or "")
+    if not re.fullmatch(r"[a-fA-F0-9-]{8,64}", request_id):
+        raise ValueError("Identificatore del caricamento non valido.")
+    filename = str(payload.get("name") or "foto.jpg")
+    mime_type = str(payload.get("type") or "").lower()
+    extension = Path(filename).suffix.lower()
+    if mime_type not in MOBILE_PHOTO_ALLOWED_MIME and extension not in VALID_IMAGE_EXTS - {""}:
+        raise ValueError("Formato non supportato. Usa JPG, PNG, WEBP, GIF, HEIC o HEIF.")
+    encoded = payload.get("data", "")
+    max_encoded = ((MOBILE_PHOTO_MAX_BYTES + 2) // 3) * 4
+    if not isinstance(encoded, str) or len(encoded) > max_encoded:
+        raise ValueError("Foto troppo grande: il limite è 10 MB.")
+    try:
+        data = base64.b64decode(encoded, validate=True)
+    except Exception as exc:
+        raise ValueError("Trasferimento incompleto. Premi di nuovo Carica la foto.") from exc
+    if not data or len(data) > MOBILE_PHOTO_MAX_BYTES:
+        raise ValueError("La foto è vuota o supera il limite di 10 MB.")
+    declared_size = payload.get("size")
+    if not isinstance(declared_size, int) or declared_size != len(data):
+        raise ValueError("Trasferimento incompleto. Premi di nuovo Carica la foto.")
+    return UploadedImageSnapshot(filename, mime_type or "application/octet-stream", data)
+
+
+def render_mobile_photo(prefix: str, disabled: bool):
+    component = components.declare_component(
+        "mobile_photo", path=str(Path(__file__).parent / "mobile_photo")
+    )
+    scope = prefix if prefix == "new" else f"{prefix}:{st.session_state.get('historical_loaded_key', '')}"
+    ack_key = f"{scope}_mobile_photo_ack"
+    error_key = f"{scope}_mobile_photo_error"
+    value = component(scope=scope, disabled=disabled,
+                      ack=st.session_state.get(ack_key, ""),
+                      error=st.session_state.get(error_key, {}),
+                      key=f"mobile_photo_{scope}", default=None)
+    if value and not disabled:
+        request_id = value.get("request_id") if isinstance(value, dict) else None
+        attempt = value.get("attempt_id") if isinstance(value, dict) else None
+        attempt_key = f"{scope}_mobile_photo_attempt"
+        if request_id and request_id == st.session_state.get(ack_key):
+            return st.session_state.get(f"{prefix}_uploaded_image_snapshot")
+        if attempt and st.session_state.get(attempt_key) != attempt:
+            st.session_state[attempt_key] = attempt
+            try:
+                snapshot = decode_mobile_photo(value, scope)
+                # Validate format before acknowledging and replacing a good photo.
+                optimize_uploaded_image(snapshot)
+                save_form_draft(prefix, snapshot)
+                st.session_state[f"{prefix}_uploaded_image_snapshot"] = snapshot
+                st.session_state[ack_key] = request_id
+                st.session_state[error_key] = {}
+            except Exception as exc:
+                st.session_state[error_key] = {
+                    "request_id": request_id,
+                    "message": f"Foto non acquisita: {exc}",
+                }
+            st.rerun()
+    return st.session_state.get(f"{prefix}_uploaded_image_snapshot")
+
+
 def optimize_uploaded_image(uploaded_file) -> tuple[bytes, dict]:
     from PIL import Image, ImageFile, ImageOps
 
@@ -1578,22 +1646,21 @@ def render_dedication_form(prefix: str, existing_image_source: str = ""):
         if st.session_state.get(f"{prefix}_image_mode", "raw") in VALID_IMAGE_MODES else 0,
         key=f"{prefix}_image_mode",
     )
-    st.caption(
-        "Premi Browse e scegli la foto con calma. Dopo Fatto, resta in questa "
-        "pagina finche compare la conferma verde: solo allora salva o pubblica la dedica."
-    )
-    uploaded_file = st.file_uploader(
-        "Foto del giorno per raw/upload",
-        disabled=image_mode not in ("raw", "upload"),
-        help=(
-            "Puoi restare nella galleria fino a 15 minuti. Sono supportati "
-            "JPG/JPEG, PNG, WEBP, GIF e HEIC."
-        ),
-        key=f"{prefix}_uploaded_file",
-        on_change=stage_uploaded_image,
-        args=(prefix,),
-    )
-    uploaded_snapshot = remember_uploaded_image(prefix, uploaded_file)
+    st.caption("Caricamento mobile v2 · Scegli la foto, premi Fatto nella galleria, "
+               "attendi che risulti pronta e premi Carica la foto. Limite: 10 MB. "
+               "La selezione resta sul dispositivo finché la sostituisci o la scarti.")
+    uploaded_snapshot = render_mobile_photo(prefix, image_mode not in ("raw", "upload"))
+    with st.expander("Caricamento classico da PC o fallback"):
+        uploaded_file = st.file_uploader(
+            "Foto del giorno",
+            disabled=image_mode not in ("raw", "upload"),
+            help="Metodo precedente, mantenuto come alternativa. Supporta JPG, PNG, WEBP, GIF e HEIC.",
+            key=f"{prefix}_uploaded_file",
+            on_change=stage_uploaded_image,
+            args=(prefix,),
+        )
+        if uploaded_file is not None:
+            uploaded_snapshot = remember_uploaded_image(prefix, uploaded_file)
     st.text_input("image_source", key=f"{prefix}_image_source")
     if existing_image_source and not uploaded_snapshot:
         st.caption(f"Immagine attuale: {existing_image_source}")

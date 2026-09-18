@@ -15,11 +15,27 @@ from scripts.aggiungi_dedica_streamlit import (
     UPLOAD_IMAGE_HARD_MAX_BYTES,
     optimize_uploaded_image,
     stage_uploaded_image,
+    decode_mobile_photo,
 )
 from scripts import aggiungi_dedica_streamlit as streamlit_app
 
 
 class StreamlitImageRegressionTest(unittest.TestCase):
+    def test_mobile_payload_rejects_partial_or_wrong_dedication_upload(self):
+        for payload in (
+            {"scope": "hist:other", "request_id": "12345678", "data": "YWJj", "size": 3},
+            {"scope": "new", "request_id": "12345678", "data": "broken base64", "size": 3},
+            {"scope": "new", "request_id": "12345678", "data": "", "size": 0},
+            {"scope": "new", "request_id": "12345678", "data": "YWJj", "size": 4},
+        ):
+            with self.subTest(payload=payload), self.assertRaises(ValueError):
+                decode_mobile_photo(payload, "new")
+        snapshot = decode_mobile_photo({
+            "scope": "new", "request_id": "12345678", "data": "YWJj",
+            "size": 3, "name": "phone.jpg", "type": "image/jpeg",
+        }, "new")
+        self.assertEqual(snapshot.getvalue(), b"abc")
+
     def convert(self, data, name):
         result, info = optimize_uploaded_image(
             UploadedImageSnapshot(name, "application/octet-stream", data)
