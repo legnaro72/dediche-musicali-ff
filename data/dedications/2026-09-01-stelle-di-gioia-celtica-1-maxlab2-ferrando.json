@@ -34,17 +34,26 @@
     "description": "Dedica musicale del giorno con \"Stelle di gioia (celtica)(1)\" di MaxLab2 Ferrando."
   },
   "created_at": "2026-09-01T01:50:49.278584+02:00",
-  "updated_at": "2026-09-01T07:41:01.949827+02:00",
+  "updated_at": "2026-09-20T11:25:23.801Z",
   "voteAverage": null,
   "thoughtsText": "",
   "reactions": {
     "down": 0,
     "like": 0,
-    "heart": 0,
+    "heart": 1,
     "sun": 0
   },
   "votes": [],
   "thoughts": [],
-  "reactionEntries": [],
+  "reactionEntries": [
+    {
+      "userId": "6de8a1b4-73f4-41dc-8955-9627d3f9a7e7",
+      "userKey": "massimiliano-ferrando",
+      "userName": "Massimiliano Ferrando",
+      "value": "heart",
+      "createdAt": "2026-09-20T11:25:23.801Z",
+      "updatedAt": "2026-09-20T11:25:23.801Z"
+    }
+  ],
   "date_it": "1 settembre 2026"
 }
