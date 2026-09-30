@@ -87,3 +87,8 @@ test('the upload action is rendered before the potentially tall preview', () => 
   assert.ok(markup.indexOf('id="send"') < markup.indexOf('id="preview"'));
   assert.match(source, /Math\.max\(document\.body\.scrollHeight \+ 32, 380\)/);
 });
+
+test('the mobile picker keeps HEIC visible on Android galleries', () => {
+  assert.match(markup, /accept="image\/\*,\.heic,\.heif"/);
+  assert.match(markup, /upload\.js\?v=3/);
+});
