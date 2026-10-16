@@ -34,17 +34,26 @@
     "description": "Dedica musicale del giorno con \"Serenamente\" di Juli, Bresh."
   },
   "created_at": "2026-09-27T16:50:52.329607+02:00",
-  "updated_at": "2026-09-27T16:50:52.859233+02:00",
+  "updated_at": "2026-10-16T15:50:16.074Z",
   "voteAverage": null,
   "thoughtsText": "",
   "reactions": {
     "down": 0,
-    "like": 0,
+    "like": 1,
     "heart": 0,
     "sun": 0
   },
   "votes": [],
   "thoughts": [],
-  "reactionEntries": [],
+  "reactionEntries": [
+    {
+      "userId": "6de8a1b4-73f4-41dc-8955-9627d3f9a7e7",
+      "userKey": "massimiliano-ferrando",
+      "userName": "Massimiliano Ferrando",
+      "value": "like",
+      "createdAt": "2026-10-16T15:50:16.074Z",
+      "updatedAt": "2026-10-16T15:50:16.074Z"
+    }
+  ],
   "date_it": "27 settembre 2026"
 }
